@@ -1,0 +1,54 @@
+﻿CardID,CardNameCN,CardType,RecipeID,DesignedForNode,Tags,DescriptionCN,IconHintCN,IsBasicCard,IsCraftedTool
+B_APPLE,苹果,Base,,Global,"fairy_tale,food,lure",童话核心物件；可作为诱饵、毒苹果、香气来源,红苹果,True,False
+B_HONEY,蜂蜜,Base,,Global,"sticky,sweet,trap",黏住、吸引动物、制造甜味陷阱,蜂蜜罐,True,False
+B_SEED,种子,Base,,Global,"growth,nature",生长、变树、变藤蔓,小种子,True,False
+B_WATER,水,Base,,Global,"liquid,growth",浇灌、稀释、制造雾气,水滴/水壶,True,False
+B_BRANCH,树枝,Base,,Global,"forest,wood,trap",拦路、绊倒、搭桥、做陷阱,树枝,True,False
+B_LEAF,树叶,Base,,Global,"forest,camouflage,soft",伪装、滑行、被风吹动,大叶子,True,False
+B_MUSHROOM,蘑菇,Base,,Global,"forest,weird,magic",森林怪物件；幻觉、弹跳、遮挡,蘑菇,True,False
+B_MIRROR_SHARD,镜子碎片,Base,,Global,"mirror,reflect,queen",反光、误导、和王后美貌主题相关,碎镜片,True,False
+B_CLOTH,布料,Base,,Global,"cover,disguise,gift",包裹、伪装、礼物、斗篷,布片,True,False
+B_CROWN,皇冠,Base,,Global,"queen,royal,identity",王后/公主身份、虚荣、权力象征,小皇冠,True,False
+B_BIRD,小鸟,Base,,Global,"animal,guide,message",引路、报信、叼走物品,童话小鸟,True,False
+B_BELL,铃铛,Base,,Global,"sound,call,alert",召唤、提醒、敲门、吸引注意,小铃铛,True,False
+B_KEY,钥匙,Base,,Global,"door,unlock,house",开门、进入小屋、解锁,钥匙,True,False
+B_FLOWER,花,Base,,Global,"nature,polite,welcome",欢迎、讨好、童话温和感,小花,True,False
+B_LAMP,灯,Base,,Global,"light,guide,warm",指路、反光、温暖、安全感,小灯,True,False
+B_WIND,风,Base,,Global,"movement,air",吹动、移动、改变方向,风线,True,False
+B_POTION,药水,Base,,Global,"magic,poison,sleep",毒、睡眠、变形、幻觉,药水瓶,True,False
+B_KNIFE,刀,Base,,Global,"cut,danger",切开、破坏、制造危险或暴露真相,小刀,True,False
+B_GLASS,玻璃,Base,,Global,"glass,coffin,reflect",玻璃棺材、反光、保护、展示,玻璃片,True,False
+B_PLANK,木板,Base,,Global,"wood,sign,coffin",门、路牌、棺材、桥,木板,True,False
+B_ROPE,绳子,Base,,Global,"move,tie,carry",拉动、捆住、搬运,绳子,True,False
+B_PAPER,纸,Base,,Global,"script,note,instruction",剧本、告示、说明书,纸张,True,False
+B_INK,墨水,Base,,Global,"write,script,mark",改写、提示、标记,墨水瓶,True,False
+B_MUSIC_BOX,音乐盒,Base,,Global,"sound,warm,magic",安抚、吸引、童话氛围,音乐盒,True,False
+T_MAGIC_MIRROR,夸夸魔镜,Tool,R001,Node1,"node:Node1,crafted,tool",由 B_MIRROR_SHARD + B_CROWN 合成；用途：镜子过度夸王后，反而让王后怀疑有人比她更美。,夸夸魔镜,False,True
+T_RUMOR_CROW,八卦乌鸦,Tool,R002,Node1,"node:Node1,crafted,tool",由 B_BIRD + B_INK 合成；用途：小鸟带来乱写的美貌排行榜，白雪公主排第一。,八卦乌鸦,False,True
+T_SCRIPT_PAGE,空白剧本页,Tool,R003,Node1,"node:Node1,crafted,tool",由 B_PAPER + B_INK 合成；用途：剧本页自动写出“白雪公主比王后漂亮”，触发嫉妒。,空白剧本页,False,True
+T_REFLECTION_TRAP,反光陷阱,Tool,R004,Node1,"node:Node1,crafted,tool",由 B_MIRROR_SHARD + B_LAMP 合成；用途：灯照镜片，把王后的脸照歪，王后以为自己变丑。,反光陷阱,False,True
+T_PAPER_CROWN_DOLL,纸皇冠替身,Tool,R005,Node1,"node:Node1,crafted,tool",由 B_CLOTH + B_CROWN 合成；用途：王后拿替身和白雪公主比较，越想越气。,纸皇冠替身,False,True
+T_HONEY_APPLE,蜜糖苹果,Tool,R006,Node2,"node:Node2,crafted,tool",由 B_APPLE + B_HONEY 合成；用途：甜味吸引小动物冲出来，打乱猎人的路线。,蜜糖苹果,False,True
+T_FAST_TREE,速生大树,Tool,R007,Node2,"node:Node2,crafted,tool",由 B_SEED + B_WATER 合成；用途：一棵树瞬间长大，拦住猎人。,速生大树,False,True
+T_MUSHROOM_FOG,蘑菇幻雾,Tool,R008,Node2,"node:Node2,crafted,tool",由 B_MUSHROOM + B_WATER 合成；用途：猎人吸到蘑菇雾，把白雪公主看成树桩。,蘑菇幻雾,False,True
+T_LEAF_CLOAK,树叶斗篷,Tool,R009,Node2,"node:Node2,crafted,tool",由 B_LEAF + B_CLOTH 合成；用途：白雪公主披上树叶斗篷，变成会发抖的灌木。,树叶斗篷,False,True
+T_STICKY_SHOES,黏鞋陷阱,Tool,R010,Node2,"node:Node2,crafted,tool",由 B_HONEY + B_BRANCH 合成；用途：猎人的鞋被粘住，白雪公主逃走。,黏鞋陷阱,False,True
+T_WRONG_SIGN,错误路牌,Tool,R011,Node2,"node:Node2,crafted,tool",由 B_PLANK + B_INK 合成；用途：路牌把猎人指向错误方向。,错误路牌,False,True
+T_LEAF_GLIDER,大叶滑翔伞,Tool,R012,Node3,"node:Node3,crafted,tool",由 B_LEAF + B_WIND 合成；用途：巨大树叶被风吹起，带白雪公主滑到小屋附近。,大叶滑翔伞,False,True
+T_BOUNCY_MUSHROOM,弹跳蘑菇,Tool,R013,Node3,"node:Node3,crafted,tool",由 B_MUSHROOM + B_WIND 合成；用途：蘑菇被风吹得弹性十足，把白雪公主弹向小屋。,弹跳蘑菇,False,True
+T_FLOWER_PATH,会指路的花路,Tool,R014,Node3,"node:Node3,crafted,tool",由 B_FLOWER + B_LAMP 合成；用途：花朵一盏一盏亮起，形成通向小屋的路线。,会指路的花路,False,True
+T_FIREFLY_GUIDE,萤火小鸟,Tool,R015,Node3,"node:Node3,crafted,tool",由 B_BIRD + B_LAMP 合成；用途：小鸟叼着灯飞，白雪公主跟着光到小屋。,萤火小鸟,False,True
+T_AUTO_SIGNPOST,自动路牌,Tool,R016,Node3,"node:Node3,crafted,tool",由 B_PLANK + B_WIND 合成；用途：风把路牌吹向正确方向，指向小矮人家。,自动路牌,False,True
+T_FLOWER_KEY,花钥匙,Tool,R017,Node3,"node:Node3,crafted,tool",由 B_FLOWER + B_KEY 合成；用途：钥匙开门时长出花，小矮人觉得有礼貌而接纳她。,花钥匙,False,True
+T_BIRD_DOORBELL,小鸟门铃,Tool,R018,Node3,"node:Node3,crafted,tool",由 B_BIRD + B_BELL 合成；用途：小鸟叼铃铛敲门，小矮人出来接白雪公主。,小鸟门铃,False,True
+T_WELCOME_LIGHT,欢迎灯光,Tool,R019,Node3,"node:Node3,crafted,tool",由 B_LAMP + B_MUSIC_BOX 合成；用途：小屋亮起暖光和音乐，白雪公主觉得安全。,欢迎灯光,False,True
+T_POISON_APPLE,毒苹果,Tool,R020,Node4,"node:Node4,crafted,tool",由 B_APPLE + B_POTION 合成；用途：白雪公主吃下苹果，夸张地转圈倒下。,毒苹果,False,True
+T_GIFT_APPLE_BASKET,伪装苹果篮,Tool,R021,Node4,"node:Node4,crafted,tool",由 B_APPLE + B_CLOTH 合成；用途：女巫把苹果包成礼物，白雪公主降低戒心。,伪装苹果篮,False,True
+T_APPLE_AROMA,苹果香气,Tool,R022,Node4,"node:Node4,crafted,tool",由 B_APPLE + B_WIND 合成；用途：风把苹果香气吹到白雪公主鼻子前。,苹果香气,False,True
+T_GLASS_COFFIN,玻璃棺材,Tool,R023,Node4,"node:Node4,crafted,tool",由 B_GLASS + B_PLANK 合成；用途：小矮人把白雪公主放入透明棺材。,玻璃棺材,False,True
+T_DWARF_CARRY_ROPE,七人搬运绳,Tool,R024,Node4,"node:Node4,crafted,tool",由 B_ROPE + B_BELL 合成；用途：铃铛召集小矮人，大家拉绳子搬运白雪公主。,七人搬运绳,False,True
+T_COFFIN_MANUAL,棺材说明书,Tool,R025,Node4,"node:Node4,crafted,tool",由 B_PAPER + B_GLASS 合成；用途：说明书写着“请放进玻璃棺材等待王子”，小矮人照做。,棺材说明书,False,True
+T_GIANT_APPLE,巨大苹果,Tool,R026,Node4,"node:Node4,crafted,tool",由 B_APPLE + B_MIRROR_SHARD 合成；用途：镜子把苹果照得巨大，白雪公主被吓退或噎住。,巨大苹果,False,True
+T_CUT_APPLE,切开的苹果,Tool,R027,Node4,"node:Node4,crafted,tool",由 B_APPLE + B_KNIFE 合成；用途：白雪公主切开苹果，发现里面写着“有毒”，剧情失败。,切开的苹果,False,True
+T_WARNING_SIGN,警告牌,Tool,R028,Node4,"node:Node4,crafted,tool",由 B_PLANK + B_PAPER 合成；用途：牌子写着“不要吃”，白雪公主不吃，剧情卡住。,警告牌,False,True
+T_STICKY_GLASS,黏糊玻璃,Tool,R029,Node4,"node:Node4,crafted,tool",由 B_GLASS + B_HONEY 合成；用途：玻璃被蜂蜜粘成奇怪形状，小矮人放不进去。,黏糊玻璃,False,True
