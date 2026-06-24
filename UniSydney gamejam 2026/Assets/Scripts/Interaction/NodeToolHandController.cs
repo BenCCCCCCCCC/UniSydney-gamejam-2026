@@ -1,4 +1,5 @@
 using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
@@ -13,6 +14,10 @@ public class NodeToolHandController : MonoBehaviour
 
     private RectTransform handArea;
     private TMP_Text activeToolText;
+    private RectTransform p1DropSlot;
+    private RectTransform p2DropSlot;
+    private RectTransform p3DropSlot;
+    private readonly Dictionary<string, RectTransform> dropSlotsByPointID = new();
     private string activeToolCardID;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -53,13 +58,24 @@ public class NodeToolHandController : MonoBehaviour
     {
         ClearPlacementPointTestValues();
         AttachPlacementPointClickBridges();
+        BuildDropSlots();
+        AlignDropSlotsToPlacementPoints();
         BuildToolButtons();
     }
 
-    public void ConfigureRuntime(RectTransform runtimeHandArea, TMP_Text runtimeActiveToolText)
+    public void ConfigureRuntime(
+        RectTransform runtimeHandArea,
+        TMP_Text runtimeActiveToolText,
+        RectTransform runtimeP1DropSlot,
+        RectTransform runtimeP2DropSlot,
+        RectTransform runtimeP3DropSlot)
     {
         handArea = runtimeHandArea;
         activeToolText = runtimeActiveToolText;
+        p1DropSlot = runtimeP1DropSlot;
+        p2DropSlot = runtimeP2DropSlot;
+        p3DropSlot = runtimeP3DropSlot;
+        BuildDropSlots();
     }
 
     public static void TryPlaceActiveTool(PlacementPoint placementPoint)
@@ -83,6 +99,42 @@ public class NodeToolHandController : MonoBehaviour
 
         instance.SelectTool(toolCardID);
         Debug.Log($"Active Tool set by drag: {toolCardID}");
+    }
+
+    public static RectTransform GetDropSlotForPoint(string placePointID)
+    {
+        if (instance == null)
+        {
+            Debug.LogWarning("NodeToolHandController: no active controller in scene.");
+            return null;
+        }
+
+        if (instance.dropSlotsByPointID.TryGetValue(placePointID, out RectTransform slot))
+        {
+            return slot;
+        }
+
+        return null;
+    }
+
+    public static string GetDropSlotNameForPoint(string placePointID)
+    {
+        if (placePointID == "N1_P1")
+        {
+            return "P1_DropSlotUI";
+        }
+
+        if (placePointID == "N1_P2")
+        {
+            return "P2_DropSlotUI";
+        }
+
+        if (placePointID == "N1_P3")
+        {
+            return "P3_DropSlotUI";
+        }
+
+        return "(none)";
     }
 
     private void SelectTool(string toolCardID)
@@ -150,6 +202,106 @@ public class NodeToolHandController : MonoBehaviour
                 Debug.Log($"Existing placement collider for {point.placePointID} bounds size = {existingCollider.bounds.size}");
             }
         }
+    }
+
+    private void BuildDropSlots()
+    {
+        dropSlotsByPointID.Clear();
+
+        if (p1DropSlot != null)
+        {
+            dropSlotsByPointID["N1_P1"] = p1DropSlot;
+        }
+
+        if (p2DropSlot != null)
+        {
+            dropSlotsByPointID["N1_P2"] = p2DropSlot;
+        }
+
+        if (p3DropSlot != null)
+        {
+            dropSlotsByPointID["N1_P3"] = p3DropSlot;
+        }
+    }
+
+    private void AlignDropSlotsToPlacementPoints()
+    {
+        Canvas canvas = p1DropSlot != null ? p1DropSlot.GetComponentInParent<Canvas>() : null;
+        RectTransform canvasRect = canvas != null ? canvas.GetComponent<RectTransform>() : null;
+        Camera sceneCamera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
+
+        if (canvas == null || canvasRect == null || sceneCamera == null)
+        {
+            Debug.LogWarning("NodeToolHandController: cannot align drop slots because canvas or camera is missing.");
+            return;
+        }
+
+        PlacementPoint[] placementPoints = FindObjectsByType<PlacementPoint>();
+        foreach (PlacementPoint point in placementPoints)
+        {
+            if (point == null || !dropSlotsByPointID.TryGetValue(point.placePointID, out RectTransform slot) || slot == null)
+            {
+                continue;
+            }
+
+            Vector3 worldPosition = GetPlacementWorldCenter(point);
+            Vector2 screenPosition = sceneCamera.WorldToScreenPoint(worldPosition);
+            Camera uiCamera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPosition, uiCamera, out Vector2 localPoint))
+            {
+                slot.anchorMin = new Vector2(0.5f, 0.5f);
+                slot.anchorMax = new Vector2(0.5f, 0.5f);
+                slot.pivot = new Vector2(0.5f, 0.5f);
+                slot.anchoredPosition = localPoint;
+                Debug.Log($"DROP_SLOT_ALIGNED: {point.placePointID} world={FormatVector3(worldPosition)} screen={FormatVector2(screenPosition)} local={FormatVector2(localPoint)}");
+            }
+        }
+    }
+
+    private static Vector3 GetPlacementWorldCenter(PlacementPoint point)
+    {
+        Collider2D triggerCollider = FindTriggerZoneCollider(point);
+        if (triggerCollider != null)
+        {
+            return triggerCollider.bounds.center;
+        }
+
+        Collider2D pointCollider = point.GetComponentInChildren<Collider2D>();
+        if (pointCollider != null)
+        {
+            return pointCollider.bounds.center;
+        }
+
+        return point.transform.position;
+    }
+
+    private static Collider2D FindTriggerZoneCollider(PlacementPoint point)
+    {
+        PlacementTriggerZone[] triggerZones = FindObjectsByType<PlacementTriggerZone>();
+        foreach (PlacementTriggerZone zone in triggerZones)
+        {
+            if (zone != null && zone.placementPoint == point)
+            {
+                Collider2D collider = zone.GetComponentInChildren<Collider2D>();
+                if (collider != null)
+                {
+                    return collider;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static string FormatVector2(Vector2 value)
+    {
+        return $"<{value.x:0.0}, {value.y:0.0}>";
+    }
+
+    private static string FormatVector3(Vector3 value)
+    {
+        return $"<{value.x:0.00}, {value.y:0.00}, {value.z:0.00}>";
     }
 
     private void BuildToolButtons()
@@ -298,11 +450,29 @@ public class NodeToolHandController : MonoBehaviour
                 new Vector2(900f, 44f),
                 24f);
 
+            RectTransform p1DropSlot = CreateDropSlot(canvasRect, "P1_DropSlotUI");
+            RectTransform p2DropSlot = CreateDropSlot(canvasRect, "P2_DropSlotUI");
+            RectTransform p3DropSlot = CreateDropSlot(canvasRect, "P3_DropSlotUI");
             RectTransform handArea = CreateHandArea(canvasRect);
 
             GameObject controllerObject = new GameObject("NodeToolHandController");
             NodeToolHandController controller = controllerObject.AddComponent<NodeToolHandController>();
-            controller.ConfigureRuntime(handArea, activeToolText);
+            controller.ConfigureRuntime(handArea, activeToolText, p1DropSlot, p2DropSlot, p3DropSlot);
+        }
+
+        private static RectTransform CreateDropSlot(Transform parent, string name)
+        {
+            GameObject slotObject = new GameObject(name, typeof(RectTransform));
+            slotObject.transform.SetParent(parent, false);
+
+            RectTransform rect = slotObject.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = new Vector2(170f, 84f);
+            rect.anchoredPosition = Vector2.zero;
+
+            return rect;
         }
 
         private static RectTransform CreateHandArea(Transform parent)
