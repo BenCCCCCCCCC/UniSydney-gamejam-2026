@@ -13,4 +13,9 @@ public class PlacementPoint : MonoBehaviour
     {
         return !string.IsNullOrEmpty(storedToolCardID);
     }
+
+    public void SetTool(string toolCardID)
+    {
+        storedToolCardID = toolCardID;
+    }
 }
