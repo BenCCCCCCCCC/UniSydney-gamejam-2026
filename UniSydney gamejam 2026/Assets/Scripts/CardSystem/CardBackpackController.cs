@@ -44,7 +44,7 @@ public class CardBackpackController : MonoBehaviour
     [SerializeField] private Vector2 baseCardSize = DefaultBaseCardSize;
     [SerializeField] private Vector2 baseCardSpacing = DefaultBaseCardSpacing;
     [SerializeField] private int maxBaseCardsPerRow = DefaultMaxBaseCardsPerRow;
-    [SerializeField] private RectOffset baseCardAreaPadding = new RectOffset(16, 16, 16, 16);
+    [SerializeField] private RectOffset baseCardAreaPadding;
     [SerializeField] private bool useManualBaseCardSlots;
     [SerializeField] private Vector2 toolHandCardSize = new Vector2(120f, 160f);
 
@@ -58,6 +58,11 @@ public class CardBackpackController : MonoBehaviour
     private RectTransform autoBaseCardArea;
     private bool inputLocked;
     private bool isContinuing;
+
+    private void Awake()
+    {
+        EnsureBaseCardAreaPadding();
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void RegisterSceneLoadedHandler()
@@ -90,6 +95,7 @@ public class CardBackpackController : MonoBehaviour
 
     private void Start()
     {
+        EnsureBaseCardAreaPadding();
         ApplyGameSessionTarget();
 
         if (!HasRequiredReferences())
@@ -439,7 +445,21 @@ public class CardBackpackController : MonoBehaviour
         grid.childAlignment = TextAnchor.MiddleCenter;
         grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         grid.constraintCount = Mathf.Max(1, Mathf.Min(Mathf.Max(1, maxBaseCardsPerRow), Mathf.Max(1, cardCount)));
-        grid.padding = baseCardAreaPadding ?? new RectOffset();
+        grid.padding = GetBaseCardAreaPadding();
+    }
+
+    private RectOffset GetBaseCardAreaPadding()
+    {
+        EnsureBaseCardAreaPadding();
+        return baseCardAreaPadding;
+    }
+
+    private void EnsureBaseCardAreaPadding()
+    {
+        if (baseCardAreaPadding == null)
+        {
+            baseCardAreaPadding = new RectOffset(16, 16, 16, 16);
+        }
     }
 
     private void ApplyManualSlotLayout(CardView view, RectTransform slot)
