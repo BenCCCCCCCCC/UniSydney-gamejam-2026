@@ -12,11 +12,13 @@ public class NodeToolHandController : MonoBehaviour
 {
     private static NodeToolHandController instance;
 
-    private RectTransform handArea;
-    private TMP_Text activeToolText;
-    private RectTransform p1DropSlot;
-    private RectTransform p2DropSlot;
-    private RectTransform p3DropSlot;
+    [Header("Manual UI References")]
+    [SerializeField] private RectTransform handArea;
+    [SerializeField] private TMP_Text activeToolText;
+    [SerializeField] private RectTransform p1DropSlot;
+    [SerializeField] private RectTransform p2DropSlot;
+    [SerializeField] private RectTransform p3DropSlot;
+
     private readonly Dictionary<string, RectTransform> dropSlotsByPointID = new();
     private string activeToolCardID;
 
@@ -55,7 +57,7 @@ public class NodeToolHandController : MonoBehaviour
             return;
         }
 
-        RuntimeUiBuilder.Build();
+        RuntimeUiBuilder.BuildOrReuse();
     }
 
     private void Awake()
@@ -65,10 +67,19 @@ public class NodeToolHandController : MonoBehaviour
 
     private void Start()
     {
+        WarnIfNodeToolHandCanvasScaleIsZero();
         ClearPlacementPointTestValues();
         AttachPlacementPointClickBridges();
         BuildDropSlots();
-        AlignDropSlotsToPlacementPoints();
+        if (IsManualDropSlotMode())
+        {
+            Debug.Log("MANUAL_DROP_SLOT_MODE");
+        }
+        else
+        {
+            AlignDropSlotsToPlacementPoints();
+        }
+
         BuildToolButtons();
     }
 
@@ -231,6 +242,49 @@ public class NodeToolHandController : MonoBehaviour
         if (p3DropSlot != null)
         {
             dropSlotsByPointID["N1_P3"] = p3DropSlot;
+        }
+    }
+
+    private bool IsManualDropSlotMode()
+    {
+        return NodePlacementSlotBinder.HasCompleteNode1Binding()
+            || (p1DropSlot != null && p2DropSlot != null && p3DropSlot != null);
+    }
+
+    private void WarnIfNodeToolHandCanvasScaleIsZero()
+    {
+        Canvas canvas = null;
+
+        if (handArea != null)
+        {
+            canvas = handArea.GetComponentInParent<Canvas>();
+        }
+
+        if (canvas == null && activeToolText != null)
+        {
+            canvas = activeToolText.GetComponentInParent<Canvas>();
+        }
+
+        if (canvas == null && p1DropSlot != null)
+        {
+            canvas = p1DropSlot.GetComponentInParent<Canvas>();
+        }
+
+        if (canvas == null)
+        {
+            GameObject canvasObject = GameObject.Find("NodeToolHandCanvas");
+            canvas = canvasObject != null ? canvasObject.GetComponent<Canvas>() : null;
+        }
+
+        if (canvas == null)
+        {
+            return;
+        }
+
+        Vector3 scale = canvas.transform.localScale;
+        if (Mathf.Approximately(scale.x, 0f) || Mathf.Approximately(scale.y, 0f) || Mathf.Approximately(scale.z, 0f))
+        {
+            Debug.LogWarning("NODE_TOOL_HAND_CANVAS_SCALE_ZERO");
         }
     }
 
@@ -447,37 +501,123 @@ public class NodeToolHandController : MonoBehaviour
 
     private static class RuntimeUiBuilder
     {
-        public static void Build()
+        public static void BuildOrReuse()
         {
             EnsureEventSystem();
 
-            GameObject canvasObject = new GameObject("NodeToolHandCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            GameObject canvasObject = GameObject.Find("NodeToolHandCanvas");
+            bool createdCanvasObject = false;
+            if (canvasObject == null)
+            {
+                canvasObject = new GameObject("NodeToolHandCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+                createdCanvasObject = true;
+            }
+
+            bool addedCanvas = false;
+            if (canvasObject.GetComponent<Canvas>() == null)
+            {
+                canvasObject.AddComponent<Canvas>();
+                addedCanvas = true;
+            }
+
+            if (canvasObject.GetComponent<GraphicRaycaster>() == null)
+            {
+                canvasObject.AddComponent<GraphicRaycaster>();
+            }
+
             Canvas canvas = canvasObject.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            if (createdCanvasObject || addedCanvas)
+            {
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            }
 
             CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
-            scaler.matchWidthOrHeight = 0.5f;
+            bool addedScaler = false;
+            if (scaler == null)
+            {
+                scaler = canvasObject.AddComponent<CanvasScaler>();
+                addedScaler = true;
+            }
+
+            if (createdCanvasObject || addedScaler)
+            {
+                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                scaler.referenceResolution = new Vector2(1920f, 1080f);
+                scaler.matchWidthOrHeight = 0.5f;
+            }
 
             RectTransform canvasRect = canvasObject.GetComponent<RectTransform>();
+            bool manualDropSlotMode = NodePlacementSlotBinder.HasCompleteNode1Binding();
 
-            TMP_Text activeToolText = CreateText(
-                "ActiveToolText",
-                canvasRect,
-                "Active Tool: None",
-                new Vector2(0.5f, 0.17f),
-                new Vector2(900f, 44f),
-                24f);
+            TMP_Text activeToolText = FindChildComponent<TMP_Text>(canvasObject.transform, "ActiveToolText");
+            if (activeToolText == null)
+            {
+                activeToolText = CreateText(
+                    "ActiveToolText",
+                    canvasRect,
+                    "Active Tool: None",
+                    new Vector2(0.5f, 0.17f),
+                    new Vector2(900f, 44f),
+                    24f);
+            }
 
-            RectTransform p1DropSlot = CreateDropSlot(canvasRect, "P1_DropSlotUI");
-            RectTransform p2DropSlot = CreateDropSlot(canvasRect, "P2_DropSlotUI");
-            RectTransform p3DropSlot = CreateDropSlot(canvasRect, "P3_DropSlotUI");
-            RectTransform handArea = CreateHandArea(canvasRect);
+            RectTransform p1DropSlot = FindChildRect(canvasObject.transform, "P1_DropSlotUI");
+            RectTransform p2DropSlot = FindChildRect(canvasObject.transform, "P2_DropSlotUI");
+            RectTransform p3DropSlot = FindChildRect(canvasObject.transform, "P3_DropSlotUI");
+
+            if (!manualDropSlotMode)
+            {
+                p1DropSlot ??= CreateDropSlot(canvasRect, "P1_DropSlotUI");
+                p2DropSlot ??= CreateDropSlot(canvasRect, "P2_DropSlotUI");
+                p3DropSlot ??= CreateDropSlot(canvasRect, "P3_DropSlotUI");
+            }
+
+            RectTransform handArea = FindChildRect(canvasObject.transform, "NodeToolHandArea");
+            if (handArea == null)
+            {
+                handArea = CreateHandArea(canvasRect);
+            }
 
             GameObject controllerObject = new GameObject("NodeToolHandController");
             NodeToolHandController controller = controllerObject.AddComponent<NodeToolHandController>();
             controller.ConfigureRuntime(handArea, activeToolText, p1DropSlot, p2DropSlot, p3DropSlot);
+        }
+
+        private static RectTransform FindChildRect(Transform parent, string childName)
+        {
+            Transform child = FindChildRecursive(parent, childName);
+            return child != null ? child.GetComponent<RectTransform>() : null;
+        }
+
+        private static T FindChildComponent<T>(Transform parent, string childName) where T : Component
+        {
+            Transform child = FindChildRecursive(parent, childName);
+            return child != null ? child.GetComponent<T>() : null;
+        }
+
+        private static Transform FindChildRecursive(Transform parent, string childName)
+        {
+            if (parent == null)
+            {
+                return null;
+            }
+
+            string trimmedChildName = childName.Trim();
+            foreach (Transform child in parent)
+            {
+                if (child.name.Trim() == trimmedChildName)
+                {
+                    return child;
+                }
+
+                Transform found = FindChildRecursive(child, childName);
+                if (found != null)
+                {
+                    return found;
+                }
+            }
+
+            return null;
         }
 
         private static RectTransform CreateDropSlot(Transform parent, string name)
