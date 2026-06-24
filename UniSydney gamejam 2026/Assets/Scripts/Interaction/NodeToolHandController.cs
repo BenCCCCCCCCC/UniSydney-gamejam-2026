@@ -22,6 +22,10 @@ public class NodeToolHandController : MonoBehaviour
 
     private string activeToolCardID;
 
+    [Header("Art")]
+    [SerializeField] private CardArtCatalog cardArtCatalog;
+    [SerializeField] private bool useResourcesArtFallback = true;
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void RegisterSceneLoadedHandler()
     {
@@ -432,6 +436,15 @@ public class NodeToolHandController : MonoBehaviour
             18f);
 
         label.color = Color.white;
+
+        Sprite sprite = CardArtLoader.GetSprite(toolCardID, cardArtCatalog, useResourcesArtFallback);
+        if (sprite != null)
+        {
+            image.sprite = sprite;
+            image.color = Color.white;
+            image.preserveAspect = false;
+            label.gameObject.SetActive(false);
+        }
     }
 
     private void UpdateActiveToolText()

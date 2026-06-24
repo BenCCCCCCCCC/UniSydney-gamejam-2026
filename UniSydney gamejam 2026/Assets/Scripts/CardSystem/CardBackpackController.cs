@@ -150,8 +150,8 @@ public class CardBackpackController : MonoBehaviour
                 false,
                 OnBaseCardClicked,
                 cardBackSprite,
-                defaultBaseFrontSprite,
                 CardArtLoader.GetSprite(card.CardID, cardArtCatalog, useResourcesArtFallback),
+                null,
                 new Color(0.92f, 0.82f, 0.62f, 1f),
                 new Color(0.16f, 0.18f, 0.25f, 1f));
 
@@ -241,8 +241,8 @@ public class CardBackpackController : MonoBehaviour
                 false,
                 null,
                 cardBackSprite,
-                defaultToolFrontSprite,
                 CardArtLoader.GetSprite(outputCard.CardID, cardArtCatalog, useResourcesArtFallback),
+                null,
                 new Color(0.66f, 0.78f, 0.95f, 1f),
                 new Color(0.16f, 0.18f, 0.25f, 1f));
 
