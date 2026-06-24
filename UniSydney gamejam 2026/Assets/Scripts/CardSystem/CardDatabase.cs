@@ -20,8 +20,13 @@ public class CardDatabase : MonoBehaviour
     {
         if (cardSystemJson == null)
         {
-            Debug.LogError("CardDatabase: cardSystemJson is missing.");
-            return;
+            cardSystemJson = Resources.Load<TextAsset>("Data/FlipTheScript_CardSystem_Data");
+
+            if (cardSystemJson == null)
+            {
+                Debug.LogError("CardDatabase: cardSystemJson is missing.");
+                return;
+            }
         }
 
         Data = JsonUtility.FromJson<CardSystemData>(cardSystemJson.text);
@@ -204,6 +209,12 @@ public class CardDatabase : MonoBehaviour
 
                 if (cardsById.TryGetValue(id, out CardRow card))
                 {
+                    if (!IsBasicCardForCrafting(card))
+                    {
+                        Debug.LogWarning($"CardDatabase: node loadout skipped non-basic card id: {id}");
+                        continue;
+                    }
+
                     result.Add(card);
                 }
                 else
@@ -216,6 +227,15 @@ public class CardDatabase : MonoBehaviour
         }
 
         return result;
+    }
+
+    private bool IsBasicCardForCrafting(CardRow card)
+    {
+        return card != null
+            && card.IsBasicCard
+            && !card.IsCraftedTool
+            && !string.IsNullOrWhiteSpace(card.CardID)
+            && card.CardID.StartsWith("B_", System.StringComparison.Ordinal);
     }
 
     private string MakePairKey(string cardAId, string cardBId)

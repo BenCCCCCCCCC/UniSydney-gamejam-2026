@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 [Serializable]
 public class CardSystemData
@@ -77,4 +78,49 @@ public class PlacementResultRow
     public string ResultID;
     public string ResultSummaryCN;
     public string NextState;
+}
+
+public static class CardDisplayNameHelper
+{
+    public static string ToEnglishName(string cardId)
+    {
+        if (string.IsNullOrWhiteSpace(cardId))
+        {
+            return string.Empty;
+        }
+
+        string name = cardId;
+
+        if (name.StartsWith("B_", StringComparison.Ordinal) || name.StartsWith("T_", StringComparison.Ordinal))
+        {
+            name = name.Substring(2);
+        }
+
+        string[] words = name.Split('_');
+        var builder = new StringBuilder();
+
+        foreach (string rawWord in words)
+        {
+            if (string.IsNullOrWhiteSpace(rawWord))
+            {
+                continue;
+            }
+
+            string word = rawWord.ToLowerInvariant();
+
+            if (builder.Length > 0)
+            {
+                builder.Append(' ');
+            }
+
+            builder.Append(char.ToUpperInvariant(word[0]));
+
+            if (word.Length > 1)
+            {
+                builder.Append(word.Substring(1));
+            }
+        }
+
+        return builder.ToString();
+    }
 }

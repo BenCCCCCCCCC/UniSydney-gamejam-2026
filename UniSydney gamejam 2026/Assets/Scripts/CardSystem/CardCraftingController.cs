@@ -96,12 +96,17 @@ public class CardCraftingController : MonoBehaviour
         foreach (var card in baseCards)
         {
             CardButton button = Instantiate(cardButtonPrefab, baseCardPanel);
-            button.Setup(card, this);
+            button.Setup(card, this, true);
         }
     }
 
     public void SelectCard(CardRow card)
     {
+        if (!CanSelectForCrafting(card))
+        {
+            return;
+        }
+
         if (selectedA == null)
         {
             selectedA = card;
@@ -119,11 +124,20 @@ public class CardCraftingController : MonoBehaviour
         RefreshSelectedUI();
     }
 
+    private bool CanSelectForCrafting(CardRow card)
+    {
+        return card != null
+            && card.IsBasicCard
+            && !card.IsCraftedTool
+            && !string.IsNullOrWhiteSpace(card.CardID)
+            && card.CardID.StartsWith("B_", System.StringComparison.Ordinal);
+    }
+
     private void CombineSelectedCards()
     {
         if (selectedA == null || selectedB == null)
         {
-            resultText.text = "先选择两张基础牌。";
+            resultText.text = "Select two base cards first.";
             return;
         }
 
@@ -136,14 +150,17 @@ public class CardCraftingController : MonoBehaviour
 
         if (!success)
         {
-            resultText.text = $"“{selectedA.CardNameCN}”和“{selectedB.CardNameCN}”好像编不出故事。";
+            string selectedAName = CardDisplayNameHelper.ToEnglishName(selectedA.CardID);
+            string selectedBName = CardDisplayNameHelper.ToEnglishName(selectedB.CardID);
+            resultText.text = $"No recipe for {selectedAName} + {selectedBName}.";
             return;
         }
 
-        resultText.text = $"合成成功：{outputCard.CardNameCN}\n{recipe.ResultSummaryCN}";
+        string outputName = CardDisplayNameHelper.ToEnglishName(outputCard.CardID);
+        resultText.text = $"Crafted: {outputName}\nID: {outputCard.CardID}";
 
         CardButton toolButton = Instantiate(cardButtonPrefab, backpackPanel);
-        toolButton.Setup(outputCard, this);
+        toolButton.Setup(outputCard, this, false);
 
         selectedA = null;
         selectedB = null;
@@ -152,8 +169,8 @@ public class CardCraftingController : MonoBehaviour
 
     private void RefreshSelectedUI()
     {
-        selectedAText.text = selectedA == null ? "Slot A: 空" : $"Slot A: {selectedA.CardNameCN}";
-        selectedBText.text = selectedB == null ? "Slot B: 空" : $"Slot B: {selectedB.CardNameCN}";
+        selectedAText.text = selectedA == null ? "Selected A: Empty" : $"Selected A: {CardDisplayNameHelper.ToEnglishName(selectedA.CardID)}";
+        selectedBText.text = selectedB == null ? "Selected B: Empty" : $"Selected B: {CardDisplayNameHelper.ToEnglishName(selectedB.CardID)}";
     }
 
     private void ClearChildren(Transform parent)
