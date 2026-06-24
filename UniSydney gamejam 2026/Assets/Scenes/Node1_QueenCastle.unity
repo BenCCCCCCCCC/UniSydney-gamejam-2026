@@ -128,6 +128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 47383801}
+  - component: {fileID: 47383802}
   m_Layer: 0
   m_Name: N1_P1_WindowPoint
   m_TagString: Untagged
@@ -152,6 +153,21 @@ Transform:
   - {fileID: 1331221913}
   m_Father: {fileID: 1089344937}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &47383802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 47383800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47e3bea6681257c44abb0e2bae925c21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlacementPoint
+  nodeID: Node1
+  placePointID: N1_P1
+  storedToolCardID: T_SPOTLIGHT_MIRROR
 --- !u!1 &61986275
 GameObject:
   m_ObjectHideFlags: 0
@@ -164,7 +180,7 @@ GameObject:
   - component: {fileID: 61986278}
   - component: {fileID: 61986277}
   m_Layer: 0
-  m_Name: TriggerZone-2
+  m_Name: P2_TriggerZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -197,8 +213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17dcb3acd21ba8649a3732043543715a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
-  nodeID: Node1
-  placePointID: N1_P2
+  placementPoint: {fileID: 1081387996}
 --- !u!61 &61986278
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -257,7 +272,7 @@ GameObject:
   - component: {fileID: 264295985}
   - component: {fileID: 264295984}
   m_Layer: 0
-  m_Name: TriggerZone-1
+  m_Name: P1_TriggerZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -290,8 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17dcb3acd21ba8649a3732043543715a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
-  nodeID: Node1
-  placePointID: N1_P1
+  placementPoint: {fileID: 47383802}
 --- !u!61 &264295985
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -441,7 +455,7 @@ GameObject:
   - component: {fileID: 629975696}
   - component: {fileID: 629975697}
   m_Layer: 0
-  m_Name: ToolSlotVisual-2
+  m_Name: P2_ToolSlotVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -655,6 +669,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1081387995}
+  - component: {fileID: 1081387996}
   m_Layer: 0
   m_Name: N1_P2_QueenPoint
   m_TagString: Untagged
@@ -679,6 +694,21 @@ Transform:
   - {fileID: 629975696}
   m_Father: {fileID: 1089344937}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1081387996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081387994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47e3bea6681257c44abb0e2bae925c21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlacementPoint
+  nodeID: Node1
+  placePointID: N1_P2
+  storedToolCardID: T_BROADCAST_BIRD
 --- !u!1 &1089344936
 GameObject:
   m_ObjectHideFlags: 0
@@ -755,7 +785,7 @@ GameObject:
   - component: {fileID: 1331221913}
   - component: {fileID: 1331221914}
   m_Layer: 0
-  m_Name: ToolSlotVisual-1
+  m_Name: P1_ToolSlotVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -976,7 +1006,7 @@ GameObject:
   - component: {fileID: 1405852955}
   - component: {fileID: 1405852954}
   m_Layer: 0
-  m_Name: StoryActor_Test
+  m_Name: Queen_Placeholder
   m_TagString: StoryActor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1247,6 +1277,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1729720874}
   - component: {fileID: 1729720875}
+  - component: {fileID: 1729720876}
   m_Layer: 0
   m_Name: N1_P3_MirrorPoint
   m_TagString: Untagged
@@ -1317,6 +1348,21 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1729720876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1729720873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47e3bea6681257c44abb0e2bae925c21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlacementPoint
+  nodeID: Node1
+  placePointID: N1_P3
+  storedToolCardID: T_BOUNCY_CROWN
 --- !u!1 &1729910019
 GameObject:
   m_ObjectHideFlags: 0
@@ -1328,7 +1374,7 @@ GameObject:
   - component: {fileID: 1729910020}
   - component: {fileID: 1729910021}
   m_Layer: 0
-  m_Name: ToolSlotVisual-3
+  m_Name: P3_ToolSlotVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1497,7 +1543,7 @@ GameObject:
   - component: {fileID: 1851893872}
   - component: {fileID: 1851893871}
   m_Layer: 0
-  m_Name: TriggerZone-3
+  m_Name: P3_TriggerZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1530,8 +1576,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17dcb3acd21ba8649a3732043543715a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
-  nodeID: Node1
-  placePointID: N1_P3
+  placementPoint: {fileID: 1729720876}
 --- !u!61 &1851893872
 BoxCollider2D:
   m_ObjectHideFlags: 0

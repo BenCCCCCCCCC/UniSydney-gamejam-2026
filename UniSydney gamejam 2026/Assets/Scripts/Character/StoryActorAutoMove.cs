@@ -10,6 +10,7 @@ public class StoryActorAutoMove : MonoBehaviour
     public float moveSpeed = 2f;
 
     private bool isPlaying = false;
+    private bool isPaused = false;
 
     private void Start()
     {
@@ -21,7 +22,7 @@ public class StoryActorAutoMove : MonoBehaviour
 
     private void Update()
     {
-        if (!isPlaying || endPoint == null)
+        if (!isPlaying || isPaused || endPoint == null)
         {
             return;
         }
@@ -47,6 +48,23 @@ public class StoryActorAutoMove : MonoBehaviour
         }
 
         isPlaying = true;
+        isPaused = false;
         Debug.Log("Play started.");
+    }
+
+    public void PauseMove()
+    {
+        isPaused = true;
+    }
+
+    public void ResumeMove()
+    {
+        isPaused = false;
+    }
+
+    public void StopMove()
+    {
+        isPlaying = false;
+        isPaused = false;
     }
 }
