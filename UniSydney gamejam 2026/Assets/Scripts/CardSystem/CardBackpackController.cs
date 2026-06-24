@@ -6,12 +6,19 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+#endif
 
 public class CardBackpackController : MonoBehaviour
 {
+    private const string Node1ID = "Node1";
+
     [Header("Data")]
     [SerializeField] private CardDatabase database;
-    [SerializeField] private string currentNodeId = "Node2";
+    [SerializeField] private string currentNodeId = Node1ID;
+    [SerializeField] private bool loadTargetSceneOnContinue = true;
+    [SerializeField] private string targetSceneName = "Node1_QueenCastle";
 
     [Header("UI")]
     [SerializeField] private RectTransform baseCardArea;
@@ -52,6 +59,8 @@ public class CardBackpackController : MonoBehaviour
 
     private void Start()
     {
+        EnsureNode1BridgeTarget();
+
         if (!HasRequiredReferences())
         {
             return;
@@ -347,8 +356,74 @@ public class CardBackpackController : MonoBehaviour
 
     private void OnContinueClicked()
     {
-        Debug.Log($"CardBackpackController: continue with {toolCards.Count} crafted tools.");
-        instructionText.text = $"Continuing with {toolCards.Count} crafted tools.";
+        List<string> toolCardIDs = GetToolCardIDs();
+        Debug.Log($"Continue clicked. Crafted tools count = {toolCardIDs.Count}");
+        Debug.Log($"Saving tool IDs: {FormatToolIDs(toolCardIDs)}");
+
+        GameSessionData.CurrentNodeID = currentNodeId;
+        GameSessionData.SetToolCardIDs(toolCardIDs);
+
+        Debug.Log($"CardBackpackController: continue with {toolCardIDs.Count} crafted tools.");
+        instructionText.text = $"Continuing with {toolCardIDs.Count} crafted tools.";
+
+        if (loadTargetSceneOnContinue && !string.IsNullOrWhiteSpace(targetSceneName))
+        {
+            LoadTargetScene();
+        }
+    }
+
+    public List<string> GetToolCardIDs()
+    {
+        var result = new List<string>();
+
+        foreach (CardView toolCard in toolCards)
+        {
+            if (toolCard == null || toolCard.Card == null || string.IsNullOrWhiteSpace(toolCard.Card.CardID))
+            {
+                continue;
+            }
+
+            result.Add(toolCard.Card.CardID);
+        }
+
+        return result;
+    }
+
+    private void LoadTargetScene()
+    {
+        Debug.Log($"Loading scene: {targetSceneName}");
+
+#if UNITY_EDITOR
+        string scenePath = $"Assets/Scenes/{targetSceneName}.unity";
+        if (SceneUtility.GetBuildIndexByScenePath(scenePath) < 0)
+        {
+            EditorSceneManager.LoadSceneInPlayMode(scenePath, new LoadSceneParameters(LoadSceneMode.Single));
+            return;
+        }
+#endif
+
+        SceneManager.LoadScene(targetSceneName);
+    }
+
+    private void EnsureNode1BridgeTarget()
+    {
+        if (currentNodeId == Node1ID)
+        {
+            return;
+        }
+
+        Debug.LogWarning($"CardBackpackController: currentNodeId was {currentNodeId}; using {Node1ID} for the Node1 bridge test.");
+        currentNodeId = Node1ID;
+    }
+
+    private static string FormatToolIDs(List<string> toolCardIDs)
+    {
+        if (toolCardIDs == null || toolCardIDs.Count == 0)
+        {
+            return "(none)";
+        }
+
+        return string.Join(", ", toolCardIDs);
     }
 
     private void ClearChildren(Transform parent)
