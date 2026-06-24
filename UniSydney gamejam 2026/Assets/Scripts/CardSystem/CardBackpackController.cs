@@ -6,19 +6,22 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
 #endif
 
 public class CardBackpackController : MonoBehaviour
 {
-    private const string Node1ID = "Node1";
+    private const string DefaultNodeID = "Node1";
+    private const string DefaultTargetSceneName = "Node1_QueenCastle";
+    private const string CardBackpackSceneName = "CardBackpackTest";
 
     [Header("Data")]
     [SerializeField] private CardDatabase database;
-    [SerializeField] private string currentNodeId = Node1ID;
+    [SerializeField] private string currentNodeId = DefaultNodeID;
     [SerializeField] private bool loadTargetSceneOnContinue = true;
-    [SerializeField] private string targetSceneName = "Node1_QueenCastle";
+    [SerializeField] private string targetSceneName = DefaultTargetSceneName;
 
     [Header("UI")]
     [SerializeField] private RectTransform baseCardArea;
@@ -46,11 +49,25 @@ public class CardBackpackController : MonoBehaviour
     private readonly List<CardView> toolCards = new();
 
     private bool inputLocked;
+    private bool isContinuing;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    private static void BuildRuntimeTestSceneIfNeeded()
+    private static void RegisterSceneLoadedHandler()
     {
-        if (SceneManager.GetActiveScene().name != "CardBackpackTest")
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
+        BuildRuntimeTestSceneIfNeeded(SceneManager.GetActiveScene());
+    }
+
+    private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        BuildRuntimeTestSceneIfNeeded(scene);
+    }
+
+    private static void BuildRuntimeTestSceneIfNeeded(Scene scene)
+    {
+        if (scene.name != CardBackpackSceneName)
         {
             return;
         }
@@ -65,14 +82,15 @@ public class CardBackpackController : MonoBehaviour
 
     private void Start()
     {
-        EnsureNode1BridgeTarget();
+        ApplyGameSessionTarget();
 
         if (!HasRequiredReferences())
         {
             return;
         }
 
-        continueButton.gameObject.SetActive(false);
+        continueButton.gameObject.SetActive(true);
+        continueButton.interactable = false;
         continueButton.onClick.RemoveAllListeners();
         continueButton.onClick.AddListener(OnContinueClicked);
 
@@ -93,9 +111,26 @@ public class CardBackpackController : MonoBehaviour
         continueButton = runtimeContinueButton;
     }
 
+    private void ApplyGameSessionTarget()
+    {
+        if (!string.IsNullOrWhiteSpace(GameSessionData.CurrentNodeID))
+        {
+            currentNodeId = GameSessionData.CurrentNodeID;
+        }
+
+        if (!string.IsNullOrWhiteSpace(GameSessionData.CurrentNodeSceneName))
+        {
+            targetSceneName = GameSessionData.CurrentNodeSceneName;
+        }
+
+        Debug.Log($"CardBackpackController target: node = {currentNodeId}, scene = {targetSceneName}");
+    }
+
     private IEnumerator BeginRound()
     {
         inputLocked = true;
+        UpdateContinueButtonState();
+
         ClearChildren(baseCardArea);
         ClearChildren(toolHandArea);
         baseCardViews.Clear();
@@ -119,6 +154,7 @@ public class CardBackpackController : MonoBehaviour
                 CardArtLoader.GetSprite(card.CardID, cardArtCatalog, useResourcesArtFallback),
                 new Color(0.92f, 0.82f, 0.62f, 1f),
                 new Color(0.16f, 0.18f, 0.25f, 1f));
+
             baseCardViews.Add(view);
         }
 
@@ -136,8 +172,8 @@ public class CardBackpackController : MonoBehaviour
         }
 
         inputLocked = false;
-        instructionText.text = "Flip two base cards to craft a tool.";
-        CheckForContinue();
+        instructionText.text = "Flip two base cards to craft a tool. Continue anytime if you have enough tools.";
+        UpdateContinueButtonState();
     }
 
     private void OnBaseCardClicked(CardView view)
@@ -170,6 +206,8 @@ public class CardBackpackController : MonoBehaviour
     private IEnumerator ResolveOpenedPair()
     {
         inputLocked = true;
+        UpdateContinueButtonState();
+
         SetRemainingBaseCardsClickable(false);
         yield return new WaitForSeconds(0.15f);
 
@@ -207,6 +245,7 @@ public class CardBackpackController : MonoBehaviour
                 CardArtLoader.GetSprite(outputCard.CardID, cardArtCatalog, useResourcesArtFallback),
                 new Color(0.66f, 0.78f, 0.95f, 1f),
                 new Color(0.16f, 0.18f, 0.25f, 1f));
+
             toolCards.Add(toolView);
             StartCoroutine(toolView.PlayAppear());
         }
@@ -227,7 +266,13 @@ public class CardBackpackController : MonoBehaviour
         openedCards.Clear();
         inputLocked = false;
         SetRemainingBaseCardsClickable(true);
-        CheckForContinue();
+
+        if (!HasAnyRemainingRecipe())
+        {
+            instructionText.text = "No more valid pairs. Continue when ready.";
+        }
+
+        UpdateContinueButtonState();
     }
 
     private void SetRemainingBaseCardsClickable(bool clickable)
@@ -243,22 +288,12 @@ public class CardBackpackController : MonoBehaviour
         }
     }
 
-    private void CheckForContinue()
-    {
-        if (HasAnyRemainingRecipe())
-        {
-            return;
-        }
-
-        continueButton.gameObject.SetActive(true);
-        instructionText.text = "No more valid pairs. Continue when ready.";
-    }
-
     private bool HasAnyRemainingRecipe()
     {
         for (int i = 0; i < baseCardViews.Count; i++)
         {
             CardView first = baseCardViews[i];
+
             if (first == null || first.IsRemoved)
             {
                 continue;
@@ -267,6 +302,7 @@ public class CardBackpackController : MonoBehaviour
             for (int j = i + 1; j < baseCardViews.Count; j++)
             {
                 CardView second = baseCardViews[j];
+
                 if (second == null || second.IsRemoved)
                 {
                     continue;
@@ -282,6 +318,17 @@ public class CardBackpackController : MonoBehaviour
         return false;
     }
 
+    private void UpdateContinueButtonState()
+    {
+        if (continueButton == null)
+        {
+            return;
+        }
+
+        continueButton.gameObject.SetActive(true);
+        continueButton.interactable = !inputLocked && !isContinuing;
+    }
+
     private CardView CreateCardView(Transform parent)
     {
         CardView view;
@@ -294,12 +341,20 @@ public class CardBackpackController : MonoBehaviour
         }
         else
         {
-            GameObject cardObject = new GameObject("CardView", typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup), typeof(CardView));
+            GameObject cardObject = new GameObject(
+                "CardView",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(Button),
+                typeof(CanvasGroup),
+                typeof(CardView));
+
             cardObject.transform.SetParent(parent, false);
             ApplyCardLayoutSize(cardObject, cardSize);
 
             Image hitImage = cardObject.GetComponent<Image>();
             hitImage.color = new Color(1f, 1f, 1f, 0f);
+
             view = cardObject.GetComponent<CardView>();
         }
 
@@ -312,6 +367,7 @@ public class CardBackpackController : MonoBehaviour
         cardRect.sizeDelta = size;
 
         LayoutElement layoutElement = cardObject.GetComponent<LayoutElement>();
+
         if (layoutElement == null)
         {
             layoutElement = cardObject.AddComponent<LayoutElement>();
@@ -362,12 +418,22 @@ public class CardBackpackController : MonoBehaviour
 
     private void OnContinueClicked()
     {
+        if (inputLocked || isContinuing)
+        {
+            return;
+        }
+
+        isContinuing = true;
+        UpdateContinueButtonState();
+
         List<string> toolCardIDs = GetToolCardIDs();
+
         Debug.Log($"Continue clicked. Crafted tools count = {toolCardIDs.Count}");
         Debug.Log($"Saving tool IDs: {FormatToolIDs(toolCardIDs)}");
 
         GameSessionData.CurrentNodeID = currentNodeId;
-        GameSessionData.SetToolCardIDs(toolCardIDs);
+        GameSessionData.CurrentNodeSceneName = targetSceneName;
+        GameSessionData.EnterPlacementWithTools(toolCardIDs);
 
         Debug.Log($"CardBackpackController: continue with {toolCardIDs.Count} crafted tools.");
         instructionText.text = $"Continuing with {toolCardIDs.Count} crafted tools.";
@@ -401,6 +467,7 @@ public class CardBackpackController : MonoBehaviour
 
 #if UNITY_EDITOR
         string scenePath = $"Assets/Scenes/{targetSceneName}.unity";
+
         if (SceneUtility.GetBuildIndexByScenePath(scenePath) < 0)
         {
             EditorSceneManager.LoadSceneInPlayMode(scenePath, new LoadSceneParameters(LoadSceneMode.Single));
@@ -409,17 +476,6 @@ public class CardBackpackController : MonoBehaviour
 #endif
 
         SceneManager.LoadScene(targetSceneName);
-    }
-
-    private void EnsureNode1BridgeTarget()
-    {
-        if (currentNodeId == Node1ID)
-        {
-            return;
-        }
-
-        Debug.LogWarning($"CardBackpackController: currentNodeId was {currentNodeId}; using {Node1ID} for the Node1 bridge test.");
-        currentNodeId = Node1ID;
     }
 
     private static string FormatToolIDs(List<string> toolCardIDs)
@@ -446,7 +502,13 @@ public class CardBackpackController : MonoBehaviour
         {
             EnsureEventSystem();
 
-            GameObject canvasObject = new GameObject("Canvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            GameObject canvasObject = new GameObject(
+                "Canvas",
+                typeof(RectTransform),
+                typeof(Canvas),
+                typeof(CanvasScaler),
+                typeof(GraphicRaycaster));
+
             Canvas canvas = canvasObject.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
@@ -473,6 +535,7 @@ public class CardBackpackController : MonoBehaviour
                 new Vector2(0.06f, 0.25f),
                 new Vector2(0.94f, 0.82f),
                 new Color(0.12f, 0.13f, 0.17f, 0.78f));
+
             GridLayoutGroup grid = baseCardArea.gameObject.AddComponent<GridLayoutGroup>();
             grid.cellSize = new Vector2(118f, 168f);
             grid.spacing = new Vector2(14f, 14f);
@@ -484,6 +547,7 @@ public class CardBackpackController : MonoBehaviour
                 new Vector2(0.22f, 0.035f),
                 new Vector2(0.78f, 0.215f),
                 new Color(0.06f, 0.07f, 0.09f, 0.9f));
+
             HorizontalLayoutGroup handLayout = toolHandArea.gameObject.AddComponent<HorizontalLayoutGroup>();
             handLayout.spacing = 24f;
             handLayout.childAlignment = TextAnchor.MiddleCenter;
@@ -498,7 +562,8 @@ public class CardBackpackController : MonoBehaviour
                 "Continue",
                 new Vector2(0.88f, 0.12f),
                 new Vector2(230f, 72f));
-            continueButton.gameObject.SetActive(false);
+
+            continueButton.gameObject.SetActive(true);
 
             GameObject controllerObject = new GameObject("CardBackpackController");
             CardDatabase database = controllerObject.AddComponent<CardDatabase>();
@@ -513,7 +578,11 @@ public class CardBackpackController : MonoBehaviour
                 return;
             }
 
-            GameObject eventSystemObject = new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
+            GameObject eventSystemObject = new GameObject(
+                "EventSystem",
+                typeof(EventSystem),
+                typeof(InputSystemUIInputModule));
+
             eventSystemObject.SetActive(true);
         }
 
@@ -521,6 +590,7 @@ public class CardBackpackController : MonoBehaviour
         {
             GameObject imageObject = new GameObject(name, typeof(RectTransform), typeof(Image));
             imageObject.transform.SetParent(parent, false);
+
             Image image = imageObject.GetComponent<Image>();
             image.color = color;
 
@@ -529,6 +599,7 @@ public class CardBackpackController : MonoBehaviour
             rect.anchorMax = Vector2.one;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
+
             return rect;
         }
 
@@ -536,6 +607,7 @@ public class CardBackpackController : MonoBehaviour
         {
             GameObject areaObject = new GameObject(name, typeof(RectTransform), typeof(Image));
             areaObject.transform.SetParent(parent, false);
+
             Image image = areaObject.GetComponent<Image>();
             image.color = color;
 
@@ -544,6 +616,7 @@ public class CardBackpackController : MonoBehaviour
             rect.anchorMax = anchorMax;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
+
             return rect;
         }
 
@@ -551,6 +624,7 @@ public class CardBackpackController : MonoBehaviour
         {
             GameObject textObject = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
             textObject.transform.SetParent(parent, false);
+
             TMP_Text tmp = textObject.GetComponent<TMP_Text>();
             tmp.text = text;
             tmp.alignment = TextAlignmentOptions.Center;
@@ -564,6 +638,7 @@ public class CardBackpackController : MonoBehaviour
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.sizeDelta = size;
             rect.anchoredPosition = Vector2.zero;
+
             return tmp;
         }
 
@@ -571,6 +646,7 @@ public class CardBackpackController : MonoBehaviour
         {
             GameObject buttonObject = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button));
             buttonObject.transform.SetParent(parent, false);
+
             Image image = buttonObject.GetComponent<Image>();
             image.color = new Color(0.24f, 0.44f, 0.58f, 1f);
 
@@ -583,8 +659,16 @@ public class CardBackpackController : MonoBehaviour
             rect.sizeDelta = size;
             rect.anchoredPosition = Vector2.zero;
 
-            TMP_Text text = CreateText("Label", buttonObject.transform, label, new Vector2(0.5f, 0.5f), size, 26f);
+            TMP_Text text = CreateText(
+                "Label",
+                buttonObject.transform,
+                label,
+                new Vector2(0.5f, 0.5f),
+                size,
+                26f);
+
             text.color = Color.white;
+
             return button;
         }
     }
