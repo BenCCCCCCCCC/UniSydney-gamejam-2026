@@ -20,8 +20,13 @@ public class CardDatabase : MonoBehaviour
     {
         if (cardSystemJson == null)
         {
-            Debug.LogError("CardDatabase: cardSystemJson is missing.");
-            return;
+            cardSystemJson = Resources.Load<TextAsset>("Data/FlipTheScript_CardSystem_Data");
+
+            if (cardSystemJson == null)
+            {
+                Debug.LogError("CardDatabase: cardSystemJson is missing.");
+                return;
+            }
         }
 
         Data = JsonUtility.FromJson<CardSystemData>(cardSystemJson.text);
