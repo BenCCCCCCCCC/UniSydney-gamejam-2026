@@ -20,6 +20,15 @@ public class NodeToolHandController : MonoBehaviour
     private readonly Dictionary<string, RectTransform> dropSlotsByPointID = new();
     private string activeToolCardID;
 
+    [Header("Art")]
+    [SerializeField] private CardArtCatalog cardArtCatalog;
+    [SerializeField] private bool useResourcesArtFallback = true;
+
+    [Header("Card Layout")]
+    [SerializeField] private Vector2 toolHandCardSize = new Vector2(150f, 64f);
+    [SerializeField] private Vector2 placedCardSize = new Vector2(150f, 64f);
+    [SerializeField] private float placedCardScale = 0.8f;
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void RegisterSceneLoadedHandler()
     {
@@ -114,6 +123,7 @@ public class NodeToolHandController : MonoBehaviour
             return slot;
         }
 
+        Debug.LogWarning($"DROP_SLOT_MISSING: {placePointID}, using fallback");
         return null;
     }
 
@@ -352,11 +362,11 @@ public class NodeToolHandController : MonoBehaviour
         buttonObject.transform.SetParent(handArea, false);
 
         RectTransform rect = buttonObject.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(150f, 64f);
+        rect.sizeDelta = toolHandCardSize;
 
         LayoutElement layoutElement = buttonObject.GetComponent<LayoutElement>();
-        layoutElement.preferredWidth = 150f;
-        layoutElement.preferredHeight = 64f;
+        layoutElement.preferredWidth = toolHandCardSize.x;
+        layoutElement.preferredHeight = toolHandCardSize.y;
         layoutElement.flexibleWidth = 0f;
         layoutElement.flexibleHeight = 0f;
 
@@ -368,6 +378,7 @@ public class NodeToolHandController : MonoBehaviour
 
         ToolCardDragItem dragItem = buttonObject.GetComponent<ToolCardDragItem>();
         dragItem.Setup(toolCardID);
+        dragItem.ConfigurePlacementVisual(placedCardScale, placedCardSize);
 
         TMP_Text label = CreateText(
             "Label",
@@ -377,6 +388,15 @@ public class NodeToolHandController : MonoBehaviour
             new Vector2(140f, 54f),
             18f);
         label.color = Color.white;
+
+        Sprite sprite = CardArtLoader.GetSprite(toolCardID, cardArtCatalog, useResourcesArtFallback);
+        if (sprite != null)
+        {
+            image.sprite = sprite;
+            image.preserveAspect = true;
+            image.color = Color.white;
+            label.gameObject.SetActive(false);
+        }
     }
 
     private void UpdateActiveToolText()

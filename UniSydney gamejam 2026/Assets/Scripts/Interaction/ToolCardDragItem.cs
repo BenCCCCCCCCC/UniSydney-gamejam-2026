@@ -8,6 +8,9 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private static readonly Dictionary<string, ToolCardDragItem> PlacedCardsByPointID = new();
 
     [SerializeField] private float snapScreenRadiusPixels = 260f;
+    [SerializeField] private bool allowRuntimeDropSlotFallback = true;
+    [SerializeField] private Vector2 placedCardSize = new Vector2(150f, 64f);
+    [SerializeField] private float placedCardScale = 0.8f;
 
     private string toolCardID;
     private RectTransform rectTransform;
@@ -34,6 +37,12 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         {
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
+    }
+
+    public void ConfigurePlacementVisual(float scale, Vector2 size)
+    {
+        placedCardScale = scale;
+        placedCardSize = size;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -341,7 +350,17 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private void PlaceOnPoint(PlacementPoint placementPoint)
     {
-        RectTransform slot = NodeToolHandController.GetDropSlotForPoint(placementPoint.placePointID);
+        RectTransform slot = NodePlacementSlotBinder.GetDropSlotForPoint(placementPoint.placePointID);
+        if (slot != null)
+        {
+            Debug.Log($"DROP_SLOT_BOUND: {placementPoint.placePointID} -> {slot.name}");
+        }
+        else if (allowRuntimeDropSlotFallback)
+        {
+            Debug.LogWarning($"DROP_SLOT_MISSING: {placementPoint.placePointID}, using fallback");
+            slot = NodeToolHandController.GetDropSlotForPoint(placementPoint.placePointID);
+        }
+
         if (slot == null || rectTransform == null)
         {
             Debug.LogWarning($"ToolCardDragItem: missing DropSlotUI for {placementPoint.placePointID}, returning to hand.");
@@ -368,10 +387,11 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
         rectTransform.anchoredPosition = Vector2.zero;
-        rectTransform.sizeDelta = new Vector2(150f, 64f);
-        transform.localScale = Vector3.one * 0.8f;
-        Debug.Log($"PLACE_ANCHOR: point={placementPoint.placePointID}, visual={NodeToolHandController.GetDropSlotNameForPoint(placementPoint.placePointID)}");
+        rectTransform.sizeDelta = placedCardSize;
+        transform.localScale = Vector3.one * placedCardScale;
+        Debug.Log($"PLACE_ANCHOR: point={placementPoint.placePointID}, visual={slot.name}");
         Debug.Log($"CARD_PLACED_VISUAL: {toolCardID} on {placementPoint.placePointID}");
+        Debug.Log($"CARD_PLACED_IN_SLOT: {toolCardID} -> {placementPoint.placePointID}");
 
         if (canvasGroup != null)
         {

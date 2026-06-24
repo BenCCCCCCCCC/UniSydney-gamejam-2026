@@ -28,9 +28,15 @@ public class CardBackpackController : MonoBehaviour
     [SerializeField] private CardView cardViewPrefab;
 
     [Header("Art Placeholders")]
+    [SerializeField] private CardArtCatalog cardArtCatalog;
+    [SerializeField] private bool useResourcesArtFallback = true;
     [SerializeField] private Sprite cardBackSprite;
     [SerializeField] private Sprite defaultBaseFrontSprite;
     [SerializeField] private Sprite defaultToolFrontSprite;
+
+    [Header("Card Sizes")]
+    [SerializeField] private Vector2 baseCardSize = new Vector2(118f, 168f);
+    [SerializeField] private Vector2 toolHandCardSize = new Vector2(120f, 160f);
 
     [Header("Timing")]
     [SerializeField] private float previewSeconds = 3f;
@@ -110,7 +116,7 @@ public class CardBackpackController : MonoBehaviour
                 OnBaseCardClicked,
                 cardBackSprite,
                 defaultBaseFrontSprite,
-                null,
+                CardArtLoader.GetSprite(card.CardID, cardArtCatalog, useResourcesArtFallback),
                 new Color(0.92f, 0.82f, 0.62f, 1f),
                 new Color(0.16f, 0.18f, 0.25f, 1f));
             baseCardViews.Add(view);
@@ -198,7 +204,7 @@ public class CardBackpackController : MonoBehaviour
                 null,
                 cardBackSprite,
                 defaultToolFrontSprite,
-                null,
+                CardArtLoader.GetSprite(outputCard.CardID, cardArtCatalog, useResourcesArtFallback),
                 new Color(0.66f, 0.78f, 0.95f, 1f),
                 new Color(0.16f, 0.18f, 0.25f, 1f));
             toolCards.Add(toolView);
@@ -279,7 +285,7 @@ public class CardBackpackController : MonoBehaviour
     private CardView CreateCardView(Transform parent)
     {
         CardView view;
-        Vector2 cardSize = parent == toolHandArea ? new Vector2(120f, 160f) : new Vector2(118f, 168f);
+        Vector2 cardSize = parent == toolHandArea ? toolHandCardSize : baseCardSize;
 
         if (cardViewPrefab != null)
         {
