@@ -22,9 +22,69 @@ public class CardCraftingController : MonoBehaviour
 
     private void Start()
     {
+        if (!HasRequiredReferences())
+        {
+            return;
+        }
+
         combineButton.onClick.AddListener(CombineSelectedCards);
         RefreshBaseCards();
         RefreshSelectedUI();
+    }
+
+    private bool HasRequiredReferences()
+    {
+        bool hasAllReferences = true;
+
+        if (database == null)
+        {
+            Debug.LogError("CardCraftingController: database is missing.");
+            hasAllReferences = false;
+        }
+
+        if (combineButton == null)
+        {
+            Debug.LogError("CardCraftingController: combineButton is missing.");
+            hasAllReferences = false;
+        }
+
+        if (baseCardPanel == null)
+        {
+            Debug.LogError("CardCraftingController: baseCardPanel is missing.");
+            hasAllReferences = false;
+        }
+
+        if (backpackPanel == null)
+        {
+            Debug.LogError("CardCraftingController: backpackPanel is missing.");
+            hasAllReferences = false;
+        }
+
+        if (cardButtonPrefab == null)
+        {
+            Debug.LogError("CardCraftingController: cardButtonPrefab is missing.");
+            hasAllReferences = false;
+        }
+
+        if (selectedAText == null)
+        {
+            Debug.LogError("CardCraftingController: selectedAText is missing.");
+            hasAllReferences = false;
+        }
+
+        if (selectedBText == null)
+        {
+            Debug.LogError("CardCraftingController: selectedBText is missing.");
+            hasAllReferences = false;
+        }
+
+        if (resultText == null)
+        {
+            Debug.LogError("CardCraftingController: resultText is missing.");
+            hasAllReferences = false;
+        }
+
+        return hasAllReferences;
     }
 
     private void RefreshBaseCards()

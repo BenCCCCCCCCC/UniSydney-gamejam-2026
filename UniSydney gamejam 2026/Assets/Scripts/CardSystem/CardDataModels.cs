@@ -15,9 +15,9 @@ public class CardSystemData
 [Serializable]
 public class CardRules
 {
-    public bool samePairCanCreateDifferentTools;
+    public bool uniquePairOutput;
     public bool pairOrderMatters;
-    public string note;
+    public string pairKeyRule;
 }
 
 [Serializable]

@@ -32,22 +32,88 @@ public class CardDatabase : MonoBehaviour
             return;
         }
 
+        if (Data.cards == null)
+        {
+            Debug.LogError("CardDatabase: JSON is missing cards.");
+            return;
+        }
+
+        if (Data.recipes == null)
+        {
+            Debug.LogError("CardDatabase: JSON is missing recipes.");
+            return;
+        }
+
+        if (Data.nodeLoadouts == null)
+        {
+            Debug.LogError("CardDatabase: JSON is missing nodeLoadouts.");
+            return;
+        }
+
         cardsById.Clear();
         recipesByPairKey.Clear();
 
         foreach (var card in Data.cards)
         {
-            if (!string.IsNullOrEmpty(card.CardID))
+            if (card == null)
             {
-                cardsById[card.CardID] = card;
+                Debug.LogWarning("CardDatabase: skipped null card row.");
+                continue;
             }
+
+            if (string.IsNullOrWhiteSpace(card.CardID))
+            {
+                Debug.LogWarning("CardDatabase: skipped card with empty CardID.");
+                continue;
+            }
+
+            if (cardsById.ContainsKey(card.CardID))
+            {
+                Debug.LogWarning($"CardDatabase: duplicate CardID found, overwriting previous card: {card.CardID}");
+            }
+
+            cardsById[card.CardID] = card;
         }
 
         foreach (var recipe in Data.recipes)
         {
-            if (!string.IsNullOrEmpty(recipe.PairKey))
+            if (recipe == null)
             {
-                recipesByPairKey[recipe.PairKey] = recipe;
+                Debug.LogWarning("CardDatabase: skipped null recipe row.");
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(recipe.PairKey))
+            {
+                Debug.LogWarning($"CardDatabase: skipped recipe with empty PairKey: {recipe.RecipeID}");
+                continue;
+            }
+
+            if (recipesByPairKey.ContainsKey(recipe.PairKey))
+            {
+                Debug.LogError($"CardDatabase: duplicate PairKey found, keeping first recipe and skipping duplicate: {recipe.PairKey}");
+                continue;
+            }
+
+            recipesByPairKey[recipe.PairKey] = recipe;
+        }
+
+        foreach (var loadout in Data.nodeLoadouts)
+        {
+            if (loadout == null)
+            {
+                Debug.LogWarning("CardDatabase: skipped null node loadout row.");
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(loadout.NodeID))
+            {
+                Debug.LogWarning("CardDatabase: node loadout has empty NodeID.");
+            }
+
+            if (string.IsNullOrWhiteSpace(loadout.AvailableBaseCardIDs))
+            {
+                Debug.LogWarning($"CardDatabase: node loadout has empty AvailableBaseCardIDs: {loadout.NodeID}");
             }
         }
 
@@ -63,6 +129,12 @@ public class CardDatabase : MonoBehaviour
     {
         outputCard = null;
         recipe = null;
+
+        // Crafting is keyed only by stable CardID values, never by Chinese display names.
+        if (string.IsNullOrWhiteSpace(cardAId) || string.IsNullOrWhiteSpace(cardBId))
+        {
+            return false;
+        }
 
         string pairKey = MakePairKey(cardAId, cardBId);
 
@@ -84,9 +156,39 @@ public class CardDatabase : MonoBehaviour
     {
         var result = new List<CardRow>();
 
+        if (string.IsNullOrWhiteSpace(nodeId))
+        {
+            Debug.LogWarning("CardDatabase: cannot get base cards for an empty nodeId.");
+            return result;
+        }
+
+        if (Data == null || Data.nodeLoadouts == null)
+        {
+            Debug.LogError("CardDatabase: cannot get base cards before data is loaded.");
+            return result;
+        }
+
         foreach (var loadout in Data.nodeLoadouts)
         {
+            if (loadout == null)
+            {
+                Debug.LogWarning("CardDatabase: skipped null node loadout row.");
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(loadout.NodeID))
+            {
+                Debug.LogWarning("CardDatabase: skipped node loadout with empty NodeID.");
+                continue;
+            }
+
             if (loadout.NodeID != nodeId) continue;
+
+            if (string.IsNullOrWhiteSpace(loadout.AvailableBaseCardIDs))
+            {
+                Debug.LogWarning($"CardDatabase: node loadout has no base cards: {nodeId}");
+                return result;
+            }
 
             string[] ids = loadout.AvailableBaseCardIDs.Split(',');
 
@@ -94,9 +196,19 @@ public class CardDatabase : MonoBehaviour
             {
                 string id = rawId.Trim();
 
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    Debug.LogWarning($"CardDatabase: skipped empty base card id in node loadout: {nodeId}");
+                    continue;
+                }
+
                 if (cardsById.TryGetValue(id, out CardRow card))
                 {
                     result.Add(card);
+                }
+                else
+                {
+                    Debug.LogWarning($"CardDatabase: node loadout references missing card id: {id}");
                 }
             }
 
@@ -108,6 +220,8 @@ public class CardDatabase : MonoBehaviour
 
     private string MakePairKey(string cardAId, string cardBId)
     {
+        // PairKey is order-independent: sort the two CardIDs before joining them.
+        // This keeps B_APPLE + B_POTION the same recipe as B_POTION + B_APPLE.
         return string.CompareOrdinal(cardAId, cardBId) < 0
             ? $"{cardAId}+{cardBId}"
             : $"{cardBId}+{cardAId}";
