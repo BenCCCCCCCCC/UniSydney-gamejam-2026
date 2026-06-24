@@ -73,6 +73,18 @@ public class NodeToolHandController : MonoBehaviour
         instance.PlaceActiveTool(placementPoint);
     }
 
+    public static void SetActiveTool(string toolCardID)
+    {
+        if (instance == null)
+        {
+            Debug.LogWarning("NodeToolHandController: no active controller in scene.");
+            return;
+        }
+
+        instance.SelectTool(toolCardID);
+        Debug.Log($"Active Tool set by drag: {toolCardID}");
+    }
+
     private void SelectTool(string toolCardID)
     {
         activeToolCardID = toolCardID;
@@ -94,8 +106,8 @@ public class NodeToolHandController : MonoBehaviour
             return;
         }
 
+        Node1PlacementRules.TryPlaceTool(activeToolCardID, placementPoint);
         placementPoint.SetTool(activeToolCardID);
-        Debug.Log($"NodeToolHandController: placed {activeToolCardID} on {placementPoint.nodeID}_{placementPoint.placePointID}.");
         UpdateActiveToolText();
     }
 
@@ -125,11 +137,17 @@ public class NodeToolHandController : MonoBehaviour
 
             bridge.SetPlacementPoint(point);
 
-            if (point.GetComponent<Collider2D>() == null)
+            Collider2D existingCollider = point.GetComponent<Collider2D>();
+            if (existingCollider == null)
             {
                 BoxCollider2D clickCollider = point.gameObject.AddComponent<BoxCollider2D>();
                 clickCollider.isTrigger = true;
-                clickCollider.size = new Vector2(1.4f, 1.4f);
+                clickCollider.size = new Vector2(3f, 3f);
+                Debug.Log($"Added placement collider for {point.placePointID} size = {clickCollider.size}");
+            }
+            else
+            {
+                Debug.Log($"Existing placement collider for {point.placePointID} bounds size = {existingCollider.bounds.size}");
             }
         }
     }
