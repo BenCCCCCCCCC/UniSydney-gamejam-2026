@@ -13,14 +13,22 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private RectTransform rectTransform;
     private Canvas rootCanvas;
     private CanvasGroup canvasGroup;
+
     private Transform originalParent;
     private int originalSiblingIndex;
     private Vector2 originalAnchoredPosition;
+
     private Transform handParent;
     private int handSiblingIndex;
     private Vector2 handAnchoredPosition;
     private bool hasHandHome;
+
     private string placedPointID;
+
+    public static void ClearPlacedCardRegistry()
+    {
+        PlacedCardsByPointID.Clear();
+    }
 
     public void Setup(string cardID)
     {
@@ -28,6 +36,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         rectTransform = GetComponent<RectTransform>();
         rootCanvas = GetComponentInParent<Canvas>();
         canvasGroup = GetComponent<CanvasGroup>();
+
         RememberHandHome();
 
         if (canvasGroup == null)
@@ -65,8 +74,11 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             transform.SetParent(rootCanvas.transform, true);
         }
 
-        canvasGroup.blocksRaycasts = false;
-        canvasGroup.alpha = 0.85f;
+        if (canvasGroup != null)
+        {
+            canvasGroup.blocksRaycasts = false;
+            canvasGroup.alpha = 0.85f;
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -81,21 +93,32 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!string.IsNullOrWhiteSpace(toolCardID))
+        if (string.IsNullOrWhiteSpace(toolCardID))
         {
-            PlacementPoint placementPoint = FindPlacementPointForDroppedCard();
-            if (placementPoint == null)
-            {
-                Debug.LogWarning($"NO_PLACEMENT_POINT: {toolCardID} returned to hand.");
-                ReturnToHand();
-            }
-            else
-            {
-                Node1PlacementRules.TryPlaceTool(toolCardID, placementPoint);
-                placementPoint.SetTool(toolCardID);
-                PlaceOnPoint(placementPoint);
-            }
+            ReturnToHand();
+            return;
         }
+
+        PlacementPoint placementPoint = FindPlacementPointForDroppedCard();
+
+        if (placementPoint == null)
+        {
+            Debug.LogWarning($"NO_PLACEMENT_POINT: {toolCardID} returned to hand.");
+            ReturnToHand();
+            return;
+        }
+
+        if (placementPoint.nodeID == "Node1")
+        {
+            Node1PlacementRules.TryPlaceTool(toolCardID, placementPoint);
+        }
+        else
+        {
+            Debug.Log($"PLACE_TEST: {toolCardID} on {placementPoint.nodeID}/{placementPoint.placePointID}");
+        }
+
+        placementPoint.SetTool(toolCardID);
+        PlaceOnPoint(placementPoint);
     }
 
     private PlacementPoint FindPlacementPointForDroppedCard()
@@ -110,6 +133,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
         Rect cardScreenRect = GetCardScreenRect();
         Vector2 cardCenterScreen = cardScreenRect.center;
+
         Debug.Log($"DRAG_END: {toolCardID}, cardCenterScreen = {FormatScreenPosition(cardCenterScreen)}");
 
         return FindNearestPlacementPoint(camera, cardCenterScreen, cardScreenRect);
@@ -119,12 +143,15 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     {
         PlacementCandidate nearest = default;
         PlacementCandidate nearestOverlapping = default;
+
         bool hasNearest = false;
         bool hasOverlap = false;
+
         float nearestDistance = float.MaxValue;
         float nearestOverlapDistance = float.MaxValue;
 
         PlacementTriggerZone[] triggerZones = FindObjectsByType<PlacementTriggerZone>();
+
         foreach (PlacementTriggerZone zone in triggerZones)
         {
             if (zone == null || zone.placementPoint == null)
@@ -134,10 +161,21 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
             Collider2D zoneCollider = zone.GetComponentInChildren<Collider2D>();
             PlacementCandidate candidate = CreateCandidate(camera, zone.placementPoint, zoneCollider, zone.transform.position);
-            ConsiderCandidate(cardCenterScreen, cardScreenRect, candidate, ref nearest, ref nearestDistance, ref hasNearest, ref nearestOverlapping, ref nearestOverlapDistance, ref hasOverlap);
+
+            ConsiderCandidate(
+                cardCenterScreen,
+                cardScreenRect,
+                candidate,
+                ref nearest,
+                ref nearestDistance,
+                ref hasNearest,
+                ref nearestOverlapping,
+                ref nearestOverlapDistance,
+                ref hasOverlap);
         }
 
         PlacementPoint[] placementPoints = FindObjectsByType<PlacementPoint>();
+
         foreach (PlacementPoint point in placementPoints)
         {
             if (point == null)
@@ -147,7 +185,17 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
             Collider2D pointCollider = point.GetComponentInChildren<Collider2D>();
             PlacementCandidate candidate = CreateCandidate(camera, point, pointCollider, point.transform.position);
-            ConsiderCandidate(cardCenterScreen, cardScreenRect, candidate, ref nearest, ref nearestDistance, ref hasNearest, ref nearestOverlapping, ref nearestOverlapDistance, ref hasOverlap);
+
+            ConsiderCandidate(
+                cardCenterScreen,
+                cardScreenRect,
+                candidate,
+                ref nearest,
+                ref nearestDistance,
+                ref hasNearest,
+                ref nearestOverlapping,
+                ref nearestOverlapDistance,
+                ref hasOverlap);
         }
 
         PlacementCandidate selected = hasOverlap ? nearestOverlapping : nearest;
@@ -201,6 +249,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private static PlacementCandidate CreateCandidate(Camera camera, PlacementPoint point, Collider2D collider, Vector3 fallbackWorldPosition)
     {
         Vector3 centerWorldPosition = collider != null ? collider.bounds.center : fallbackWorldPosition;
+
         Rect screenRect = collider != null
             ? BoundsToScreenRect(camera, collider.bounds)
             : PointToScreenRect(camera, centerWorldPosition, 160f);
@@ -220,6 +269,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
         Camera uiCamera = GetUiCamera();
         Vector2 firstPoint = RectTransformUtility.WorldToScreenPoint(uiCamera, worldCorners[0]);
+
         float minX = firstPoint.x;
         float maxX = firstPoint.x;
         float minY = firstPoint.y;
@@ -228,6 +278,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         for (int i = 1; i < worldCorners.Length; i++)
         {
             Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(uiCamera, worldCorners[i]);
+
             minX = Mathf.Min(minX, screenPoint.x);
             maxX = Mathf.Max(maxX, screenPoint.x);
             minY = Mathf.Min(minY, screenPoint.y);
@@ -251,6 +302,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     {
         Vector3 min = bounds.min;
         Vector3 max = bounds.max;
+
         Vector3[] corners =
         {
             new Vector3(min.x, min.y, min.z),
@@ -264,6 +316,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         };
 
         Vector3 firstPoint = camera.WorldToScreenPoint(corners[0]);
+
         float minX = firstPoint.x;
         float maxX = firstPoint.x;
         float minY = firstPoint.y;
@@ -272,6 +325,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         for (int i = 1; i < corners.Length; i++)
         {
             Vector3 screenPoint = camera.WorldToScreenPoint(corners[i]);
+
             minX = Mathf.Min(minX, screenPoint.x);
             maxX = Mathf.Max(maxX, screenPoint.x);
             minY = Mathf.Min(minY, screenPoint.y);
@@ -285,24 +339,32 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     {
         Vector3 screenPoint = camera.WorldToScreenPoint(worldPosition);
         float halfSize = size * 0.5f;
-        return Rect.MinMaxRect(screenPoint.x - halfSize, screenPoint.y - halfSize, screenPoint.x + halfSize, screenPoint.y + halfSize);
+
+        return Rect.MinMaxRect(
+            screenPoint.x - halfSize,
+            screenPoint.y - halfSize,
+            screenPoint.x + halfSize,
+            screenPoint.y + halfSize);
     }
 
     private static PlacementPoint GetPlacementPointFromCollider(Collider2D hit)
     {
         PlacementTriggerZone triggerZone = hit.GetComponentInParent<PlacementTriggerZone>();
+
         if (triggerZone != null && triggerZone.placementPoint != null)
         {
             return triggerZone.placementPoint;
         }
 
         PlacementPoint point = hit.GetComponentInParent<PlacementPoint>();
+
         if (point != null)
         {
             return point;
         }
 
         PlacementPointClickBridge bridge = hit.GetComponentInParent<PlacementPointClickBridge>();
+
         if (bridge != null && bridge.PlacementPoint != null)
         {
             return bridge.PlacementPoint;
@@ -314,6 +376,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private static Camera FindSceneCamera()
     {
         Camera camera = Camera.main;
+
         if (camera != null)
         {
             return camera;
@@ -342,6 +405,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private void PlaceOnPoint(PlacementPoint placementPoint)
     {
         RectTransform slot = NodeToolHandController.GetDropSlotForPoint(placementPoint.placePointID);
+
         if (slot == null || rectTransform == null)
         {
             Debug.LogWarning($"ToolCardDragItem: missing DropSlotUI for {placementPoint.placePointID}, returning to hand.");
@@ -349,12 +413,16 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             return;
         }
 
-        if (!string.IsNullOrWhiteSpace(placedPointID) && PlacedCardsByPointID.TryGetValue(placedPointID, out ToolCardDragItem previousSelf) && previousSelf == this)
+        if (!string.IsNullOrWhiteSpace(placedPointID)
+            && PlacedCardsByPointID.TryGetValue(placedPointID, out ToolCardDragItem previousSelf)
+            && previousSelf == this)
         {
             PlacedCardsByPointID.Remove(placedPointID);
         }
 
-        if (PlacedCardsByPointID.TryGetValue(placementPoint.placePointID, out ToolCardDragItem oldCard) && oldCard != null && oldCard != this)
+        if (PlacedCardsByPointID.TryGetValue(placementPoint.placePointID, out ToolCardDragItem oldCard)
+            && oldCard != null
+            && oldCard != this)
         {
             Debug.Log($"REPLACED_PLACED_TOOL: old={oldCard.toolCardID}, new={toolCardID}, point={placementPoint.placePointID}");
             oldCard.ReturnToHand();
@@ -364,12 +432,15 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         placedPointID = placementPoint.placePointID;
 
         transform.SetParent(slot, false);
+
         rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
         rectTransform.anchoredPosition = Vector2.zero;
         rectTransform.sizeDelta = new Vector2(150f, 64f);
+
         transform.localScale = Vector3.one * 0.8f;
+
         Debug.Log($"PLACE_ANCHOR: point={placementPoint.placePointID}, visual={NodeToolHandController.GetDropSlotNameForPoint(placementPoint.placePointID)}");
         Debug.Log($"CARD_PLACED_VISUAL: {toolCardID} on {placementPoint.placePointID}");
 
@@ -382,7 +453,9 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private void ReturnToHand()
     {
-        if (!string.IsNullOrWhiteSpace(placedPointID) && PlacedCardsByPointID.TryGetValue(placedPointID, out ToolCardDragItem placedCard) && placedCard == this)
+        if (!string.IsNullOrWhiteSpace(placedPointID)
+            && PlacedCardsByPointID.TryGetValue(placedPointID, out ToolCardDragItem placedCard)
+            && placedCard == this)
         {
             PlacedCardsByPointID.Remove(placedPointID);
             placedPointID = string.Empty;
