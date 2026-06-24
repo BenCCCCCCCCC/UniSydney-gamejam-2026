@@ -359,16 +359,17 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
         if (PlacedCardsByPointID.TryGetValue(placementPoint.placePointID, out ToolCardDragItem oldCard) && oldCard != null && oldCard != this)
         {
-            Debug.Log($"Replacing tool on {placementPoint.placePointID}: {oldCard.toolCardID} returned to hand.");
+            Debug.Log($"REPLACED_PLACED_TOOL: old={oldCard.toolCardID}, new={toolCardID}, point={placementPoint.placePointID}");
             oldCard.ReturnToHand();
         }
 
         PlacedCardsByPointID[placementPoint.placePointID] = this;
         placedPointID = placementPoint.placePointID;
 
-        Vector3 anchorWorldPosition = GetPlacementAnchorWorldPosition(placementPoint, placementAnchorCollider);
+        Vector3 anchorWorldPosition = GetToolSlotAnchor(placementPoint, out string resolvedVisualName);
         Vector3 screenPosition = camera.WorldToScreenPoint(anchorWorldPosition);
         RectTransform canvasRect = rootCanvas.GetComponent<RectTransform>();
+        Debug.Log($"PLACE_ANCHOR: point={placementPoint.placePointID}, visual={resolvedVisualName}, world={FormatWorldPosition(anchorWorldPosition)}, screen={FormatScreenPosition(screenPosition)}");
 
         transform.SetParent(rootCanvas.transform, false);
 
@@ -386,6 +387,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         }
 
         transform.localScale = Vector3.one * 0.8f;
+        Debug.Log($"CARD_PLACED_VISUAL: {toolCardID} on {placementPoint.placePointID}");
 
         if (canvasGroup != null)
         {
@@ -394,14 +396,46 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         }
     }
 
-    private static Vector3 GetPlacementAnchorWorldPosition(PlacementPoint placementPoint, Collider2D anchorCollider)
+    private static Vector3 GetToolSlotAnchor(PlacementPoint placementPoint, out string resolvedVisualName)
     {
-        Collider2D collider = anchorCollider != null ? anchorCollider : placementPoint.GetComponent<Collider2D>();
-        Vector3 anchorWorldPosition = collider != null
-            ? collider.bounds.center
-            : placementPoint.transform.position;
+        string visualName = GetToolSlotVisualName(placementPoint.placePointID);
+        if (!string.IsNullOrWhiteSpace(visualName))
+        {
+            GameObject visual = GameObject.Find(visualName);
+            if (visual != null)
+            {
+                resolvedVisualName = visualName;
+                return visual.transform.position;
+            }
+        }
 
-        return anchorWorldPosition + Vector3.up * 0.4f;
+        resolvedVisualName = "(fallback PlacementPoint)";
+        return placementPoint.transform.position;
+    }
+
+    private static string GetToolSlotVisualName(string placePointID)
+    {
+        if (placePointID == "N1_P1")
+        {
+            return "P1_ToolSlotVisual";
+        }
+
+        if (placePointID == "N1_P2")
+        {
+            return "P2_ToolSlotVisual";
+        }
+
+        if (placePointID == "N1_P3")
+        {
+            return "P3_ToolSlotVisual";
+        }
+
+        return string.Empty;
+    }
+
+    private static string FormatWorldPosition(Vector3 worldPosition)
+    {
+        return $"<{worldPosition.x:0.00}, {worldPosition.y:0.00}, {worldPosition.z:0.00}>";
     }
 
     private void ReturnToHand()
