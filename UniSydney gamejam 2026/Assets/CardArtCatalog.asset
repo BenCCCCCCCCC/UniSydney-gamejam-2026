@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce97f8e2d3e67c419c4c312024e417d, type: 3}
+  m_Name: CardArtCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::CardArtCatalog
+  entries:
+  - cardID: B_APPLE
+    sprite: {fileID: -6482835348413371888, guid: 4427aabaebab2c64eb8b8495558845d2, type: 3}
+  - cardID: B_BELL
+    sprite: {fileID: 1653410989186875167, guid: c7290108ba4033240a686b7b6c589e4e, type: 3}
+  - cardID: B_BIRD
+    sprite: {fileID: -798446864157468837, guid: c7d5e67aeb97f7c4281b8ab731bd6751, type: 3}
+  - cardID: B_CLOTH
+    sprite: {fileID: 663455848043613904, guid: f1d554d0c89da29498074ce88f858a88, type: 3}
+  - cardID: B_CROWN
+    sprite: {fileID: 8538985039029115744, guid: d70e7939e8cabfa46810fa7ff18eaa04, type: 3}
+  - cardID: B_CRYSTAL
+    sprite: {fileID: -6091321608862071422, guid: 039377ac4fb2cea40a53c59ed9caa8ac, type: 3}
+  - cardID: B_FLOWER
+    sprite: {fileID: -6053833663051375574, guid: c33b0d021804f4e41ae3846d7067654e, type: 3}
+  - cardID: B_HONEY
+    sprite: {fileID: -598979749157733351, guid: ed743686a4c0b584f9d6a73ccbffabf6, type: 3}
+  - cardID: B_HORN
+    sprite: {fileID: -7575757756500345680, guid: ddb3a70e60055f14cb43ab7e301ea4d2, type: 3}
+  - cardID: B_KEY
+    sprite: {fileID: 2698002436378477423, guid: 9f1fc57382c05e14c835203d9ca696be, type: 3}
+  - cardID: B_LAMP
+    sprite: {fileID: -7483818551606178255, guid: 09ed642972c94784289e5d8fc7a4f751, type: 3}
+  - cardID: B_LEAF
+    sprite: {fileID: 956816428957980774, guid: fff7fc466ab5b9e45b485f9e65e5b6de, type: 3}
+  - cardID: B_LOCK
+    sprite: {fileID: 5777037313470621253, guid: 0f19a81d86ee0f743a1c05528412af23, type: 3}
+  - cardID: B_MIRROR_SHARD
+    sprite: {fileID: -746506204105295226, guid: 88fada2ff5b33e046b890f1c7357d973, type: 3}
+  - cardID: B_MUSHROOM
+    sprite: {fileID: 7605948650898260857, guid: e6e94859d7cddc64db426b98ab6daa3e, type: 3}
+  - cardID: B_PAPER
+    sprite: {fileID: 254820113734600706, guid: 27aa8e714e43d0f46b182dca759e4b19, type: 3}
+  - cardID: B_PLANK
+    sprite: {fileID: 3225680811923170793, guid: f6e5e0a380de97546ad0714309f5ac3e, type: 3}
+  - cardID: B_POTION
+    sprite: {fileID: -4039996668946364577, guid: 61338c1a1ee768c4882ad326e0bccdd2, type: 3}
+  - cardID: B_ROPE
+    sprite: {fileID: 3873878346624319662, guid: 0f668314de0cb2041b67de428ca59e33, type: 3}
+  - cardID: B_SEED
+    sprite: {fileID: 5258080392000346968, guid: 1298b0c42fd3d9947924bc37f94aa1fd, type: 3}
+  - cardID: B_SIGNPOST
+    sprite: {fileID: 5599323782787759188, guid: 6b76a78ed6df8c94e8b1fffd3913f9ea, type: 3}
+  - cardID: B_SPRING
+    sprite: {fileID: 8933066180510333674, guid: 8fa8047326b0df94fbf415bb8964ad99, type: 3}
+  - cardID: B_TOOLBOX
+    sprite: {fileID: -3888296939815685336, guid: 73ff333737c955444b9aaaef42a2dbd0, type: 3}
+  - cardID: B_WATER
+    sprite: {fileID: 8657397879617074920, guid: 65eef5e0964719b49b398c7cadd4b442, type: 3}
+  - cardID: B_WIND
+    sprite: {fileID: 7132462436376741485, guid: 3b21b1b67dbabc14dbca2be3dbc5cdce, type: 3}

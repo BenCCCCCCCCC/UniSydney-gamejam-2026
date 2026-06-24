@@ -246,9 +246,11 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             iconImage = CreateChildImage("IconImage");
             RectTransform iconRect = iconImage.rectTransform;
-            iconRect.anchorMin = new Vector2(0.5f, 0.56f);
-            iconRect.anchorMax = new Vector2(0.5f, 0.56f);
-            iconRect.sizeDelta = new Vector2(56f, 56f);
+            iconRect.anchorMin = new Vector2(0.1f, 0.38f);
+            iconRect.anchorMax = new Vector2(0.9f, 0.92f);
+            iconRect.offsetMin = Vector2.zero;
+            iconRect.offsetMax = Vector2.zero;
+            iconImage.preserveAspect = true;
         }
 
         if (nameText == null)
