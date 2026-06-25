@@ -112,6 +112,11 @@ public class Node3ResultPlayer : MonoBehaviour
 
     public void PlayResult(PlacementPoint point)
     {
+        if (!IsRunningInRetryScene())
+        {
+            return;
+        }
+
         if (hasEnded)
         {
             return;
@@ -277,6 +282,11 @@ public class Node3ResultPlayer : MonoBehaviour
 
     private void OnActorReachedEnd(StoryActorAutoMove actor)
     {
+        if (!IsRunningInRetryScene())
+        {
+            return;
+        }
+
         if (hasEnded)
         {
             return;
@@ -448,6 +458,16 @@ public class Node3ResultPlayer : MonoBehaviour
         GameSessionData.ToolCardIDs.Clear();
 
         LoadSceneByName(retrySceneName);
+    }
+
+    private bool IsRunningInRetryScene()
+    {
+        if (string.IsNullOrWhiteSpace(retrySceneName))
+        {
+            return true;
+        }
+
+        return SceneManager.GetActiveScene().name == retrySceneName;
     }
 
     private void LoadSceneByName(string sceneName)
