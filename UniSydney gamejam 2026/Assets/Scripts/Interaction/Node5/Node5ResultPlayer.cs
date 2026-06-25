@@ -16,7 +16,8 @@ public class Node5ResultPlayer : MonoBehaviour
 
     [Header("Text UI")]
     [SerializeField] private SceneTextUIController textUI;
-    [SerializeField] private bool showTriggerFeedback = false;
+    [SerializeField] private Node5TextBank textBank;
+    [SerializeField] private bool showTriggerFeedback = true;
     [SerializeField] private float triggerFeedbackDuration = 1.2f;
 
     private int totalScore;
@@ -44,6 +45,11 @@ public class Node5ResultPlayer : MonoBehaviour
         if (database == null)
         {
             database = FindAnyObjectByType<CardDatabase>();
+        }
+
+        if (textBank == null)
+        {
+            textBank = FindAnyObjectByType<Node5TextBank>();
         }
 
         if (textUI != null)
@@ -101,14 +107,15 @@ public class Node5ResultPlayer : MonoBehaviour
 
         Debug.Log($"NODE5_SCORE_RECORD: {placePointID} / {loggedToolCardID} / {outcomeType} / delta = {delta} / total = {totalScore} / {summary}");
 
-        if (showTriggerFeedback && !string.IsNullOrWhiteSpace(summary))
+        if (showTriggerFeedback)
         {
             if (feedbackCoroutine != null)
             {
                 StopCoroutine(feedbackCoroutine);
+                feedbackCoroutine = null;
             }
 
-            feedbackCoroutine = StartCoroutine(ShowFeedbackThenHide(summary));
+            feedbackCoroutine = StartCoroutine(ShowFeedbackThenHide(GetFeedbackMessage(placePointID, delta)));
         }
     }
 
@@ -120,11 +127,22 @@ public class Node5ResultPlayer : MonoBehaviour
             yield break;
         }
 
+        if (storyActor != null)
+        {
+            storyActor.PauseMove();
+        }
+
         textUI.ShowDialogue(message);
 
         yield return new WaitForSeconds(triggerFeedbackDuration);
 
         textUI.HideDialogue();
+        feedbackCoroutine = null;
+
+        if (!hasEnded && storyActor != null)
+        {
+            storyActor.ResumeMove();
+        }
     }
 
     private bool TryGetPlacementResult(string placePointID, string toolCardID, out PlacementResultRow result)
@@ -255,29 +273,96 @@ public class Node5ResultPlayer : MonoBehaviour
 
     private void GetEnding(out string title, out string body)
     {
+        if (textBank != null)
+        {
+            textBank.GetEnding(totalScore, princeCalled, out title, out body);
+            return;
+        }
+
+        Debug.LogWarning("Node5ResultPlayer: Node5TextBank is not assigned. Using fallback ending text.");
+
         if (totalScore < 0)
         {
             title = "Bad Ending";
-            body = "Snow White remains sealed in the crystal coffin forever.";
+            body = "It seems Snow White has been sealed away forever.";
             return;
         }
 
         if (totalScore == 0)
         {
-            title = "Hundred-Year Ending";
-            body = "A hundred years later, Snow White wakes up by herself.";
+            title = "Failed Rescue";
+            body = princeCalled
+                ? "The prince and the dwarfs cannot rescue Snow White."
+                : "The dwarfs cannot rescue Snow White.";
             return;
         }
 
         if (princeCalled)
         {
-            title = "Prince Ending";
-            body = "The prince reaches the crystal coffin, and Snow White wakes up.";
+            title = "Rescue Ending";
+            body = "The prince and the dwarfs rescue Snow White.";
             return;
         }
 
         title = "Dwarfs Rescue Ending";
-        body = "The dwarfs rescue Snow White from the crystal coffin.";
+        body = "The dwarfs rescue Snow White.";
+    }
+
+    private string GetFeedbackMessage(string placePointID, int delta)
+    {
+        if (textBank != null)
+        {
+            return textBank.GetFeedbackMessage(placePointID, delta);
+        }
+
+        Debug.LogWarning("Node5ResultPlayer: Node5TextBank is not assigned. Using fallback feedback text.");
+
+        if (placePointID == "N5_P1")
+        {
+            if (delta > 0)
+            {
+                return "The prince receives help and finds the way forward.";
+            }
+
+            if (delta < 0)
+            {
+                return "The prince gets lost.";
+            }
+
+            return "The prince follows a beautiful flower path, but it does not really help.";
+        }
+
+        if (placePointID == "N5_P2")
+        {
+            if (delta > 0)
+            {
+                return "The dwarfs receive useful help.";
+            }
+
+            if (delta < 0)
+            {
+                return "The dwarfs are thrown into trouble.";
+            }
+
+            return "The dwarfs notice something, but it is not enough to change the rescue.";
+        }
+
+        if (placePointID == "N5_P3")
+        {
+            if (delta > 0)
+            {
+                return "The crystal coffin begins to open.";
+            }
+
+            if (delta < 0)
+            {
+                return "The seal around the crystal coffin grows stronger.";
+            }
+
+            return "The crystal coffin reacts faintly, but remains closed.";
+        }
+
+        return "The magic has an unclear effect.";
     }
 
     private void ShowEndingPanel(string title, string body)

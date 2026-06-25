@@ -974,7 +974,8 @@ MonoBehaviour:
   storyActor: {fileID: 1405852954}
   database: {fileID: 0}
   textUI: {fileID: 3200000005}
-  showTriggerFeedback: 0
+  textBank: {fileID: 3200000500}
+  showTriggerFeedback: 1
   triggerFeedbackDuration: 1.2
 --- !u!1 &1331221912
 GameObject:
@@ -2197,6 +2198,7 @@ GameObject:
   - component: {fileID: 3200000003}
   - component: {fileID: 3200000004}
   - component: {fileID: 3200000005}
+  - component: {fileID: 3200000500}
   m_Layer: 5
   m_Name: Node5_TextCanvas
   m_TagString: Untagged
@@ -2312,6 +2314,36 @@ MonoBehaviour:
   retryButton: {fileID: 3200000332}
   tryAnotherWayButton: {fileID: 3200000352}
   nextLevelButton: {fileID: 3200000372}
+--- !u!114 &3200000500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3200000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4d02b36d3fc47aca4618ca33f6e40e8, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Node5TextBank
+  princeRoutePlus: The prince receives help and finds the way forward.
+  princeRouteNeutral: The prince follows a beautiful flower path, but it does not really help.
+  princeRouteMinus: The prince gets lost.
+  dwarfsRescuePlus: The dwarfs receive useful help.
+  dwarfsRescueNeutral: The dwarfs notice something, but it is not enough to change the rescue.
+  dwarfsRescueMinus: The dwarfs are thrown into trouble.
+  crystalCoffinPlus: The crystal coffin begins to open.
+  crystalCoffinNeutral: The crystal coffin reacts faintly, but remains closed.
+  crystalCoffinMinus: The seal around the crystal coffin grows stronger.
+  badEndingTitle: Bad Ending
+  badEndingBody: It seems Snow White has been sealed away forever.
+  failedRescueTitle: Failed Rescue
+  failedRescueWithPrinceBody: The prince and the dwarfs cannot rescue Snow White.
+  failedRescueDwarfsBody: The dwarfs cannot rescue Snow White.
+  rescueEndingTitle: Rescue Ending
+  rescueEndingBody: The prince and the dwarfs rescue Snow White.
+  dwarfsRescueEndingTitle: Dwarfs Rescue Ending
+  dwarfsRescueEndingBody: The dwarfs rescue Snow White.
 --- !u!1 &3200000100
 GameObject:
   m_ObjectHideFlags: 0
