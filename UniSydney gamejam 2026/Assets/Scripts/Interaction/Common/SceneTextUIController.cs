@@ -13,6 +13,13 @@ public class SceneTextUIController : MonoBehaviour
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private TMP_Text dialogueText;
 
+    [Header("Speaker Portrait")]
+    [SerializeField] private bool showDadPortraitForBriefing = true;
+    [SerializeField] private bool showDadPortraitForDialogue = true;
+    [SerializeField] private Image dadPortraitImage;
+    [SerializeField] private Sprite dadPortraitSprite;
+    [SerializeField] private GameObject dadPortraitRoot;
+
     [Header("Ending")]
     [SerializeField] private GameObject endingPanel;
     [SerializeField] private TMP_Text endingTitleText;
@@ -21,32 +28,47 @@ public class SceneTextUIController : MonoBehaviour
     [SerializeField] private Button tryAnotherWayButton;
     [SerializeField] private Button nextLevelButton;
 
+    private bool hasWarnedMissingDadPortraitSprite;
+
     public void HideAll()
     {
         HideBriefing();
         HideDialogue();
         HideEnding();
+        HideDadPortrait();
     }
 
     public void ShowBriefing()
     {
         SetActiveOrWarn(briefingPanel, true, nameof(briefingPanel));
+
+        if (showDadPortraitForBriefing)
+        {
+            ShowDadPortrait();
+        }
     }
 
     public void HideBriefing()
     {
         SetActiveIfPresent(briefingPanel, false);
+        HideDadPortrait();
     }
 
     public void ShowDialogue(string message)
     {
         SetTextOrWarn(dialogueText, message, nameof(dialogueText));
         SetActiveOrWarn(dialoguePanel, true, nameof(dialoguePanel));
+
+        if (showDadPortraitForDialogue)
+        {
+            ShowDadPortrait();
+        }
     }
 
     public void HideDialogue()
     {
         SetActiveIfPresent(dialoguePanel, false);
+        HideDadPortrait();
     }
 
     public void ShowEnding(string title, string body, bool success)
@@ -86,6 +108,44 @@ public class SceneTextUIController : MonoBehaviour
         if (action != null)
         {
             button.onClick.AddListener(action);
+        }
+    }
+
+    private void ShowDadPortrait()
+    {
+        if (dadPortraitRoot != null)
+        {
+            dadPortraitRoot.SetActive(true);
+        }
+
+        if (dadPortraitImage == null)
+        {
+            return;
+        }
+
+        if (dadPortraitSprite != null)
+        {
+            dadPortraitImage.sprite = dadPortraitSprite;
+        }
+        else if (!hasWarnedMissingDadPortraitSprite)
+        {
+            Debug.LogWarning($"{nameof(SceneTextUIController)} on {name}: Dad portrait sprite is missing.");
+            hasWarnedMissingDadPortraitSprite = true;
+        }
+
+        dadPortraitImage.gameObject.SetActive(true);
+    }
+
+    private void HideDadPortrait()
+    {
+        if (dadPortraitRoot != null)
+        {
+            dadPortraitRoot.SetActive(false);
+        }
+
+        if (dadPortraitImage != null)
+        {
+            dadPortraitImage.gameObject.SetActive(false);
         }
     }
 
