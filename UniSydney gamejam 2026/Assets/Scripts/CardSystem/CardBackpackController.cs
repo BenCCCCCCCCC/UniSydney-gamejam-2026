@@ -979,16 +979,20 @@ public class CardBackpackController : MonoBehaviour
             RectTransform canvasRect = canvasObject.GetComponent<RectTransform>();
 
             Texture2D backgroundSnapshot = GameSessionData.CardBackpackBackgroundSnapshot;
+            RectTransform snapshotLayer = null;
             if (backgroundSnapshot != null)
             {
-                CreateStretchRawImage("GameplaySnapshotBackground", canvasRect, backgroundSnapshot);
+                snapshotLayer = CreateStretchRawImage("GameplaySnapshotBackground", canvasRect, backgroundSnapshot);
             }
 
-            CreateStretchImage("BackgroundDimOverlay", canvasRect, new Color(0f, 0f, 0f, 0.5f));
+            Color dimColor = new Color(0f, 0f, 0f, 0.5f);
+            RectTransform dimOverlay = CreateStretchImage("BackgroundDimOverlay", canvasRect, dimColor);
+            RectTransform uiLayer = CreateStretchContainer("CardBackpackUILayer", canvasRect);
+            ApplyBackgroundLayerOrder(snapshotLayer, dimOverlay, uiLayer, dimColor);
 
             TMP_Text instructionText = CreateText(
                 "InstructionText",
-                canvasRect,
+                uiLayer,
                 "Memorize the base cards. They will flip soon.",
                 new Vector2(0.5f, 0.94f),
                 new Vector2(1120f, 58f),
@@ -996,7 +1000,7 @@ public class CardBackpackController : MonoBehaviour
 
             RectTransform baseCardArea = CreateArea(
                 "BaseCardArea",
-                canvasRect,
+                uiLayer,
                 new Vector2(0.06f, 0.25f),
                 new Vector2(0.94f, 0.82f),
                 Color.clear);
@@ -1011,7 +1015,7 @@ public class CardBackpackController : MonoBehaviour
 
             RectTransform toolHandArea = CreateArea(
                 "ToolHandArea",
-                canvasRect,
+                uiLayer,
                 new Vector2(0.22f, 0f),
                 new Vector2(0.78f, 0.18f),
                 Color.clear);
@@ -1027,7 +1031,7 @@ public class CardBackpackController : MonoBehaviour
 
             Button continueButton = CreateButton(
                 "ContinueButton",
-                canvasRect,
+                uiLayer,
                 "Continue",
                 new Vector2(0.88f, 0.12f),
                 new Vector2(230f, 72f));
@@ -1061,13 +1065,51 @@ public class CardBackpackController : MonoBehaviour
             eventSystemObject.SetActive(true);
         }
 
+        private static void ApplyBackgroundLayerOrder(
+            RectTransform snapshotLayer,
+            RectTransform dimOverlay,
+            RectTransform uiLayer,
+            Color dimColor)
+        {
+            if (snapshotLayer != null)
+            {
+                snapshotLayer.SetAsFirstSibling();
+                dimOverlay.SetSiblingIndex(1);
+            }
+            else
+            {
+                dimOverlay.SetAsFirstSibling();
+            }
+
+            uiLayer.SetAsLastSibling();
+
+            Debug.Log(
+                $"CardBackpack background layers: snapshotSibling={(snapshotLayer != null ? snapshotLayer.GetSiblingIndex() : -1)}, dimSibling={dimOverlay.GetSiblingIndex()}, uiSibling={uiLayer.GetSiblingIndex()}, dimColor={dimColor}");
+        }
+
+        private static RectTransform CreateStretchContainer(string name, Transform parent)
+        {
+            GameObject containerObject = new GameObject(name, typeof(RectTransform));
+            containerObject.transform.SetParent(parent, false);
+
+            RectTransform rect = containerObject.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            return rect;
+        }
+
         private static RectTransform CreateStretchImage(string name, Transform parent, Color color)
         {
             GameObject imageObject = new GameObject(name, typeof(RectTransform), typeof(Image));
             imageObject.transform.SetParent(parent, false);
 
             Image image = imageObject.GetComponent<Image>();
+            image.material = null;
             image.color = color;
+            image.raycastTarget = false;
 
             RectTransform rect = imageObject.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
@@ -1087,6 +1129,7 @@ public class CardBackpackController : MonoBehaviour
             imageObject.transform.SetParent(parent, false);
 
             RawImage image = imageObject.GetComponent<RawImage>();
+            image.material = null;
             image.texture = texture;
             image.color = Color.white;
             image.raycastTarget = false;
