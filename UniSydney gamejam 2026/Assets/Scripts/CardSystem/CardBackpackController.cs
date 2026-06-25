@@ -72,6 +72,13 @@ public class CardBackpackController : MonoBehaviour
     [Header("Timing")]
     [SerializeField] private float previewSeconds = 3f;
 
+    [Header("Scene Transition")]
+    [SerializeField] private bool useSceneTransitionOverlay = true;
+    [SerializeField] private Color transitionColor = Color.black;
+    [SerializeField] private float transitionFadeInSeconds = 0.08f;
+    [SerializeField] private float transitionFadeOutSeconds = 0.18f;
+    [SerializeField] private int transitionWaitFramesAfterLoad = 2;
+
     private readonly List<CardView> baseCardViews = new();
     private readonly List<CardView> roundBaseCardViews = new();
     private readonly List<CardView> openedCards = new();
@@ -899,7 +906,14 @@ public class CardBackpackController : MonoBehaviour
 
         if (loadTargetSceneOnContinue && !string.IsNullOrWhiteSpace(targetSceneName))
         {
-            LoadTargetScene();
+            if (useSceneTransitionOverlay)
+            {
+                LoadTargetSceneWithTransition();
+            }
+            else
+            {
+                LoadTargetScene();
+            }
         }
     }
 
@@ -935,6 +949,28 @@ public class CardBackpackController : MonoBehaviour
 #endif
 
         SceneManager.LoadScene(targetSceneName);
+    }
+
+    private void LoadTargetSceneWithTransition()
+    {
+        Debug.Log($"Loading scene with transition cover: {targetSceneName}");
+
+#if UNITY_EDITOR
+        string scenePath = $"Assets/Scenes/{targetSceneName}.unity";
+        bool needsEditorFallback = SceneUtility.GetBuildIndexByScenePath(scenePath) < 0;
+#else
+        string scenePath = null;
+        bool needsEditorFallback = false;
+#endif
+
+        SceneTransitionOverlay.LoadSceneCovered(
+            targetSceneName,
+            scenePath,
+            needsEditorFallback,
+            transitionColor,
+            transitionFadeInSeconds,
+            transitionFadeOutSeconds,
+            transitionWaitFramesAfterLoad);
     }
 
     private static string FormatToolIDs(List<string> toolCardIDs)
