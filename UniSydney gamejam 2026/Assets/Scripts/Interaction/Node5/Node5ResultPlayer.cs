@@ -95,7 +95,14 @@ public class Node5ResultPlayer : MonoBehaviour
 
         if (dwarfVisualRoot != null)
         {
-            dwarfVisualRoot.SetActive(false);
+            dwarfVisualRoot.SetActive(true);
+        }
+
+        SetDwarfTriggerEnabled(false);
+
+        if (dwarfActor != null)
+        {
+            dwarfActor.PauseMove();
         }
 
         if (database == null)
@@ -537,7 +544,7 @@ public class Node5ResultPlayer : MonoBehaviour
 
         dwarfVisualRoot.SetActive(true);
         dwarfActor.gameObject.tag = "StoryActor";
-        EnableDwarfTrigger();
+        SetDwarfTriggerEnabled(true);
 
         if (dwarfStartPoint != null && dwarfEndPoint != null)
         {
@@ -588,7 +595,7 @@ public class Node5ResultPlayer : MonoBehaviour
         }
     }
 
-    private void EnableDwarfTrigger()
+    private void SetDwarfTriggerEnabled(bool enabled)
     {
         if (dwarfActor == null)
         {
@@ -598,7 +605,7 @@ public class Node5ResultPlayer : MonoBehaviour
         Collider2D[] colliders = dwarfActor.GetComponents<Collider2D>();
         foreach (Collider2D actorCollider in colliders)
         {
-            actorCollider.enabled = true;
+            actorCollider.enabled = enabled;
         }
     }
 

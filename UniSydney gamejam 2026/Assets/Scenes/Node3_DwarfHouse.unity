@@ -1221,6 +1221,7 @@ GameObject:
   - component: {fileID: 1405852956}
   - component: {fileID: 1405852955}
   - component: {fileID: 1405852954}
+  - component: {fileID: 1405852959}
   m_Layer: 0
   m_Name: SnowWhite_Placeholder
   m_TagString: StoryActor
@@ -1244,6 +1245,27 @@ MonoBehaviour:
   endPoint: {fileID: 1994000446}
   moveSpeed: 2
   arriveDistance: 0.05
+--- !u!114 &1405852959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405852953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e7d2b77a3cf4bb4b91a0b0a7b46a0d2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::StoryActorFrameAnimator
+  targetRenderer: {fileID: 2102600039}
+  idleFrames: []
+  walkFrames: []
+  idleFrameRate: 4
+  walkFrameRate: 8
+  movementThreshold: 0.001
+  useUnscaledTime: 0
+  playIdleWhenNoFrames: 1
+  logMissingFrames: 0
 --- !u!50 &1405852955
 Rigidbody2D:
   serializedVersion: 5
@@ -2057,7 +2079,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2102600036}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: a6c6604c92fc3c649bd6f0f1d263562c, type: 2}
   m_CullingMode: 0
