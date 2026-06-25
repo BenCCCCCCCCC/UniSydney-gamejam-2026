@@ -28,7 +28,7 @@ public class Node3PlacementPlayController : MonoBehaviour
     [Header("Tool Hand")]
     [SerializeField] private Vector2 handPanelAnchor = new Vector2(0.5f, 0.20f);
     [SerializeField] private Vector2 handPanelSize = new Vector2(1000f, 180f);
-    [SerializeField] private Vector2 handCardSize = new Vector2(150f, 150f);
+    [SerializeField] private Vector2 handCardSize = new Vector2(210f, 294f);
     [SerializeField] private float handCardSpacing = 18f;
 
     [Header("Runtime Play Button")]
@@ -46,6 +46,8 @@ public class Node3PlacementPlayController : MonoBehaviour
     private RectTransform handPanel;
     private RectTransform[] slotRects;
     private Node3CentralToolCardDragItem[] placedCards;
+    private CardDatabase runtimeCardDatabase;
+    private HandCardPresentationSettings handPresentationSettings;
 
     private bool hasStartedPlay;
 
@@ -280,22 +282,19 @@ public class Node3PlacementPlayController : MonoBehaviour
         handObject.transform.SetParent(canvasRect, false);
 
         Image image = handObject.GetComponent<Image>();
-        image.color = new Color(0.04f, 0.05f, 0.07f, 0.70f);
+        image.color = Color.clear;
+        image.raycastTarget = false;
 
         handPanel = handObject.GetComponent<RectTransform>();
-        handPanel.anchorMin = handPanelAnchor;
-        handPanel.anchorMax = handPanelAnchor;
-        handPanel.pivot = new Vector2(0.5f, 0.5f);
+        handPanel.anchorMin = new Vector2(handPanelAnchor.x, 0f);
+        handPanel.anchorMax = new Vector2(handPanelAnchor.x, 0f);
+        handPanel.pivot = new Vector2(0.5f, 0f);
         handPanel.sizeDelta = handPanelSize;
         handPanel.anchoredPosition = Vector2.zero;
 
-        HorizontalLayoutGroup layout = handObject.GetComponent<HorizontalLayoutGroup>();
-        layout.spacing = handCardSpacing;
-        layout.childAlignment = TextAnchor.MiddleCenter;
-        layout.childControlWidth = false;
-        layout.childControlHeight = false;
-        layout.childForceExpandWidth = false;
-        layout.childForceExpandHeight = false;
+        handPresentationSettings = HandCardPresentationApplier.ResolveSettings(
+            HandCardPresentationApplier.GetCurrentOrDefaults());
+        HandCardPresentationApplier.ApplyHandArea(handPanel, handPresentationSettings);
 
         Debug.Log($"NODE3_MANUAL_HAND_TOOLS: {string.Join(", ", GameSessionData.ToolCardIDs)}");
 
@@ -307,59 +306,59 @@ public class Node3PlacementPlayController : MonoBehaviour
 
     private void CreateHandCard(string toolCardID)
     {
-        GameObject cardObject = new GameObject(
-            $"ToolCard_{toolCardID}",
-            typeof(RectTransform),
-            typeof(Image),
-            typeof(CanvasGroup),
-            typeof(LayoutElement),
-            typeof(Node3CentralToolCardDragItem));
-
-        cardObject.transform.SetParent(handPanel, false);
-
-        RectTransform rect = cardObject.GetComponent<RectTransform>();
-        rect.sizeDelta = handCardSize;
-
-        LayoutElement layoutElement = cardObject.GetComponent<LayoutElement>();
-        layoutElement.preferredWidth = handCardSize.x;
-        layoutElement.preferredHeight = handCardSize.y;
-        layoutElement.flexibleWidth = 0f;
-        layoutElement.flexibleHeight = 0f;
-
-        Image cardImage = cardObject.GetComponent<Image>();
-        cardImage.color = new Color(0.25f, 0.36f, 0.56f, 0.95f);
-
-        Image iconImage = CreateImage(
-            "Icon",
-            cardObject.transform,
-            new Vector2(0.5f, 0.62f),
-            new Vector2(handCardSize.x - 34f, 72f));
-
         Sprite sprite = CardArtLoader.GetSprite(toolCardID, cardArtCatalog, useResourcesArtFallback);
-
-        if (sprite != null)
+        CardRow card = GetToolCard(toolCardID);
+        if (card == null)
         {
-            iconImage.sprite = sprite;
-            iconImage.color = Color.white;
-            iconImage.preserveAspect = true;
-        }
-        else
-        {
-            iconImage.color = new Color(1f, 1f, 1f, 0f);
+            return;
         }
 
-        TMP_Text nameLabel = CreateText(
-            "Name",
-            cardObject.transform,
-            CardDisplayNameHelper.ToEnglishName(toolCardID),
-            new Vector2(0.5f, 0.24f),
-            new Vector2(handCardSize.x - 16f, 58f),
-            16f);
+        Canvas canvas = tableCanvasObject.GetComponent<Canvas>();
+        CardView cardView = HandCardViewFactory.Create(
+            handPanel,
+            card,
+            null,
+            sprite,
+            handPresentationSettings,
+            canvas);
 
-        nameLabel.color = Color.white;
+        if (cardView == null)
+        {
+            return;
+        }
 
-        Node3CentralToolCardDragItem dragItem = cardObject.GetComponent<Node3CentralToolCardDragItem>();
-        dragItem.Setup(this, toolCardID, tableCanvasObject.GetComponent<Canvas>(), handPanel);
+        cardView.gameObject.name = $"ToolCard_{toolCardID}";
+        Node3CentralToolCardDragItem dragItem =
+            cardView.gameObject.AddComponent<Node3CentralToolCardDragItem>();
+        dragItem.Setup(this, toolCardID, canvas, handPanel);
+    }
+
+    private CardRow GetToolCard(string toolCardID)
+    {
+        CardDatabase database = GetRuntimeCardDatabase();
+        CardRow card = null;
+        bool found = database != null && database.TryGetCard(toolCardID, out card);
+
+        if (!found)
+        {
+            Debug.LogWarning($"Node3PlacementPlayController: card data missing for {toolCardID}.");
+            return null;
+        }
+
+        return card;
+    }
+
+    private CardDatabase GetRuntimeCardDatabase()
+    {
+        if (runtimeCardDatabase != null)
+        {
+            return runtimeCardDatabase;
+        }
+
+        GameObject databaseObject = new GameObject("RuntimeNode3CardDatabase");
+        databaseObject.transform.SetParent(transform, false);
+        runtimeCardDatabase = databaseObject.AddComponent<CardDatabase>();
+        return runtimeCardDatabase;
     }
 
     public void TryPlaceCardInSlot(Node3CentralToolCardDragItem card, int slotIndex)
@@ -372,12 +371,14 @@ public class Node3PlacementPlayController : MonoBehaviour
         if (slotIndex < 0 || slotIndex >= slotRects.Length)
         {
             card.ReturnToHand();
+            RestoreHandCardPresentation(card);
             return;
         }
 
         if (requiredPlacementPoints == null || slotIndex >= requiredPlacementPoints.Length || requiredPlacementPoints[slotIndex] == null)
         {
             card.ReturnToHand();
+            RestoreHandCardPresentation(card);
             return;
         }
 
@@ -397,6 +398,7 @@ public class Node3PlacementPlayController : MonoBehaviour
         {
             Node3CentralToolCardDragItem oldCard = placedCards[slotIndex];
             oldCard.ReturnToHand();
+            RestoreHandCardPresentation(oldCard);
         }
 
         placedCards[slotIndex] = card;
@@ -431,7 +433,21 @@ public class Node3PlacementPlayController : MonoBehaviour
         }
 
         card.ReturnToHand();
+        RestoreHandCardPresentation(card);
         RefreshPlayButtonState();
+    }
+
+    private void RestoreHandCardPresentation(Node3CentralToolCardDragItem card)
+    {
+        if (card == null || tableCanvasObject == null)
+        {
+            return;
+        }
+
+        HandCardPresentationApplier.ApplyHandCard(
+            card.gameObject,
+            tableCanvasObject.GetComponent<Canvas>(),
+            handPresentationSettings);
     }
 
     private void RefreshPlayButtonState()
