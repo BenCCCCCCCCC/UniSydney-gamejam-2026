@@ -64,6 +64,10 @@ public class Node3PlacementPlayController : MonoBehaviour
     [Tooltip("false = 构建后立即隐藏，等外部调用 ShowPlacementUI() 再显示（用于 Node2_2 等先旁白后放牌的场景）")]
     [SerializeField] private bool showUIImmediately = true;
 
+    [Header("Actor Start Delay")]
+    [SerializeField] private float actorStartDelaySeconds = 1f;
+    [SerializeField] private bool delayInitialActorStart;
+
     private GameObject tableCanvasObject;
     private GameObject playButtonCanvasObject;
     private RectTransform canvasRect;
@@ -720,6 +724,16 @@ private void BuildPlacementTable()
         if (tableCanvasObject != null)
         {
             tableCanvasObject.SetActive(false);
+        }
+
+        StartCoroutine(StartActorAfterDelay());
+    }
+
+    private IEnumerator StartActorAfterDelay()
+    {
+        if (delayInitialActorStart && actorStartDelaySeconds > 0f)
+        {
+            yield return new WaitForSeconds(actorStartDelaySeconds);
         }
 
         if (storyActor != null)

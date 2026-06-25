@@ -35,6 +35,9 @@ public class Node3ResultPlayer : MonoBehaviour
     [SerializeField] private Transform shortcutTargetBeforeDoorTrigger;
     [SerializeField] private float shortcutMoveSpeedMultiplier = 3.5f;
     [SerializeField] private float shortcutArriveDistance = 0.05f;
+    [SerializeField] private float fallbackShortcutDistanceBeforeDoorTrigger = 0.7f;
+    [SerializeField] private bool useAutomaticDoorTriggerFallback = true;
+    [SerializeField] private float minimumShortcutMoveSpeed = 6f;
 
     [Header("Door Visual")]
     [SerializeField] private SpriteRenderer doorRenderer;
@@ -131,6 +134,12 @@ public class Node3ResultPlayer : MonoBehaviour
         string message = hasPlacementResult
             ? result.ResultSummaryCN
             : "What's that for?";
+
+        if (hasPlacementResult && placePointID == "N3_P2" && result.OutcomeType == "Fail")
+        {
+            message = "Snow White gets lost in the forest.";
+            routeFailReason = message;
+        }
 
         Debug.Log($"NODE3_RESULT: {placePointID} / {toolCardID} / {(hasPlacementResult ? result.OutcomeType : "InvalidPlacement")}");
 
@@ -283,9 +292,9 @@ public class Node3ResultPlayer : MonoBehaviour
             yield break;
         }
 
-        if (shortcutTargetBeforeDoorTrigger == null)
+        if (!TryGetShortcutTargetPosition(out Vector3 shortcutTargetPosition))
         {
-            Debug.LogWarning("Node3ResultPlayer: shortcutTargetBeforeDoorTrigger is not assigned. Resuming normal movement.");
+            Debug.LogWarning("Node3ResultPlayer: no shortcut target or automatic N3_P3 fallback was found. Resuming normal movement.");
             storyActor.ResumeMove();
             yield break;
         }
@@ -293,24 +302,95 @@ public class Node3ResultPlayer : MonoBehaviour
         isShortcutMoving = true;
         storyActor.PauseMove();
 
-        float shortcutSpeed = Mathf.Max(0.01f, shortcutMoveSpeedMultiplier);
-        while (Vector3.Distance(storyActor.transform.position, shortcutTargetBeforeDoorTrigger.position) > shortcutArriveDistance)
+        float shortcutSpeed = Mathf.Max(minimumShortcutMoveSpeed, shortcutMoveSpeedMultiplier);
+        while (Vector3.Distance(storyActor.transform.position, shortcutTargetPosition) > shortcutArriveDistance)
         {
             storyActor.transform.position = Vector3.MoveTowards(
                 storyActor.transform.position,
-                shortcutTargetBeforeDoorTrigger.position,
+                shortcutTargetPosition,
                 shortcutSpeed * Time.deltaTime);
 
             yield return null;
         }
 
-        storyActor.transform.position = shortcutTargetBeforeDoorTrigger.position;
+        storyActor.transform.position = shortcutTargetPosition;
         isShortcutMoving = false;
 
         if (!hasEnded)
         {
             storyActor.ResumeMove();
         }
+    }
+
+    private bool TryGetShortcutTargetPosition(out Vector3 shortcutTargetPosition)
+    {
+        if (shortcutTargetBeforeDoorTrigger != null)
+        {
+            shortcutTargetPosition = shortcutTargetBeforeDoorTrigger.position;
+            return true;
+        }
+
+        if (!useAutomaticDoorTriggerFallback || storyActor == null)
+        {
+            shortcutTargetPosition = Vector3.zero;
+            return false;
+        }
+
+        if (!TryFindDoorTriggerPosition(out Vector3 doorTriggerPosition))
+        {
+            shortcutTargetPosition = Vector3.zero;
+            return false;
+        }
+
+        Vector3 directionToDoor = doorTriggerPosition - storyActor.transform.position;
+        directionToDoor.z = 0f;
+
+        if (directionToDoor.sqrMagnitude <= 0.0001f)
+        {
+            directionToDoor = Vector3.right;
+        }
+        else
+        {
+            directionToDoor.Normalize();
+        }
+
+        shortcutTargetPosition = doorTriggerPosition - directionToDoor * fallbackShortcutDistanceBeforeDoorTrigger;
+        shortcutTargetPosition.z = storyActor.transform.position.z;
+        return true;
+    }
+
+    private bool TryFindDoorTriggerPosition(out Vector3 doorTriggerPosition)
+    {
+        PlacementTriggerZone[] triggerZones = FindObjectsByType<PlacementTriggerZone>();
+        foreach (PlacementTriggerZone triggerZone in triggerZones)
+        {
+            PlacementPoint point = triggerZone != null ? triggerZone.placementPoint : null;
+            if (IsNode3DoorPoint(point))
+            {
+                doorTriggerPosition = triggerZone.transform.position;
+                return true;
+            }
+        }
+
+        PlacementPoint[] placementPoints = FindObjectsByType<PlacementPoint>();
+        foreach (PlacementPoint point in placementPoints)
+        {
+            if (IsNode3DoorPoint(point))
+            {
+                doorTriggerPosition = point.transform.position;
+                return true;
+            }
+        }
+
+        doorTriggerPosition = Vector3.zero;
+        return false;
+    }
+
+    private bool IsNode3DoorPoint(PlacementPoint point)
+    {
+        return point != null
+            && point.nodeID == nodeID
+            && point.placePointID == "N3_P3";
     }
 
     private void OnActorReachedEnd(StoryActorAutoMove actor)

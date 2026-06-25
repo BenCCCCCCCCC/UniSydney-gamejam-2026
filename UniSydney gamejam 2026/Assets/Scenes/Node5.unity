@@ -1464,6 +1464,8 @@ MonoBehaviour:
   buttonAnchor: {x: 0.88, y: 0.24}
   buttonSize: {x: 220, y: 70}
   showUIImmediately: 1
+  actorStartDelaySeconds: 1
+  delayInitialActorStart: 1
 --- !u!1 &1371917635
 GameObject:
   m_ObjectHideFlags: 0

@@ -2079,7 +2079,7 @@
       "ToolCardID": "T_SPINNING_SIGN",
       "OutcomeType": "Fail",
       "ResultID": "N3_R021",
-      "ResultSummaryCN": "Spinning Signpost leads Snow White the wrong way.",
+      "ResultSummaryCN": "Snow White gets lost in the forest.",
       "NextState": "Retry"
     },
     {
@@ -2099,7 +2099,7 @@
       "ToolCardID": "T_HALLUCINATION_MUSHROOM",
       "OutcomeType": "Fail",
       "ResultID": "N3_R023",
-      "ResultSummaryCN": "Hallucination Mushroom leads Snow White the wrong way.",
+      "ResultSummaryCN": "Snow White gets lost in the forest.",
       "NextState": "Retry"
     },
     {
@@ -2109,7 +2109,7 @@
       "ToolCardID": "T_SPORE_FOG",
       "OutcomeType": "Fail",
       "ResultID": "N3_R024",
-      "ResultSummaryCN": "Spore Fog leads Snow White the wrong way.",
+      "ResultSummaryCN": "Snow White gets lost in the forest.",
       "NextState": "Retry"
     },
     {
