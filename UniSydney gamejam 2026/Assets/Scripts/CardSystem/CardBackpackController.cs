@@ -949,7 +949,6 @@ public class CardBackpackController : MonoBehaviour
 
         isContinuing = true;
         UpdateContinueButtonState();
-        GameSessionData.ClearCardBackpackBackgroundSnapshot();
 
         List<string> toolCardIDs = GetToolCardIDs();
 
@@ -1220,6 +1219,12 @@ public class CardBackpackController : MonoBehaviour
             Transform parent,
             Texture texture)
         {
+            if (texture == null || texture.width <= 0 || texture.height <= 0)
+            {
+                Debug.LogWarning($"CardBackpackController: {name} texture is invalid; skipping snapshot background layer.");
+                return null;
+            }
+
             GameObject imageObject = new GameObject(name, typeof(RectTransform), typeof(RawImage));
             imageObject.transform.SetParent(parent, false);
 
