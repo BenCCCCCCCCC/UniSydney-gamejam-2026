@@ -14,6 +14,15 @@ public class Node5ResultPlayer : MonoBehaviour
     [SerializeField] private StoryActorAutoMove storyActor;
     [SerializeField] private CardDatabase database;
 
+    [Header("Actors")]
+    [SerializeField] private StoryActorAutoMove princeActor;
+    [SerializeField] private StoryActorAutoMove dwarfActor;
+    [SerializeField] private GameObject princeVisualRoot;
+    [SerializeField] private GameObject dwarfVisualRoot;
+    [SerializeField] private Transform dwarfStartPoint;
+    [SerializeField] private Transform dwarfEndPoint;
+    [SerializeField] private Vector3 princeFollowOffset = new Vector3(-0.8f, 0f, 0f);
+
     [Header("Text UI")]
     [SerializeField] private SceneTextUIController textUI;
     [SerializeField] private Node5TextBank textBank;
@@ -24,6 +33,10 @@ public class Node5ResultPlayer : MonoBehaviour
     private bool princeCalled;
     private bool hasEnded;
     private Coroutine feedbackCoroutine;
+    private bool n5P1Resolved;
+    private bool princeLost;
+    private bool dwarfPhaseStarted;
+    private bool princeFollowingDwarf;
 
     private void OnEnable()
     {
@@ -49,9 +62,40 @@ public class Node5ResultPlayer : MonoBehaviour
 
     private void Start()
     {
+        if (princeActor == null)
+        {
+            princeActor = storyActor;
+        }
+
         if (storyActor == null)
         {
-            storyActor = FindAnyObjectByType<StoryActorAutoMove>();
+            storyActor = princeActor;
+        }
+
+        if (princeActor == null)
+        {
+            princeActor = FindAnyObjectByType<StoryActorAutoMove>();
+            storyActor = princeActor;
+        }
+
+        if (princeVisualRoot == null && princeActor != null)
+        {
+            princeVisualRoot = princeActor.gameObject;
+        }
+
+        if (dwarfVisualRoot == null && dwarfActor != null)
+        {
+            dwarfVisualRoot = dwarfActor.gameObject;
+        }
+
+        if (dwarfActor != null && dwarfStartPoint != null && dwarfEndPoint != null)
+        {
+            dwarfActor.SetMovePath(dwarfStartPoint, dwarfEndPoint);
+        }
+
+        if (dwarfVisualRoot != null)
+        {
+            dwarfVisualRoot.SetActive(false);
         }
 
         if (database == null)
@@ -76,6 +120,16 @@ public class Node5ResultPlayer : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        if (!princeFollowingDwarf || princeVisualRoot == null || dwarfVisualRoot == null)
+        {
+            return;
+        }
+
+        princeVisualRoot.transform.position = dwarfVisualRoot.transform.position + princeFollowOffset;
+    }
+
     public void PlayResult(PlacementPoint point)
     {
         if (hasEnded || point == null)
@@ -84,6 +138,23 @@ public class Node5ResultPlayer : MonoBehaviour
         }
 
         string placePointID = point.placePointID;
+
+        if (placePointID == "N5_P1")
+        {
+            if (n5P1Resolved)
+            {
+                return;
+            }
+        }
+        else if (placePointID == "N5_P2" || placePointID == "N5_P3")
+        {
+            if (!dwarfPhaseStarted)
+            {
+                Debug.LogWarning($"NODE5_TRIGGER_IGNORED_BEFORE_DWARF_PHASE: {placePointID}");
+                return;
+            }
+        }
+
         string toolCardID = string.IsNullOrWhiteSpace(point.storedToolCardID)
             ? ""
             : point.storedToolCardID;
@@ -113,6 +184,12 @@ public class Node5ResultPlayer : MonoBehaviour
             princeCalled = true;
         }
 
+        if (placePointID == "N5_P1")
+        {
+            n5P1Resolved = true;
+            princeLost = delta < 0;
+        }
+
         string loggedToolCardID = string.IsNullOrWhiteSpace(toolCardID)
             ? "(empty)"
             : toolCardID;
@@ -127,21 +204,33 @@ public class Node5ResultPlayer : MonoBehaviour
                 feedbackCoroutine = null;
             }
 
-            feedbackCoroutine = StartCoroutine(ShowFeedbackThenHide(GetFeedbackMessage(placePointID, delta)));
+            feedbackCoroutine = StartCoroutine(ShowFeedbackThenHide(
+                GetFeedbackMessage(placePointID, delta),
+                placePointID == "N5_P1"));
+        }
+        else if (placePointID == "N5_P1")
+        {
+            StartDwarfPhase();
         }
     }
 
-    private IEnumerator ShowFeedbackThenHide(string message)
+    private IEnumerator ShowFeedbackThenHide(string message, bool switchToDwarfAfter)
     {
         if (textUI == null)
         {
             Debug.LogWarning("Node5ResultPlayer: cannot show feedback because SceneTextUIController is not assigned.");
+            if (switchToDwarfAfter)
+            {
+                StartDwarfPhase();
+            }
+
             yield break;
         }
 
-        if (storyActor != null)
+        StoryActorAutoMove activeActor = GetActiveActor();
+        if (activeActor != null)
         {
-            storyActor.PauseMove();
+            activeActor.PauseMove();
         }
 
         textUI.ShowDialogue(message);
@@ -151,9 +240,21 @@ public class Node5ResultPlayer : MonoBehaviour
         textUI.HideDialogue();
         feedbackCoroutine = null;
 
-        if (!hasEnded && storyActor != null)
+        if (hasEnded)
         {
-            storyActor.ResumeMove();
+            yield break;
+        }
+
+        if (switchToDwarfAfter)
+        {
+            StartDwarfPhase();
+            yield break;
+        }
+
+        activeActor = GetActiveActor();
+        if (activeActor != null)
+        {
+            activeActor.ResumeMove();
         }
     }
 
@@ -254,7 +355,8 @@ public class Node5ResultPlayer : MonoBehaviour
             return;
         }
 
-        if (storyActor != null && actor != storyActor)
+        StoryActorAutoMove activeActor = GetActiveActor();
+        if (activeActor != null && actor != activeActor)
         {
             return;
         }
@@ -272,9 +374,10 @@ public class Node5ResultPlayer : MonoBehaviour
             textUI.HideDialogue();
         }
 
-        if (storyActor != null)
+        activeActor = GetActiveActor();
+        if (activeActor != null)
         {
-            storyActor.PauseMove();
+            activeActor.PauseMove();
         }
 
         GameSessionData.CurrentPhase = GameFlowPhase.Result;
@@ -386,6 +489,117 @@ public class Node5ResultPlayer : MonoBehaviour
         }
 
         textUI.ShowEnding(title, $"{body}\n\nFinal Score: {totalScore}", true);
+    }
+
+    private void StartDwarfPhase()
+    {
+        if (dwarfPhaseStarted)
+        {
+            return;
+        }
+
+        dwarfPhaseStarted = true;
+        DisablePrinceTrigger();
+
+        if (princeActor != null)
+        {
+            princeActor.PauseMove();
+        }
+
+        if (princeLost)
+        {
+            princeFollowingDwarf = false;
+            if (princeVisualRoot != null)
+            {
+                princeVisualRoot.SetActive(false);
+            }
+        }
+        else
+        {
+            if (princeVisualRoot != null)
+            {
+                princeVisualRoot.SetActive(true);
+            }
+
+            princeFollowingDwarf = true;
+        }
+
+        if (dwarfActor == null)
+        {
+            Debug.LogWarning("Node5ResultPlayer: dwarfActor is not assigned.");
+            return;
+        }
+
+        if (dwarfVisualRoot == null)
+        {
+            dwarfVisualRoot = dwarfActor.gameObject;
+        }
+
+        dwarfVisualRoot.SetActive(true);
+        dwarfActor.gameObject.tag = "StoryActor";
+        EnableDwarfTrigger();
+
+        if (dwarfStartPoint != null && dwarfEndPoint != null)
+        {
+            dwarfActor.SetMovePath(dwarfStartPoint, dwarfEndPoint);
+        }
+
+        StartCoroutine(StartDwarfActorAfterActivation());
+    }
+
+    private IEnumerator StartDwarfActorAfterActivation()
+    {
+        yield return null;
+
+        if (hasEnded || dwarfActor == null)
+        {
+            yield break;
+        }
+
+        if (dwarfStartPoint != null)
+        {
+            dwarfActor.MoveToStart();
+        }
+
+        dwarfActor.ResumeMove();
+    }
+
+    private StoryActorAutoMove GetActiveActor()
+    {
+        if (dwarfPhaseStarted && dwarfActor != null)
+        {
+            return dwarfActor;
+        }
+
+        return princeActor != null ? princeActor : storyActor;
+    }
+
+    private void DisablePrinceTrigger()
+    {
+        if (princeActor == null)
+        {
+            return;
+        }
+
+        Collider2D[] colliders = princeActor.GetComponents<Collider2D>();
+        foreach (Collider2D actorCollider in colliders)
+        {
+            actorCollider.enabled = false;
+        }
+    }
+
+    private void EnableDwarfTrigger()
+    {
+        if (dwarfActor == null)
+        {
+            return;
+        }
+
+        Collider2D[] colliders = dwarfActor.GetComponents<Collider2D>();
+        foreach (Collider2D actorCollider in colliders)
+        {
+            actorCollider.enabled = true;
+        }
     }
 
     private void RetryNode5()
