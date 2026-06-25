@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3ae0fa7101e62504d99eaec59cdfd54c
+guid: 5608e8fa06cb88746b0cd7a440c7e8e2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -550310789412613461
-    second: bg_card_0
+      213: -384732974935762353
+    second: T_PETAL_PATH_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: bg_card_0
+      name: T_PETAL_PATH_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 378
-        height: 528
+        width: 630
+        height: 880
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ba21ff0b047ec58f0800000000000000
-      internalID: -550310789412613461
+      spriteID: f4a139fc56729aaf0800000000000000
+      internalID: -384732974935762353
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      bg_card_0: -550310789412613461
+      T_PETAL_PATH_0: -384732974935762353
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

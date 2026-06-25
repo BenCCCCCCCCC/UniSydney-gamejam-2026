@@ -23,7 +23,7 @@ MonoBehaviour:
     sprite: {fileID: 663455848043613904, guid: f1d554d0c89da29498074ce88f858a88, type: 3}
   - cardID: B_CROWN
     sprite: {fileID: 8538985039029115744, guid: d70e7939e8cabfa46810fa7ff18eaa04, type: 3}
-  - cardID: B_CRYSTAL
+  - cardID: B_CRYSTAL_GLASS
     sprite: {fileID: -6091321608862071422, guid: 039377ac4fb2cea40a53c59ed9caa8ac, type: 3}
   - cardID: B_FLOWER
     sprite: {fileID: -6053833663051375574, guid: c33b0d021804f4e41ae3846d7067654e, type: 3}
@@ -53,7 +53,7 @@ MonoBehaviour:
     sprite: {fileID: 3873878346624319662, guid: 0f668314de0cb2041b67de428ca59e33, type: 3}
   - cardID: B_SEED
     sprite: {fileID: 5258080392000346968, guid: 1298b0c42fd3d9947924bc37f94aa1fd, type: 3}
-  - cardID: B_SIGNPOST
+  - cardID: B_SIGN
     sprite: {fileID: 5599323782787759188, guid: 6b76a78ed6df8c94e8b1fffd3913f9ea, type: 3}
   - cardID: B_SPRING
     sprite: {fileID: 8933066180510333674, guid: 8fa8047326b0df94fbf415bb8964ad99, type: 3}
@@ -63,3 +63,89 @@ MonoBehaviour:
     sprite: {fileID: 8657397879617074920, guid: 65eef5e0964719b49b398c7cadd4b442, type: 3}
   - cardID: B_WIND
     sprite: {fileID: 7132462436376741485, guid: 3b21b1b67dbabc14dbca2be3dbc5cdce, type: 3}
+  - cardID: T_APPLE_DELIVERY_BIRD
+    sprite: {fileID: 6629841647723219548, guid: 457f4a056a31b81488fe2af734ea4668, type: 3}
+  - cardID: T_BARRICADE_DOOR
+    sprite: {fileID: 5067230150301290670, guid: 2ebc07de1e8021d4cb663d04c79ba53f, type: 3}
+  - cardID: T_BEAUTY_RANKING
+    sprite: {fileID: -515178881118667679, guid: d838239731e32e64dba7124ec1a9ba47, type: 3}
+  - cardID: T_BLOOMING_PATH
+    sprite: {fileID: 1778077228091104352, guid: d69c79256ebfa7749abd644125ec8d42, type: 3}
+  - cardID: T_BOUNCY_APPLE
+    sprite: {fileID: -8517863825618275594, guid: 041867fb4c402eb448245266a41b8fae, type: 3}
+  - cardID: T_BOUNCY_CROWN
+    sprite: {fileID: 4458080892731724118, guid: 84faf9ce0e4dbdf42aab947eac0c8e4e, type: 3}
+  - cardID: T_BOUNCY_MUSHROOM
+    sprite: {fileID: 2621757206066837212, guid: ff844c899e68aa1498ff7fa5237da35c, type: 3}
+  - cardID: T_COFFIN_HARNESS
+    sprite: {fileID: -8808456779830006239, guid: e8387af686e0d2846b9f9faf85408a4b, type: 3}
+  - cardID: T_COFFIN_OPENER
+    sprite: {fileID: -235507654468719833, guid: a2fc23c2faef6e24d870fe6674387358, type: 3}
+  - cardID: T_CRYSTAL_COFFIN_FRAME
+    sprite: {fileID: -4271893542656270081, guid: 234cf3287d7523a45a3e636aa919663d, type: 3}
+  - cardID: T_DILUTED_POTION
+    sprite: {fileID: -651491964323265686, guid: 642bcaa0a1dd57c4bbb5da6a86a88bda, type: 3}
+  - cardID: T_DOORBELL_BIRD
+    sprite: {fileID: 5736039645190179926, guid: 227a572f222d3af4bbf090cd75a28730, type: 3}
+  - cardID: T_ELASTIC_ROPE
+    sprite: {fileID: -2944105036897109805, guid: 8eabfe5a2a13f3947adb6a3368456151, type: 3}
+  - cardID: T_FAST_VINES
+    sprite: {fileID: 2731124068762719809, guid: cccef086342cd6a4ebac3b1ab9efd969, type: 3}
+  - cardID: T_FLOWER_KEY
+    sprite: {fileID: -4353745139668654492, guid: 41c845fa8a4ab1a418a92bc0e6b69154, type: 3}
+  - cardID: T_FLYING_CLOAK
+    sprite: {fileID: 1990514026508716964, guid: 37284a680716bc54585dae0be966e321, type: 3}
+  - cardID: T_FOCUSED_CRYSTAL
+    sprite: {fileID: 603926120720839516, guid: 4d7e0a9d06df08c489c66fe077ca3b0c, type: 3}
+  - cardID: T_GIFT_APPLE
+    sprite: {fileID: 8504981586602399093, guid: 06dca336f44fdcf44b5f8337613782a7, type: 3}
+  - cardID: T_GLOWING_SIGN
+    sprite: {fileID: -595623699718339130, guid: a73ed74e1d9841a4ab032660888aa794, type: 3}
+  - cardID: T_GUIDE_BIRD
+    sprite: {fileID: -5672375167411509912, guid: ea082cef8a530fb4d8e33167319139d5, type: 3}
+  - cardID: T_HALLUCINATION_MUSHROOM
+    sprite: {fileID: -8771591674561308651, guid: 1a165abe2e72a13449a2a6966fc932da, type: 3}
+  - cardID: T_HONEY_BAIT
+    sprite: {fileID: 2562937793085658298, guid: 91819f04546a1d84f972afc17c66824b, type: 3}
+  - cardID: T_LABELED_APPLE
+    sprite: {fileID: -6424952262622709985, guid: e7494e2174b3d6d4da801d9eb1122c5b, type: 3}
+  - cardID: T_LEAF_CLOAK
+    sprite: {fileID: -8074139009698676532, guid: ae08c8b1c80c71f41b1a8b2aaa78f416, type: 3}
+  - cardID: T_LEAF_GLIDER
+    sprite: {fileID: -7684597531666194941, guid: 7ee4ecd35fd00d54d9498957650c84f0, type: 3}
+  - cardID: T_LOCKPICK_TOOLS
+    sprite: {fileID: 4480382998747184970, guid: 2f5953cc9bcc4824d9c0b08a77d53c71, type: 3}
+  - cardID: T_MAGIC_MIRROR
+    sprite: {fileID: -2077453115925867722, guid: e43d971ff0ace5746bb33c0848beef92, type: 3}
+  - cardID: T_MAGIC_SEAL
+    sprite: {fileID: 1027726689647761724, guid: 73c0d3ce068f8cb4f83350e0b915a3e5, type: 3}
+  - cardID: T_PAPER_CROWN_DOLL
+    sprite: {fileID: -591695658248330065, guid: cb98dc8f8df6bf74c9eed56b8b4cf49e, type: 3}
+  - cardID: T_PETAL_PATH
+    sprite: {fileID: -384732974935762353, guid: 5608e8fa06cb88746b0cd7a440c7e8e2, type: 3}
+  - cardID: T_POISION_APPLE
+    sprite: {fileID: 6598860494425132216, guid: fc72cd6e02e29494e8e027ca2e6adf16, type: 3}
+  - cardID: T_RESCUE_BEACON
+    sprite: {fileID: 2725541604295273370, guid: d4a6480c08d745d4889426e9987c3f5e, type: 3}
+  - cardID: T_RESCUE_BELL_MACHINE
+    sprite: {fileID: 1752280392429555707, guid: 66ba2736a5eebb94ab1f62104ef255e5, type: 3}
+  - cardID: T_ROLLING_APPLE
+    sprite: {fileID: 7780450870121836006, guid: 6cd2c77267db3314abaabc72e399c8ff, type: 3}
+  - cardID: T_SLEEPING_HANDKERCHIEF
+    sprite: {fileID: 1542998995624487220, guid: ce488c4262f89ae4b8ccebb839090d04, type: 3}
+  - cardID: T_SLEEPING_SIGN
+    sprite: {fileID: -5800942342975624976, guid: 37f2745c53d41fa4bb69ee49c8bc0a9c, type: 3}
+  - cardID: T_SPORE_FOG
+    sprite: {fileID: 2742256560116781838, guid: 82f4193332b296e4293360837859f0b5, type: 3}
+  - cardID: T_STICKY_PLANK
+    sprite: {fileID: 3275718832649954336, guid: 3fb30156d7e27e8449fd63e553bc53c2, type: 3}
+  - cardID: T_STICKY_PLANK
+    sprite: {fileID: 3275718832649954336, guid: 3fb30156d7e27e8449fd63e553bc53c2, type: 3}
+  - cardID: T_TALKING_SIGN
+    sprite: {fileID: -2615759701313701882, guid: 1adb8501dfc511c4a95d290663d69ac0, type: 3}
+  - cardID: T_TUNLOCK_KIT
+    sprite: {fileID: 3488196593219628645, guid: 5fceab79980653a4b917bcac5ada24dd, type: 3}
+  - cardID: T_WELCOME_CURTAIN
+    sprite: {fileID: -736251774395838962, guid: 5d7e81ab19861b2409976f082bc2e42e, type: 3}
+  - cardID: T_WIND_CHIME_SIGNAL
+    sprite: {fileID: -6415814434738763982, guid: 757863ea186fd7942a9211d8621a120d, type: 3}

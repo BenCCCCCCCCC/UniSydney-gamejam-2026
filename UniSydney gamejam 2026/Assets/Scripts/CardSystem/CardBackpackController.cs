@@ -16,6 +16,9 @@ public class CardBackpackController : MonoBehaviour
     private const string DefaultNodeID = "Node1";
     private const string DefaultTargetSceneName = "Node1_QueenCastle";
     private const string CardBackpackSceneName = "CardBackpackTest";
+    private static readonly Vector2 DefaultBaseCardSize = new Vector2(145f, 205f);
+    private static readonly Vector2 DefaultBaseCardSpacing = new Vector2(18f, 18f);
+    private const int DefaultMaxBaseCardsPerRow = 8;
 
     [Header("Data")]
     [SerializeField] private CardDatabase database;
@@ -38,7 +41,11 @@ public class CardBackpackController : MonoBehaviour
     [SerializeField] private Sprite defaultToolFrontSprite;
 
     [Header("Card Sizes")]
-    [SerializeField] private Vector2 baseCardSize = new Vector2(118f, 168f);
+    [SerializeField] private Vector2 baseCardSize = DefaultBaseCardSize;
+    [SerializeField] private Vector2 baseCardSpacing = DefaultBaseCardSpacing;
+    [SerializeField] private int maxBaseCardsPerRow = DefaultMaxBaseCardsPerRow;
+    [SerializeField] private RectOffset baseCardAreaPadding;
+    [SerializeField] private bool useManualBaseCardSlots;
     [SerializeField] private Vector2 toolHandCardSize = new Vector2(120f, 160f);
 
     [Header("Timing")]
@@ -48,8 +55,14 @@ public class CardBackpackController : MonoBehaviour
     private readonly List<CardView> openedCards = new();
     private readonly List<CardView> toolCards = new();
 
+    private RectTransform autoBaseCardArea;
     private bool inputLocked;
     private bool isContinuing;
+
+    private void Awake()
+    {
+        EnsureBaseCardAreaPadding();
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void RegisterSceneLoadedHandler()
@@ -82,6 +95,7 @@ public class CardBackpackController : MonoBehaviour
 
     private void Start()
     {
+        EnsureBaseCardAreaPadding();
         ApplyGameSessionTarget();
 
         if (!HasRequiredReferences())
@@ -111,6 +125,27 @@ public class CardBackpackController : MonoBehaviour
         continueButton = runtimeContinueButton;
     }
 
+    public void ApplySceneConfig(CardBackpackSceneConfig config)
+    {
+        if (config == null)
+        {
+            return;
+        }
+
+        cardArtCatalog = config.CardArtCatalog;
+        cardBackSprite = config.CardBackSprite;
+        useResourcesArtFallback = config.UseResourcesArtFallback;
+        baseCardSize = config.BaseCardSize;
+        baseCardSpacing = config.BaseCardSpacing;
+        maxBaseCardsPerRow = Mathf.Max(1, config.MaxBaseCardsPerRow);
+        baseCardAreaPadding = CopyPadding(config.BaseCardAreaPadding);
+        toolHandCardSize = config.ToolHandCardSize;
+        previewSeconds = Mathf.Max(0f, config.PreviewSeconds);
+        useManualBaseCardSlots = config.UseManualBaseCardSlots;
+
+        Debug.Log("CardBackpackController: applied CardBackpackSceneConfig.");
+    }
+
     private void ApplyGameSessionTarget()
     {
         if (!string.IsNullOrWhiteSpace(GameSessionData.CurrentNodeID))
@@ -131,7 +166,6 @@ public class CardBackpackController : MonoBehaviour
         inputLocked = true;
         UpdateContinueButtonState();
 
-        ClearChildren(baseCardArea);
         ClearChildren(toolHandArea);
         baseCardViews.Clear();
         openedCards.Clear();
@@ -140,18 +174,33 @@ public class CardBackpackController : MonoBehaviour
         instructionText.text = "Memorize the base cards. They will flip soon.";
 
         List<CardRow> baseCards = database.GetBaseCardsForNode(currentNodeId);
+        BaseCardSlotBinder slotBinder = useManualBaseCardSlots ? FindAnyObjectByType<BaseCardSlotBinder>() : null;
+        if (useManualBaseCardSlots && slotBinder == null)
+        {
+            Debug.LogWarning("CardBackpackController: useManualBaseCardSlots is true, but no BaseCardSlotBinder was found. Using automatic layout.");
+        }
+
+        bool useManualSlots = useManualBaseCardSlots && slotBinder != null;
+        List<CardRow> autoLayoutCards = GetAutoLayoutBaseCards(baseCards, slotBinder, useManualSlots);
+        PrepareBaseCardLayout(autoLayoutCards.Count);
 
         foreach (CardRow card in baseCards)
         {
-            CardView view = CreateCardView(baseCardArea);
+            bool placedInManualSlot = TryGetManualBaseCardParent(card, slotBinder, useManualSlots, out Transform parent);
+            CardView view = CreateCardView(parent, baseCardSize);
+            if (placedInManualSlot)
+            {
+                ApplyManualSlotLayout(view, parent as RectTransform);
+            }
+
             view.Setup(
                 card,
                 true,
                 false,
                 OnBaseCardClicked,
                 cardBackSprite,
-                defaultBaseFrontSprite,
                 CardArtLoader.GetSprite(card.CardID, cardArtCatalog, useResourcesArtFallback),
+                null,
                 new Color(0.92f, 0.82f, 0.62f, 1f),
                 new Color(0.16f, 0.18f, 0.25f, 1f));
 
@@ -234,6 +283,7 @@ public class CardBackpackController : MonoBehaviour
             Destroy(first.gameObject);
             Destroy(second.gameObject);
 
+            Sprite toolSprite = CardArtLoader.GetSprite(outputCard.CardID, cardArtCatalog, useResourcesArtFallback);
             CardView toolView = CreateCardView(toolHandArea);
             toolView.Setup(
                 outputCard,
@@ -241,8 +291,8 @@ public class CardBackpackController : MonoBehaviour
                 false,
                 null,
                 cardBackSprite,
-                defaultToolFrontSprite,
-                CardArtLoader.GetSprite(outputCard.CardID, cardArtCatalog, useResourcesArtFallback),
+                toolSprite,
+                null,
                 new Color(0.66f, 0.78f, 0.95f, 1f),
                 new Color(0.16f, 0.18f, 0.25f, 1f));
 
@@ -329,10 +379,145 @@ public class CardBackpackController : MonoBehaviour
         continueButton.interactable = !inputLocked && !isContinuing;
     }
 
+    private List<CardRow> GetAutoLayoutBaseCards(List<CardRow> baseCards, BaseCardSlotBinder slotBinder, bool useManualSlots)
+    {
+        var autoCards = new List<CardRow>();
+
+        foreach (CardRow card in baseCards)
+        {
+            if (card == null)
+            {
+                continue;
+            }
+
+            if (useManualSlots && slotBinder.TryGetSlot(card.CardID, out _))
+            {
+                continue;
+            }
+
+            autoCards.Add(card);
+        }
+
+        return autoCards;
+    }
+
+    private bool TryGetManualBaseCardParent(CardRow card, BaseCardSlotBinder slotBinder, bool useManualSlots, out Transform parent)
+    {
+        parent = autoBaseCardArea != null ? autoBaseCardArea : baseCardArea;
+
+        if (!useManualSlots)
+        {
+            return false;
+        }
+
+        if (slotBinder.TryGetSlot(card.CardID, out RectTransform slot))
+        {
+            parent = slot;
+            return true;
+        }
+
+        Debug.LogWarning($"BaseCardSlotBinder: no slot bound for {card.CardID}; using automatic fallback layout.");
+        return false;
+    }
+
+    private void PrepareBaseCardLayout(int autoLayoutCardCount)
+    {
+        GridLayoutGroup baseGrid = baseCardArea.GetComponent<GridLayoutGroup>();
+        if (baseGrid != null)
+        {
+            baseGrid.enabled = false;
+        }
+
+        autoBaseCardArea = GetOrCreateAutoBaseCardArea();
+        ClearChildren(autoBaseCardArea);
+        ConfigureGridLayout(autoBaseCardArea, autoLayoutCardCount);
+    }
+
+    private RectTransform GetOrCreateAutoBaseCardArea()
+    {
+        Transform existing = baseCardArea.Find("AutoBaseCardLayoutArea");
+        if (existing != null && existing.TryGetComponent(out RectTransform existingRect))
+        {
+            return existingRect;
+        }
+
+        GameObject areaObject = new GameObject("AutoBaseCardLayoutArea", typeof(RectTransform));
+        areaObject.transform.SetParent(baseCardArea, false);
+
+        RectTransform rect = areaObject.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        return rect;
+    }
+
+    private void ConfigureGridLayout(RectTransform area, int cardCount)
+    {
+        GridLayoutGroup grid = area.GetComponent<GridLayoutGroup>();
+        if (grid == null)
+        {
+            grid = area.gameObject.AddComponent<GridLayoutGroup>();
+        }
+
+        grid.enabled = true;
+        grid.cellSize = baseCardSize;
+        grid.spacing = baseCardSpacing;
+        grid.childAlignment = TextAnchor.MiddleCenter;
+        grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        grid.constraintCount = Mathf.Max(1, Mathf.Min(Mathf.Max(1, maxBaseCardsPerRow), Mathf.Max(1, cardCount)));
+        grid.padding = GetBaseCardAreaPadding();
+    }
+
+    private RectOffset GetBaseCardAreaPadding()
+    {
+        EnsureBaseCardAreaPadding();
+        return baseCardAreaPadding;
+    }
+
+    private void EnsureBaseCardAreaPadding()
+    {
+        if (baseCardAreaPadding == null)
+        {
+            baseCardAreaPadding = new RectOffset(16, 16, 16, 16);
+        }
+    }
+
+    private static RectOffset CopyPadding(RectOffset source)
+    {
+        if (source == null)
+        {
+            return new RectOffset(16, 16, 16, 16);
+        }
+
+        return new RectOffset(source.left, source.right, source.top, source.bottom);
+    }
+
+    private void ApplyManualSlotLayout(CardView view, RectTransform slot)
+    {
+        if (view == null || slot == null)
+        {
+            return;
+        }
+
+        RectTransform rect = view.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = baseCardSize;
+    }
+
     private CardView CreateCardView(Transform parent)
     {
-        CardView view;
         Vector2 cardSize = parent == toolHandArea ? toolHandCardSize : baseCardSize;
+        return CreateCardView(parent, cardSize);
+    }
+
+    private CardView CreateCardView(Transform parent, Vector2 cardSize)
+    {
+        CardView view;
 
         if (cardViewPrefab != null)
         {
@@ -537,9 +722,12 @@ public class CardBackpackController : MonoBehaviour
                 new Color(0.12f, 0.13f, 0.17f, 0.78f));
 
             GridLayoutGroup grid = baseCardArea.gameObject.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(118f, 168f);
-            grid.spacing = new Vector2(14f, 14f);
+            grid.cellSize = DefaultBaseCardSize;
+            grid.spacing = DefaultBaseCardSpacing;
             grid.childAlignment = TextAnchor.MiddleCenter;
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = DefaultMaxBaseCardsPerRow;
+            grid.padding = new RectOffset(16, 16, 16, 16);
 
             RectTransform toolHandArea = CreateArea(
                 "ToolHandArea",
@@ -569,6 +757,12 @@ public class CardBackpackController : MonoBehaviour
             CardDatabase database = controllerObject.AddComponent<CardDatabase>();
             CardBackpackController controller = controllerObject.AddComponent<CardBackpackController>();
             controller.ConfigureRuntime(database, baseCardArea, toolHandArea, instructionText, continueButton);
+
+            CardBackpackSceneConfig config = FindAnyObjectByType<CardBackpackSceneConfig>();
+            if (config != null)
+            {
+                controller.ApplySceneConfig(config);
+            }
         }
 
         private static void EnsureEventSystem()
