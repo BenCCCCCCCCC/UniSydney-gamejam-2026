@@ -188,6 +188,7 @@ public static class HandCardPresentationApplier
         if (cardRect != null)
         {
             cardRect.sizeDelta = settings.CardSize;
+            cardRect.localRotation = Quaternion.identity;
             cardRect.localScale = Vector3.one;
         }
 
@@ -228,6 +229,7 @@ public static class HandCardPresentationApplier
             settings.HoverExitDuration,
             settings.OriginalCardRestoreDuration,
             settings.HoverFadeDuration);
+        hoverEffect.SetHoverEnabled(true);
     }
 
     public static Vector3 CalculatePendingCardWorldPosition(

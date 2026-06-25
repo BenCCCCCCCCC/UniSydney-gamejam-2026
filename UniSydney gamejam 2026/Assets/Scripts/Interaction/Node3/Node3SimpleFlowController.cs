@@ -48,6 +48,10 @@ public class Node3SimpleFlowController : MonoBehaviour
             textUI.HideBriefing();
         }
 
+        yield return new WaitForEndOfFrame();
+        GameSessionData.SetCardBackpackBackgroundSnapshot(
+            ScreenCapture.CaptureScreenshotAsTexture());
+
         GameSessionData.CurrentPhase = GameFlowPhase.CardCrafting;
         LoadSceneByName(cardBackpackSceneName);
     }

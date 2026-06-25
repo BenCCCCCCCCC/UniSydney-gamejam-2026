@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public enum GameFlowPhase
 {
@@ -19,6 +20,29 @@ public static class GameSessionData
     public static GameFlowPhase CurrentPhase { get; set; } = GameFlowPhase.Briefing;
 
     public static readonly List<string> ToolCardIDs = new();
+    public static Texture2D CardBackpackBackgroundSnapshot { get; private set; }
+
+    public static void SetCardBackpackBackgroundSnapshot(Texture2D snapshot)
+    {
+        if (CardBackpackBackgroundSnapshot == snapshot)
+        {
+            return;
+        }
+
+        ClearCardBackpackBackgroundSnapshot();
+        CardBackpackBackgroundSnapshot = snapshot;
+    }
+
+    public static void ClearCardBackpackBackgroundSnapshot()
+    {
+        if (CardBackpackBackgroundSnapshot == null)
+        {
+            return;
+        }
+
+        Object.Destroy(CardBackpackBackgroundSnapshot);
+        CardBackpackBackgroundSnapshot = null;
+    }
 
     public static void StartNode(string nodeID, string sceneName)
     {

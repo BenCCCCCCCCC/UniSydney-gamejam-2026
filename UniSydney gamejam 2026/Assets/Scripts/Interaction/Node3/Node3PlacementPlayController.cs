@@ -5,9 +5,28 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class Node3PlacementPlayController : MonoBehaviour
 {
+    private const int MaxPlacementSlots = 4;
+    private const float PlacementSlotScale = 0.8f;
+    private static readonly Vector2 NativePlacementSlotSize = new Vector2(378f, 528f);
+    private static readonly float[] SlotRotations = { -8f, 5f, 12f, -4f };
+    private static readonly Vector2[] FourSlotPositions =
+    {
+        new Vector2(0.25f, 0.58f),
+        new Vector2(0.42f, 0.52f),
+        new Vector2(0.58f, 0.61f),
+        new Vector2(0.75f, 0.54f)
+    };
+    private const string PlacementSlotResourcesPath = "Art/UI/bg_add_card";
+#if UNITY_EDITOR
+    private const string PlacementSlotAssetPath = "Assets/Art/UI/bg_add_card.png";
+#endif
+
     [Header("Node")]
     [SerializeField] private string nodeID = "Node3";
 
@@ -24,6 +43,7 @@ public class Node3PlacementPlayController : MonoBehaviour
     [SerializeField] private Vector2 slotPanelSize = new Vector2(820f, 260f);
     [SerializeField] private Vector2 slotSize = new Vector2(210f, 240f);
     [SerializeField] private float slotSpacing = 34f;
+    [SerializeField] private Sprite placementSlotSprite;
 
     [Header("Tool Hand")]
     [SerializeField] private Vector2 handPanelAnchor = new Vector2(0.5f, 0.20f);
@@ -52,6 +72,7 @@ public class Node3PlacementPlayController : MonoBehaviour
     private Node3CentralToolCardDragItem[] placedCards;
     private CardDatabase runtimeCardDatabase;
     private HandCardPresentationSettings handPresentationSettings;
+    private bool loggedMissingPlacementSlotSprite;
 
     private bool hasStartedPlay;
     public bool HasStartedPlay => hasStartedPlay;
@@ -128,6 +149,7 @@ public class Node3PlacementPlayController : MonoBehaviour
     {
         if (requiredPlacementPoints != null && requiredPlacementPoints.Length > 0)
         {
+            requiredPlacementPoints = LimitPlacementPoints(requiredPlacementPoints);
             return;
         }
 
@@ -150,7 +172,39 @@ public class Node3PlacementPlayController : MonoBehaviour
             return string.CompareOrdinal(aID, bID);
         });
 
-        requiredPlacementPoints = nodePoints.ToArray();
+        requiredPlacementPoints = LimitPlacementPoints(nodePoints.ToArray());
+    }
+
+    private PlacementPoint[] LimitPlacementPoints(PlacementPoint[] source)
+    {
+        if (source == null || source.Length == 0)
+        {
+            return System.Array.Empty<PlacementPoint>();
+        }
+
+        List<PlacementPoint> limitedPoints = new(MaxPlacementSlots);
+        foreach (PlacementPoint point in source)
+        {
+            if (point == null)
+            {
+                continue;
+            }
+
+            limitedPoints.Add(point);
+            if (limitedPoints.Count >= MaxPlacementSlots)
+            {
+                break;
+            }
+        }
+
+        if (source.Length > MaxPlacementSlots)
+        {
+            Debug.LogWarning(
+                $"Node3PlacementPlayController: Node 3 supports at most {MaxPlacementSlots} placement slots. "
+                + "Only the first four valid placement points will be used.");
+        }
+
+        return limitedPoints.ToArray();
     }
 
     private void ClearAllPlacementPointTools()
@@ -219,82 +273,142 @@ private void BuildPlacementTable()
     {
         GameObject panelObject = new GameObject(
             "CentralPlacementSlots",
-            typeof(RectTransform),
-            typeof(Image),
-            typeof(HorizontalLayoutGroup));
+            typeof(RectTransform));
 
         panelObject.transform.SetParent(canvasRect, false);
 
-        Image panelImage = panelObject.GetComponent<Image>();
-        panelImage.color = new Color(0.04f, 0.05f, 0.06f, 0.45f);
-
         RectTransform panelRect = panelObject.GetComponent<RectTransform>();
-        panelRect.anchorMin = slotPanelAnchor;
-        panelRect.anchorMax = slotPanelAnchor;
+        panelRect.anchorMin = Vector2.zero;
+        panelRect.anchorMax = Vector2.one;
         panelRect.pivot = new Vector2(0.5f, 0.5f);
-        panelRect.sizeDelta = slotPanelSize;
-        panelRect.anchoredPosition = Vector2.zero;
+        panelRect.offsetMin = Vector2.zero;
+        panelRect.offsetMax = Vector2.zero;
 
-        HorizontalLayoutGroup layout = panelObject.GetComponent<HorizontalLayoutGroup>();
-        layout.spacing = slotSpacing;
-        layout.childAlignment = TextAnchor.MiddleCenter;
-        layout.childControlWidth = false;
-        layout.childControlHeight = false;
-        layout.childForceExpandWidth = false;
-        layout.childForceExpandHeight = false;
+        int requestedSlotCount = requiredPlacementPoints != null
+            ? requiredPlacementPoints.Length
+            : 0;
 
-        int slotCount = requiredPlacementPoints != null ? requiredPlacementPoints.Length : 3;
+        int slotCount = requestedSlotCount > 0
+            ? Mathf.Min(requestedSlotCount, MaxPlacementSlots)
+            : 3;
 
         slotRects = new RectTransform[slotCount];
         placedCards = new Node3CentralToolCardDragItem[slotCount];
 
         for (int i = 0; i < slotCount; i++)
         {
-            string pointID = i < requiredPlacementPoints.Length && requiredPlacementPoints[i] != null
-                ? requiredPlacementPoints[i].placePointID
-                : $"N3_P{i + 1}";
-
-            CreateSlot(panelObject.transform, i, pointID);
+            CreateSlot(panelObject.transform, i, slotCount);
         }
     }
 
-    private void CreateSlot(Transform parent, int slotIndex, string pointID)
+    private void CreateSlot(Transform parent, int slotIndex, int slotCount)
     {
         GameObject slotObject = new GameObject(
             $"Point{slotIndex + 1}_CardSlot",
             typeof(RectTransform),
             typeof(Image),
-            typeof(LayoutElement),
             typeof(Node3CentralCardSlot));
 
         slotObject.transform.SetParent(parent, false);
 
         RectTransform rect = slotObject.GetComponent<RectTransform>();
-        rect.sizeDelta = slotSize;
+        Vector2 normalizedPosition = GetNormalizedSlotPosition(slotIndex, slotCount);
+        rect.anchorMin = normalizedPosition;
+        rect.anchorMax = normalizedPosition;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = NativePlacementSlotSize * PlacementSlotScale;
+        rect.localRotation = Quaternion.Euler(0f, 0f, GetSlotRotation(slotIndex));
         slotRects[slotIndex] = rect;
 
-        LayoutElement layoutElement = slotObject.GetComponent<LayoutElement>();
-        layoutElement.preferredWidth = slotSize.x;
-        layoutElement.preferredHeight = slotSize.y;
-        layoutElement.flexibleWidth = 0f;
-        layoutElement.flexibleHeight = 0f;
-
         Image image = slotObject.GetComponent<Image>();
-        image.color = new Color(0.16f, 0.18f, 0.22f, 0.72f);
+        image.sprite = GetPlacementSlotSprite();
+        image.preserveAspect = true;
+        image.raycastTarget = true;
+
+        if (image.sprite != null)
+        {
+            image.color = Color.white;
+            image.SetNativeSize();
+            rect.sizeDelta *= PlacementSlotScale;
+        }
+        else
+        {
+            image.color = Color.clear;
+            rect.sizeDelta = NativePlacementSlotSize * PlacementSlotScale;
+        }
 
         Node3CentralCardSlot slot = slotObject.GetComponent<Node3CentralCardSlot>();
         slot.Setup(this, slotIndex);
+    }
 
-        TMP_Text label = CreateText(
-            "PointLabel",
-            slotObject.transform,
-            $"Point {slotIndex + 1}\n{pointID}\nDrop card here",
-            new Vector2(0.5f, 0.5f),
-            new Vector2(slotSize.x - 20f, slotSize.y - 20f),
-            22f);
+    private Vector2 GetNormalizedSlotPosition(int slotIndex, int slotCount)
+    {
+        if (slotCount >= MaxPlacementSlots)
+        {
+            return FourSlotPositions[Mathf.Clamp(slotIndex, 0, FourSlotPositions.Length - 1)];
+        }
 
-        label.color = new Color(1f, 0.92f, 0.62f, 1f);
-        label.fontStyle = FontStyles.Bold;
+        if (slotCount == 3)
+        {
+            Vector2[] positions =
+            {
+                new Vector2(0.30f, 0.58f),
+                new Vector2(0.50f, 0.52f),
+                new Vector2(0.70f, 0.60f)
+            };
+            return positions[Mathf.Clamp(slotIndex, 0, positions.Length - 1)];
+        }
+
+        if (slotCount == 2)
+        {
+            return slotIndex == 0
+                ? new Vector2(0.38f, 0.57f)
+                : new Vector2(0.62f, 0.53f);
+        }
+
+        return new Vector2(0.5f, 0.56f);
+    }
+
+    private static float GetSlotRotation(int slotIndex)
+    {
+        return SlotRotations[slotIndex % SlotRotations.Length];
+    }
+
+    private Sprite GetPlacementSlotSprite()
+    {
+        if (placementSlotSprite != null)
+        {
+            return placementSlotSprite;
+        }
+
+        placementSlotSprite = Resources.Load<Sprite>(PlacementSlotResourcesPath);
+
+#if UNITY_EDITOR
+        if (placementSlotSprite == null)
+        {
+            Object[] assets = AssetDatabase.LoadAllAssetsAtPath(PlacementSlotAssetPath);
+            foreach (Object asset in assets)
+            {
+                if (asset is Sprite sprite)
+                {
+                    placementSlotSprite = sprite;
+                    break;
+                }
+            }
+        }
+#endif
+
+        if (placementSlotSprite == null && !loggedMissingPlacementSlotSprite)
+        {
+            Debug.LogWarning(
+                "Node3PlacementPlayController: bg_add_card could not be loaded. "
+                + "Assign Assets/Art/UI/bg_add_card.png to Placement Slot Sprite "
+                + "or provide it at Resources/Art/UI/bg_add_card.");
+            loggedMissingPlacementSlotSprite = true;
+        }
+
+        return placementSlotSprite;
     }
 
     private void BuildHandPanel()
@@ -433,6 +547,7 @@ private void BuildPlacementTable()
         bool isValidPlacement = NodePlacementRules.TryPlaceTool(card.ToolCardID, point);
         point.SetTool(card.ToolCardID);
 
+        SetPlacedCardHoverEnabled(card, false);
         card.PlaceInSlot(slotIndex, slotRects[slotIndex]);
 
         Debug.Log($"NODE3_MANUAL_PLACE: {card.ToolCardID} -> {point.placePointID}, valid = {isValidPlacement}");
@@ -475,6 +590,22 @@ private void BuildPlacementTable()
             card.gameObject,
             tableCanvasObject.GetComponent<Canvas>(),
             handPresentationSettings);
+    }
+
+    private static void SetPlacedCardHoverEnabled(
+        Node3CentralToolCardDragItem card,
+        bool hoverEnabled)
+    {
+        if (card == null)
+        {
+            return;
+        }
+
+        HandCardHoverEffect hoverEffect = card.GetComponent<HandCardHoverEffect>();
+        if (hoverEffect != null)
+        {
+            hoverEffect.SetHoverEnabled(hoverEnabled);
+        }
     }
 
     private void RefreshPlayButtonState()
