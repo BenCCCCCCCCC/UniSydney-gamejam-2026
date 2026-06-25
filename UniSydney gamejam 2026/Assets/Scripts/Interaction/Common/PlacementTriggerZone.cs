@@ -16,12 +16,20 @@ public class PlacementTriggerZone : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (triggerOnlyOnce && hasTriggered)
+        if (!other.CompareTag("StoryActor"))
         {
             return;
         }
 
-        if (!other.CompareTag("StoryActor"))
+        // 只有点击 Play、进入 AutoPlay 阶段后，TriggerZone 才允许触发。
+        // 这样可以避免角色开场站在 Trigger 里时提前触发空卡结果。
+        if (GameSessionData.CurrentPhase != GameFlowPhase.AutoPlay)
+        {
+            Debug.Log($"TRIGGER_IGNORED_NOT_AUTOPLAY: {gameObject.name}, phase = {GameSessionData.CurrentPhase}");
+            return;
+        }
+
+        if (triggerOnlyOnce && hasTriggered)
         {
             return;
         }
@@ -61,15 +69,26 @@ public class PlacementTriggerZone : MonoBehaviour
             return;
         }
 
-        if (node1ResultPlayer == null)
+        if (nodeID == "Node1")
         {
-            node1ResultPlayer = FindAnyObjectByType<Node1ResultPlayer>();
+            if (node1ResultPlayer == null)
+            {
+                node1ResultPlayer = FindAnyObjectByType<Node1ResultPlayer>();
+            }
+
+            if (node1ResultPlayer != null)
+            {
+                node1ResultPlayer.PlayResult(placementPoint);
+            }
+            else
+            {
+                Debug.LogWarning($"{gameObject.name}: Node1ResultPlayer is missing.");
+            }
+
+            return;
         }
 
-        if (node1ResultPlayer != null)
-        {
-            node1ResultPlayer.PlayResult(placementPoint);
-        }
+        Debug.LogWarning($"{gameObject.name}: no result player configured for node {nodeID}.");
     }
 
     public void ResetTrigger()
