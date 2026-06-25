@@ -82,6 +82,7 @@ public class PlacedToolIconPresenter : MonoBehaviour
 
             PlacedToolIconView view = iconObject.GetComponent<PlacedToolIconView>();
             view.Play(icon, startPosition, endPosition, fallDuration, iconSize, sortingLayerName, sortingOrder);
+            view.ConfigureAnticipationPulse(binding.PlacementPoint, endPosition);
 
             if (hidePlacedCardUIAfterSpawn && binding.PlacedCardUIObjectToHide != null)
             {

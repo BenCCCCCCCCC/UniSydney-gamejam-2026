@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class PlacedToolIconView : MonoBehaviour
 {
+    private const float PlacedItemScaleMultiplier = 1.2f;
+
     private SpriteRenderer spriteRenderer;
     private Coroutine playCoroutine;
+    private Vector3 stableBaseScale = Vector3.one;
 
     public void Play(
         Sprite icon,
@@ -37,6 +40,24 @@ public class PlacedToolIconView : MonoBehaviour
         }
 
         playCoroutine = StartCoroutine(PlayFall(startWorldPosition, endWorldPosition, Mathf.Max(0f, duration)));
+    }
+
+    public void ConfigureAnticipationPulse(
+        PlacementPoint placementPoint,
+        Vector3 triggerWorldPosition)
+    {
+        PlacedToolItemPulseEffect pulseEffect =
+            GetComponent<PlacedToolItemPulseEffect>();
+
+        if (pulseEffect == null)
+        {
+            pulseEffect = gameObject.AddComponent<PlacedToolItemPulseEffect>();
+        }
+
+        pulseEffect.Configure(
+            placementPoint,
+            triggerWorldPosition,
+            stableBaseScale);
     }
 
     private IEnumerator PlayFall(Vector3 startWorldPosition, Vector3 endWorldPosition, float duration)
@@ -78,13 +99,15 @@ public class PlacedToolIconView : MonoBehaviour
     {
         if (icon == null || icon.bounds.size.x <= 0f || icon.bounds.size.y <= 0f || size.x <= 0f || size.y <= 0f)
         {
-            transform.localScale = Vector3.one;
+            stableBaseScale = Vector3.one * PlacedItemScaleMultiplier;
+            transform.localScale = stableBaseScale;
             return;
         }
 
         float scaleX = size.x / icon.bounds.size.x;
         float scaleY = size.y / icon.bounds.size.y;
-        float scale = Mathf.Min(scaleX, scaleY);
-        transform.localScale = Vector3.one * scale;
+        float scale = Mathf.Min(scaleX, scaleY) * PlacedItemScaleMultiplier;
+        stableBaseScale = Vector3.one * scale;
+        transform.localScale = stableBaseScale;
     }
 }
