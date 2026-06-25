@@ -283,6 +283,7 @@ public class CardBackpackController : MonoBehaviour
             Destroy(first.gameObject);
             Destroy(second.gameObject);
 
+            Sprite toolSprite = CardArtLoader.GetSprite(outputCard.CardID, cardArtCatalog, useResourcesArtFallback);
             CardView toolView = CreateCardView(toolHandArea);
             toolView.Setup(
                 outputCard,
@@ -290,7 +291,7 @@ public class CardBackpackController : MonoBehaviour
                 false,
                 null,
                 cardBackSprite,
-                null,
+                toolSprite,
                 null,
                 new Color(0.66f, 0.78f, 0.95f, 1f),
                 new Color(0.16f, 0.18f, 0.25f, 1f));

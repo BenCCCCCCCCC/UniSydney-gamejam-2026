@@ -12,6 +12,11 @@ public class NodeToolHandController : MonoBehaviour
 {
     private static NodeToolHandController instance;
 
+    [Header("Tool Card Art")]
+    [SerializeField] private CardArtCatalog cardArtCatalog;
+    [SerializeField] private bool useResourcesArtFallback = true;
+    [SerializeField] private Vector2 toolHandCardSize = new Vector2(120f, 160f);
+
     private RectTransform handArea;
     private TMP_Text activeToolText;
     private RectTransform p1DropSlot;
@@ -406,11 +411,11 @@ public class NodeToolHandController : MonoBehaviour
         buttonObject.transform.SetParent(handArea, false);
 
         RectTransform rect = buttonObject.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(150f, 64f);
+        rect.sizeDelta = toolHandCardSize;
 
         LayoutElement layoutElement = buttonObject.GetComponent<LayoutElement>();
-        layoutElement.preferredWidth = 150f;
-        layoutElement.preferredHeight = 64f;
+        layoutElement.preferredWidth = toolHandCardSize.x;
+        layoutElement.preferredHeight = toolHandCardSize.y;
         layoutElement.flexibleWidth = 0f;
         layoutElement.flexibleHeight = 0f;
 
@@ -428,10 +433,19 @@ public class NodeToolHandController : MonoBehaviour
             buttonObject.transform,
             CardDisplayNameHelper.ToEnglishName(toolCardID),
             new Vector2(0.5f, 0.5f),
-            new Vector2(140f, 54f),
+            new Vector2(Mathf.Max(40f, toolHandCardSize.x - 10f), Mathf.Max(30f, toolHandCardSize.y - 10f)),
             18f);
 
         label.color = Color.white;
+
+        Sprite toolSprite = CardArtLoader.GetSprite(toolCardID, cardArtCatalog, useResourcesArtFallback);
+        if (toolSprite != null)
+        {
+            image.sprite = toolSprite;
+            image.color = Color.white;
+            image.preserveAspect = false;
+            label.gameObject.SetActive(false);
+        }
     }
 
     private void UpdateActiveToolText()
