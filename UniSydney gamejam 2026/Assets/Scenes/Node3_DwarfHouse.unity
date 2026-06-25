@@ -1384,7 +1384,7 @@ Transform:
   m_GameObject: {fileID: 1405852953}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.35, y: -0.64, z: 0}
+  m_LocalPosition: {x: -7.65, y: -0.62, z: 0}
   m_LocalScale: {x: 1.5, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1855,7 +1855,7 @@ Transform:
   m_GameObject: {fileID: 2038911015}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.89, y: -0.72, z: 0}
+  m_LocalPosition: {x: -7.65, y: -0.62, z: 0}
   m_LocalScale: {x: -8.89, y: -0.72, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2091,9 +2091,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37edfc728929e744d89bf904dce4538e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Node1ResultPlayer
+  nodeID: Node1
+  retrySceneName: Node1_QueenCastle
   storyActor: {fileID: 1405852954}
-  queenPlaceholder: {fileID: 1405852958}
-  resultDuration: 1.2
+  messageDuration: 1.6
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
