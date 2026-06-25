@@ -2100,7 +2100,6 @@ Transform:
   - {fileID: 1994000446}
   m_Father: {fileID: 2089790158}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-<<<<<<< HEAD
 --- !u!1 &2128733684
 GameObject:
   m_ObjectHideFlags: 0
@@ -2185,16 +2184,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-=======
->>>>>>> parent of 307fef7 (canvas +)
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 837009141}
   - {fileID: 2089790158}
-<<<<<<< HEAD
   - {fileID: 2128733687}
   - {fileID: 757769003}
-=======
->>>>>>> parent of 307fef7 (canvas +)
