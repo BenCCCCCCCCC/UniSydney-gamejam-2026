@@ -214,7 +214,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 1081387996}
-  resultPlayer: {fileID: 2116289184}
+  node1ResultPlayer: {fileID: 0}
+  node3ResultPlayer: {fileID: 1115226646}
   triggerOnlyOnce: 1
 --- !u!61 &61986278
 BoxCollider2D:
@@ -358,7 +359,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 47383802}
-  resultPlayer: {fileID: 2116289184}
+  node1ResultPlayer: {fileID: 0}
+  node3ResultPlayer: {fileID: 1115226646}
   triggerOnlyOnce: 1
 --- !u!61 &264295985
 BoxCollider2D:
@@ -873,6 +875,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2089790158}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1115226644
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1115226645}
+  - component: {fileID: 1115226646}
+  m_Layer: 0
+  m_Name: Node3_ResultPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1115226645
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1115226644}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1837204890}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1115226646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1115226644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 993287f7a0d699a4bb00cee0f22421cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Node3ResultPlayer
+  nodeID: Node3
+  retrySceneName: Node3_DwarfHouse
+  storyActor: {fileID: 1405852954}
+  messageDuration: 1.6
 --- !u!1 &1331221912
 GameObject:
   m_ObjectHideFlags: 0
@@ -1015,7 +1065,7 @@ MonoBehaviour:
   - {fileID: 47383802}
   - {fileID: 1081387996}
   - {fileID: 1729720876}
-  cardArtCatalog: {fileID: 0}
+  cardArtCatalog: {fileID: 11400000, guid: 129c2306ebcc5ab4483abc86d5aec4fa, type: 2}
   useResourcesArtFallback: 1
   slotPanelAnchor: {x: 0.5, y: 0.56}
   slotPanelSize: {x: 820, y: 260}
@@ -1055,7 +1105,7 @@ Transform:
   m_GameObject: {fileID: 1371917635}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.04, y: -0.08, z: 0}
   m_LocalScale: {x: 0.9, y: 0.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1334,7 +1384,7 @@ Transform:
   m_GameObject: {fileID: 1405852953}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.35, y: -0.64, z: 0}
+  m_LocalPosition: {x: -7.65, y: -0.62, z: 0}
   m_LocalScale: {x: 1.5, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1651,6 +1701,7 @@ Transform:
   - {fileID: 2116289183}
   - {fileID: 242490779}
   - {fileID: 1360430605}
+  - {fileID: 1115226645}
   m_Father: {fileID: 2089790158}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1851893869
@@ -1699,7 +1750,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 1729720876}
-  resultPlayer: {fileID: 2116289184}
+  node1ResultPlayer: {fileID: 0}
+  node3ResultPlayer: {fileID: 1115226646}
   triggerOnlyOnce: 1
 --- !u!61 &1851893872
 BoxCollider2D:
@@ -1803,7 +1855,7 @@ Transform:
   m_GameObject: {fileID: 2038911015}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.89, y: -0.72, z: 0}
+  m_LocalPosition: {x: -7.65, y: -0.62, z: 0}
   m_LocalScale: {x: -8.89, y: -0.72, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2039,9 +2091,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37edfc728929e744d89bf904dce4538e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Node1ResultPlayer
+  nodeID: Node1
+  retrySceneName: Node1_QueenCastle
   storyActor: {fileID: 1405852954}
-  queenPlaceholder: {fileID: 1405852958}
-  resultDuration: 1.2
+  messageDuration: 1.6
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
