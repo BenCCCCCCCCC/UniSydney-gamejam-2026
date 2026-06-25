@@ -104,6 +104,7 @@ public class CardBackpackController : MonoBehaviour
     private void OnDisable()
     {
         CleanupMemoryCountdown();
+        GameSessionData.ClearCardBackpackBackgroundSnapshot();
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -882,6 +883,7 @@ public class CardBackpackController : MonoBehaviour
 
         isContinuing = true;
         UpdateContinueButtonState();
+        GameSessionData.ClearCardBackpackBackgroundSnapshot();
 
         List<string> toolCardIDs = GetToolCardIDs();
 
@@ -976,7 +978,13 @@ public class CardBackpackController : MonoBehaviour
 
             RectTransform canvasRect = canvasObject.GetComponent<RectTransform>();
 
-            CreateStretchImage("DarkBackground", canvasRect, new Color(0.055f, 0.06f, 0.08f, 1f));
+            Texture2D backgroundSnapshot = GameSessionData.CardBackpackBackgroundSnapshot;
+            if (backgroundSnapshot != null)
+            {
+                CreateStretchRawImage("GameplaySnapshotBackground", canvasRect, backgroundSnapshot);
+            }
+
+            CreateStretchImage("BackgroundDimOverlay", canvasRect, new Color(0f, 0f, 0f, 0.5f));
 
             TMP_Text instructionText = CreateText(
                 "InstructionText",
@@ -991,7 +999,7 @@ public class CardBackpackController : MonoBehaviour
                 canvasRect,
                 new Vector2(0.06f, 0.25f),
                 new Vector2(0.94f, 0.82f),
-                new Color(0.12f, 0.13f, 0.17f, 0.78f));
+                Color.clear);
 
             GridLayoutGroup grid = baseCardArea.gameObject.AddComponent<GridLayoutGroup>();
             grid.cellSize = DefaultBaseCardSize;
@@ -1060,6 +1068,28 @@ public class CardBackpackController : MonoBehaviour
 
             Image image = imageObject.GetComponent<Image>();
             image.color = color;
+
+            RectTransform rect = imageObject.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            return rect;
+        }
+
+        private static RectTransform CreateStretchRawImage(
+            string name,
+            Transform parent,
+            Texture texture)
+        {
+            GameObject imageObject = new GameObject(name, typeof(RectTransform), typeof(RawImage));
+            imageObject.transform.SetParent(parent, false);
+
+            RawImage image = imageObject.GetComponent<RawImage>();
+            image.texture = texture;
+            image.color = Color.white;
+            image.raycastTarget = false;
 
             RectTransform rect = imageObject.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;

@@ -47,6 +47,10 @@ public class Node5SimpleFlowController : MonoBehaviour
             textUI.HideBriefing();
         }
 
+        yield return new WaitForEndOfFrame();
+        GameSessionData.SetCardBackpackBackgroundSnapshot(
+            ScreenCapture.CaptureScreenshotAsTexture());
+
         GameSessionData.CurrentPhase = GameFlowPhase.CardCrafting;
 
         Debug.Log($"Node5SimpleFlowController: loading scene {cardBackpackSceneName}");

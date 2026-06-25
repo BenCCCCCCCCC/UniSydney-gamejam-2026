@@ -95,7 +95,8 @@ public class Node3CentralToolCardDragItem : MonoBehaviour, IBeginDragHandler, ID
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
         rectTransform.anchoredPosition = Vector2.zero;
         rectTransform.sizeDelta = slotRect.sizeDelta * 0.86f;
-        transform.localScale = Vector3.one;
+        rectTransform.localRotation = Quaternion.identity;
+        rectTransform.localScale = Vector3.one;
 
         if (canvasGroup != null)
         {
@@ -118,9 +119,9 @@ public class Node3CentralToolCardDragItem : MonoBehaviour, IBeginDragHandler, ID
         if (rectTransform != null)
         {
             rectTransform.anchoredPosition = handAnchoredPosition;
+            rectTransform.localRotation = Quaternion.identity;
+            rectTransform.localScale = Vector3.one;
         }
-
-        transform.localScale = Vector3.one;
 
         if (canvasGroup != null)
         {
