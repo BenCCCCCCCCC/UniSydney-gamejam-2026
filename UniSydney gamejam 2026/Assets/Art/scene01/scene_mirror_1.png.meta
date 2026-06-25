@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 54ac8629c19f1dd4680de24f02ef84b3
+guid: 5b8bb3632712873419ff323939ffad19
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6792470522035226716
-    second: cha_princess_stand_0
-  - first:
-      213: 387963341404942091
-    second: cha_princess_stand_1
+      213: -461575370716113435
+    second: scene_mirror_1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,67 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cha_princess_stand_0
+      name: scene_mirror_1_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 540
-        height: 540
+        width: 283
+        height: 414
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4a737ca5c0c4cb1a0800000000000000
-      internalID: -6792470522035226716
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: cha_princess_stand_1
-      rect:
-        serializedVersion: 2
-        x: 540
-        y: 0
-        width: 540
-        height: 540
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b0fa05e7a92526500800000000000000
-      internalID: 387963341404942091
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: cha_princess_stand_2
-      rect:
-        serializedVersion: 2
-        x: 1080
-        y: 0
-        width: 540
-        height: 540
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 045563aede87f3646a3381dff0579a34
-      internalID: 149513388
+      spriteID: 5e5956755a72899f0800000000000000
+      internalID: -461575370716113435
       vertices: []
       indices: 
       edges: []
@@ -172,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 445373f26ad3c1141adad4cf9eabb612
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -180,13 +133,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":1.0},"gridSpriteSize":{"x":540.0,"y":540.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      cha_princess_stand_0: -6792470522035226716
-      cha_princess_stand_1: 387963341404942091
-      cha_princess_stand_2: 149513388
+      scene_mirror_1_0: -461575370716113435
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
