@@ -236,14 +236,7 @@ public class NodeToolHandController : MonoBehaviour
             return;
         }
 
-        if (placementPoint.nodeID == "Node1")
-        {
-            Node1PlacementRules.TryPlaceTool(activeToolCardID, placementPoint);
-        }
-        else
-        {
-            Debug.Log($"PLACE_TEST: {activeToolCardID} on {placementPoint.nodeID}/{placementPoint.placePointID}");
-        }
+        NodePlacementRules.TryPlaceTool(activeToolCardID, placementPoint);
 
         placementPoint.SetTool(activeToolCardID);
         UpdateActiveToolText();

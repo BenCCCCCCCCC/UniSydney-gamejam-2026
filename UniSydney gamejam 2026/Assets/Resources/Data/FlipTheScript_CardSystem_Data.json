@@ -1666,7 +1666,7 @@
       "StoryBridgeCN": "王后得知/确认白雪公主更美 → 派猎人追杀白雪公主",
       "AvailableBaseCardIDs": "B_MIRROR_SHARD,B_CROWN,B_BIRD,B_HORN,B_SIGN,B_WIND,B_FLOWER,B_LAMP,B_PAPER,B_SPRING,B_CLOTH",
       "CoreToolCardIDs": "T_SPOTLIGHT_MIRROR,T_BEAUTY_RANKING,T_BOUNCY_CROWN,T_BROADCAST_BIRD",
-      "OptionalToolCardIDs": "T_PAPER_CROWN_DOLL,T_GLOWING_FLOWER_PATH,T_PETAL_PATH",
+      "OptionalToolCardIDs": "T_PAPER_CROWN_DOLL",
       "RequiredSuccessCount": 1,
       "NotesCN": "第一幕不设置失败；至少放置一个有效道具才能播放，所有成功路线都导向王后派猎人。"
     },
@@ -1686,7 +1686,7 @@
       "StoryBridgeCN": "白雪公主从森林入口向右移动 → 通过位移或走对路到小屋门前 → 进入小屋获得庇护",
       "AvailableBaseCardIDs": "B_LEAF,B_WIND,B_MUSHROOM,B_SPRING,B_PLANK,B_ROPE,B_BIRD,B_HORN,B_SIGN,B_LAMP,B_FLOWER,B_WATER,B_KEY,B_LOCK,B_BELL,B_TOOLBOX,B_CLOTH",
       "CoreToolCardIDs": "T_LEAF_GLIDER,T_BOUNCY_MUSHROOM,T_GUIDE_BIRD,T_GLOWING_SIGN,T_FLOWER_KEY,T_BIRD_DOORBELL,T_UNLOCK_SET",
-      "OptionalToolCardIDs": "T_FLYING_CLOAK,T_LAUNCH_BOARD,T_ELASTIC_ROPE,T_TALKING_SIGN,T_PETAL_PATH,T_GLOWING_FLOWER_PATH,T_BLOOMING_PATH,T_LOCKPICK_TOOLS,T_BARRED_DOOR,T_WELCOME_CURTAIN,T_RESCUE_BEACON",
+      "OptionalToolCardIDs": "T_BROADCAST_BIRD,T_TALKING_SIGN,T_SPINNING_SIGN,T_PETAL_PATH,T_GLOWING_FLOWER_PATH,T_BLOOMING_PATH,T_FLYING_CLOAK,T_LAUNCH_BOARD,T_ELASTIC_ROPE,T_FAST_VINE,T_HALLUCINATION_MUSHROOM,T_SPORE_FOG,T_WIND_CHIME_SIGNAL,T_LOCKPICK_TOOLS,T_BARRED_DOOR,T_WELCOME_CURTAIN,T_RESCUE_BEACON",
       "RequiredSuccessCount": 2,
       "NotesCN": "横板逻辑：点位1直接送到门前；点位2走对路；点位1和2都失败则迷失森林；点位3必须成功才能进屋。"
     },
@@ -1696,7 +1696,7 @@
       "StoryBridgeCN": "白雪公主吃下/受到毒苹果事件影响 → 被放入玻璃/水晶棺中",
       "AvailableBaseCardIDs": "B_APPLE,B_POTION,B_CLOTH,B_WIND,B_BIRD,B_PAPER,B_CRYSTAL_GLASS,B_PLANK,B_ROPE,B_BELL,B_MIRROR_SHARD,B_WATER,B_SPRING",
       "CoreToolCardIDs": "T_POISON_APPLE,T_GIFT_APPLE_WRAP,T_ROLLING_APPLE,T_CRYSTAL_COFFIN_FRAME,T_COFFIN_HOIST",
-      "OptionalToolCardIDs": "T_BOUNCING_APPLE,T_LABEL_APPLE,T_DELIVERY_BIRD,T_DILUTED_POTION,T_SLEEP_HANDKERCHIEF,T_MIRROR_CURSE_POTION",
+      "OptionalToolCardIDs": "T_HONEY_LURE,T_BOUNCING_APPLE,T_LABEL_APPLE,T_DELIVERY_BIRD,T_DILUTED_POTION,T_SLEEP_HANDKERCHIEF,T_MIRROR_CURSE_POTION,T_VIBRATING_COFFIN",
       "RequiredSuccessCount": 2,
       "NotesCN": "需要把故事推进到白雪公主沉睡并进入水晶棺/玻璃棺。"
     },
@@ -1706,7 +1706,7 @@
       "StoryBridgeCN": "王子、小矮人和水晶棺前的道具共同决定最终结局",
       "AvailableBaseCardIDs": "B_BIRD,B_HORN,B_SIGN,B_WIND,B_FLOWER,B_LAMP,B_BELL,B_TOOLBOX,B_KEY,B_LOCK,B_CRYSTAL_GLASS,B_SPRING,B_POTION,B_MIRROR_SHARD,B_WATER,B_PAPER,B_PLANK",
       "CoreToolCardIDs": "T_COFFIN_OPENER,T_VIBRATING_COFFIN,T_FOCUS_CRYSTAL,T_SEALED_COFFIN,T_SLEEP_SEAL_LOCK,T_MIRROR_SEAL,T_RESCUE_BELL_MACHINE",
-      "OptionalToolCardIDs": "T_BROADCAST_BIRD,T_TALKING_SIGN,T_RESCUE_BEACON,T_WIND_CHIME_SIGNAL,T_UNLOCK_SET,T_LOCKPICK_TOOLS,T_DILUTED_POTION,T_HALLUCINATION_MUSHROOM,T_SPORE_FOG,T_BARRED_DOOR",
+      "OptionalToolCardIDs": "T_BROADCAST_BIRD,T_TALKING_SIGN,T_PETAL_PATH,T_BLOOMING_PATH,T_FAST_VINE,T_HALLUCINATION_MUSHROOM,T_SPORE_FOG,T_BIRD_DOORBELL,T_WIND_CHIME_SIGNAL,T_UNLOCK_SET,T_LOCKPICK_TOOLS,T_BARRED_DOOR,T_RESCUE_BEACON,T_DILUTED_POTION,T_MIRROR_CURSE_POTION",
       "RequiredSuccessCount": 0,
       "NotesCN": "第五幕使用 -1/0/+1 分数结算：总分<0永久封印；总分=0百年后自醒；总分>0且点位1不小于0为王子结局；总分>0且点位1小于0为小矮人结局。"
     }
@@ -1724,7 +1724,7 @@
     },
     {
       "NodeID": "Node1",
-      "PlacePointID": "N1_P2",
+      "PlacePointID": "N1_P3",
       "PlacePointNameCN": "王后桌上/剧本点",
       "ToolCardID": "T_BEAUTY_RANKING",
       "OutcomeType": "Success",
@@ -1744,7 +1744,7 @@
     },
     {
       "NodeID": "Node1",
-      "PlacePointID": "N1_P3",
+      "PlacePointID": "N1_P2",
       "PlacePointNameCN": "王后身边",
       "ToolCardID": "T_PAPER_CROWN_DOLL",
       "OutcomeType": "SuccessFunny",
@@ -1754,7 +1754,7 @@
     },
     {
       "NodeID": "Node1",
-      "PlacePointID": "N1_P4",
+      "PlacePointID": "N1_P2",
       "PlacePointNameCN": "城堡窗边/走廊",
       "ToolCardID": "T_BROADCAST_BIRD",
       "OutcomeType": "Success",

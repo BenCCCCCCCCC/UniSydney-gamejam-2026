@@ -108,14 +108,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             return;
         }
 
-        if (placementPoint.nodeID == "Node1")
-        {
-            Node1PlacementRules.TryPlaceTool(toolCardID, placementPoint);
-        }
-        else
-        {
-            Debug.Log($"PLACE_TEST: {toolCardID} on {placementPoint.nodeID}/{placementPoint.placePointID}");
-        }
+        NodePlacementRules.TryPlaceTool(toolCardID, placementPoint);
 
         placementPoint.SetTool(toolCardID);
         PlaceOnPoint(placementPoint);
