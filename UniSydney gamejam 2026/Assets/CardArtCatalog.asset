@@ -161,3 +161,5 @@ MonoBehaviour:
     sprite: {fileID: 7113978937093574563, guid: 186bdad239ebef44493b8bd67b865c22, type: 3}
   - cardID: T_BROADCAST_BIRD
     sprite: {fileID: -220151198244820131, guid: 82e5656f20496be4da3bcbae897ded34, type: 3}
+  - cardID: T_MIRROR_CURSE_POTION
+    sprite: {fileID: -3007827498052362213, guid: 3feaa9f700b5d3a438d3f29df0ad049c, type: 3}

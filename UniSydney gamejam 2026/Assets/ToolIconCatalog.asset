@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26beaa5a55bd72c409bc98656a88fd00, type: 3}
+  m_Name: ToolIconCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::ToolIconCatalog
+  entries:
+  - toolCardID: T_MAGIC_MIRROR
+    iconSprite: {fileID: 2042823853694462013, guid: 7b0599770bff2054e88b3ec24bd88301, type: 3}
+  - toolCardID: T_BROADCAST_BIRD
+    iconSprite: {fileID: 4660220448303959523, guid: 0fb231a55ee5c2243a1276256b4fcdc6, type: 3}
+  - toolCardID: T_BOUNCY_CROWN
+    iconSprite: {fileID: -2038877859348349805, guid: 1bb4f1abc6999814580519572c32115c, type: 3}
+  - toolCardID: T_BEAUTY_RANKING
+    iconSprite: {fileID: -5539808558106465931, guid: 7939a72443d0ee94fb8275ee11ae2362, type: 3}
+  - toolCardID: T_PAPER_CROWN_DOLL
+    iconSprite: {fileID: -7086911718242775410, guid: ad3342a2d5cab8d4cb74c27c3b440030, type: 3}
