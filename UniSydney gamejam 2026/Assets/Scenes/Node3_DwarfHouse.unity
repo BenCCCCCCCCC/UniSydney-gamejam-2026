@@ -309,8 +309,9 @@ MonoBehaviour:
   nodeID: Node3
   nodeSceneName: Node3_DwarfHouse
   cardBackpackSceneName: CardBackpackTest
-  briefingLine: Snow White is lost
-  readingSeconds: 4
+  briefingLine: Snow White gets lost in the forest. She eventually finds the dwarfs'
+    cottage and finds a way to get inside.
+  readingSeconds: 6
 --- !u!1 &264295982
 GameObject:
   m_ObjectHideFlags: 0
@@ -677,7 +678,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1055,7 +1056,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 324246142}
@@ -1190,6 +1191,7 @@ MonoBehaviour:
   startPoint: {fileID: 2038911016}
   endPoint: {fileID: 1994000446}
   moveSpeed: 2
+  arriveDistance: 0.05
 --- !u!50 &1405852955
 Rigidbody2D:
   serializedVersion: 5
