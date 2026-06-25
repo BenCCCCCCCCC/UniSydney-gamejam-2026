@@ -21,7 +21,7 @@ public class Node3ResultPlayer : MonoBehaviour
     [Header("Scene")]
     [SerializeField] private string nodeID = "Node3";
     [SerializeField] private string retrySceneName = "Node3_DwarfHouse";
-    [SerializeField] private string nextSceneName = "";
+    [SerializeField] private string nextSceneName = "Node4_1";
     [SerializeField] private bool useAsyncLoad = false;
     [SerializeField] private StoryActorAutoMove storyActor;
 

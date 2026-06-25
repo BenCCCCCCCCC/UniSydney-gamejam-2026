@@ -21,6 +21,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Node3_DwarfHouse.unity
     guid: 17d2e5ea7fcbe1645b50d658243b8122
   - enabled: 1
+    path: Assets/Scenes/Node4_1.unity
+    guid: bab80f3fb16ff884b8ef3e5ac811d724
+  - enabled: 1
     path: Assets/Scenes/Node5.unity
     guid: 28f4be242ddd9ea478b41789a66505d5
   m_configObjects:
