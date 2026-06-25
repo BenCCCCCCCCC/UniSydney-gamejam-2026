@@ -9,6 +9,7 @@ public class StoryActorFrameAnimator : MonoBehaviour
     }
 
     [SerializeField] private SpriteRenderer targetRenderer;
+    [SerializeField] private StoryActorAutoMove movementSource;
     [SerializeField] private Sprite[] idleFrames;
     [SerializeField] private Sprite[] walkFrames;
     [SerializeField] private float idleFrameRate = 4f;
@@ -37,6 +38,16 @@ public class StoryActorFrameAnimator : MonoBehaviour
         if (targetRenderer == null)
         {
             targetRenderer = GetComponentInChildren<SpriteRenderer>();
+        }
+
+        if (movementSource == null)
+        {
+            movementSource = GetComponent<StoryActorAutoMove>();
+        }
+
+        if (movementSource == null)
+        {
+            movementSource = GetComponentInParent<StoryActorAutoMove>();
         }
 
         lastPosition = transform.position;
@@ -75,6 +86,11 @@ public class StoryActorFrameAnimator : MonoBehaviour
 
     private AnimationState GetMovementState()
     {
+        if (movementSource != null)
+        {
+            return movementSource.IsMoving ? AnimationState.Walk : AnimationState.Idle;
+        }
+
         float movedDistance = Vector3.Distance(transform.position, lastPosition);
         return movedDistance > movementThreshold ? AnimationState.Walk : AnimationState.Idle;
     }
