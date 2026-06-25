@@ -59,7 +59,8 @@ public class CardMergeEffectPlayer : MonoBehaviour
         CardView first,
         CardView second,
         CardView resultVisualSource,
-        Vector3 handTargetWorldPosition)
+        Vector3 handTargetWorldPosition,
+        bool showCorrectToolHint = false)
     {
         if (effectLayer == null && canvas != null)
         {
@@ -99,6 +100,11 @@ public class CardMergeEffectPlayer : MonoBehaviour
         CanvasGroup firstCloneGroup = firstClone.GetComponent<CanvasGroup>();
         CanvasGroup secondCloneGroup = secondClone.GetComponent<CanvasGroup>();
         CanvasGroup resultCloneGroup = resultClone.GetComponent<CanvasGroup>();
+
+        if (showCorrectToolHint)
+        {
+            CorrectToolHintEffect.ConfigureMergeResult(resultClone);
+        }
 
         Vector3 inputStartScale = Vector3.one * inputCardStartScale;
         firstCloneRect.anchoredPosition = GetLayerPosition(firstRect);

@@ -416,7 +416,8 @@ public class CardBackpackController : MonoBehaviour
                 toolSprite,
                 handPresentationSettings,
                 canvas,
-                cardViewPrefab: cardViewPrefab);
+                cardViewPrefab: cardViewPrefab,
+                enableCorrectToolHint: false);
 
             CanvasGroup sourceCanvasGroup = resultVisualSource.GetComponent<CanvasGroup>();
             sourceCanvasGroup.alpha = 0f;
@@ -424,13 +425,22 @@ public class CardBackpackController : MonoBehaviour
             sourceCanvasGroup.blocksRaycasts = false;
 
             Vector3 handTargetWorldPosition = CalculatePendingHandCardWorldPosition();
+            bool isCorrectHintTool =
+                CorrectToolHintRules.IsCorrectSolutionTool(
+                    currentNodeId,
+                    outputCard.CardID);
+            Debug.Log(
+                $"CORRECT_TOOL_MERGE_CHECK: node={currentNodeId}, "
+                + $"result={outputCard.CardID}, correct={isCorrectHintTool}");
+
             if (effectPlayer != null)
             {
                 yield return effectPlayer.PlayMerge(
                     first,
                     second,
                     resultVisualSource,
-                    handTargetWorldPosition);
+                    handTargetWorldPosition,
+                    isCorrectHintTool);
             }
 
             Destroy(resultVisualSource.gameObject);
