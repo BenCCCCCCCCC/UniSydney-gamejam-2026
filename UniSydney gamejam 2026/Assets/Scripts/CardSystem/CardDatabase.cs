@@ -354,7 +354,10 @@ public class CardDatabase : MonoBehaviour
 
             if (card.DesignedForNode != loadout.NodeID)
             {
-                Debug.LogWarning($"{loadout.NodeID} {fieldName} contains {id}, but it is DesignedForNode {card.DesignedForNode}.");
+                string prefix = fieldName == "CoreToolCardIDs"
+                    ? "CROSS_NODE_CORE_TOOL"
+                    : "CROSS_NODE_OPTIONAL_TOOL";
+                Debug.Log($"{prefix}: {loadout.NodeID} {fieldName} contains {id}; primary DesignedForNode is {card.DesignedForNode}.");
             }
         }
     }

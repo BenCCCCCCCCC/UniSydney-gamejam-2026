@@ -10,6 +10,8 @@ public class Node1ResultPlayer : MonoBehaviour
     [Header("Result Settings")]
     public float resultDuration = 1.2f;
 
+    private CardDatabase database;
+
     public void PlayResult(PlacementPoint point)
     {
         if (point == null)
@@ -28,35 +30,73 @@ public class Node1ResultPlayer : MonoBehaviour
             storyActor.PauseMove();
         }
 
-        string key = $"{point.nodeID}_{point.placePointID}_{point.storedToolCardID}";
-
-        switch (key)
+        if (TryGetDatabase(out CardDatabase resultDatabase)
+            && resultDatabase.TryGetPlacementResult(
+                point.nodeID,
+                point.placePointID,
+                point.storedToolCardID,
+                out PlacementResultRow result))
         {
-            case "Node1_N1_P1_T_SPOTLIGHT_MIRROR":
-                Debug.Log("Result: 聚光魔镜触发，王后注意到白雪更美。");
-                yield return ShakeQueen();
-                break;
-
-            case "Node1_N1_P2_T_BROADCAST_BIRD":
-                Debug.Log("Result: 广播鸟触发，窗外开始广播白雪更美。");
-                yield return ShakeQueen();
-                break;
-
-            case "Node1_N1_P3_T_BOUNCY_CROWN":
-                Debug.Log("Result: 弹跳王冠触发，王后觉得主角地位被抢。");
-                yield return ShakeQueen();
-                break;
-
-            default:
-                Debug.Log($"Result: {key} 没有特殊结果，播放中性效果。");
-                yield return new WaitForSeconds(resultDuration);
-                break;
+            Debug.Log($"Result: {result.ResultSummaryCN}");
+            Debug.Log($"OutcomeType: {result.OutcomeType}, NextState: {result.NextState}");
+            yield return ShakeQueen();
+        }
+        else
+        {
+            yield return PlayLegacyResult(point);
         }
 
         if (storyActor != null)
         {
             storyActor.ResumeMove();
         }
+    }
+
+    private IEnumerator PlayLegacyResult(PlacementPoint point)
+    {
+        string key = $"{point.nodeID}_{point.placePointID}_{point.storedToolCardID}";
+
+        switch (key)
+        {
+            // T_SPOTLIGHT_MIRROR is the old ID. T_MAGIC_MIRROR is the current JSON ID.
+            case "Node1_N1_P1_T_SPOTLIGHT_MIRROR":
+            case "Node1_N1_P1_T_MAGIC_MIRROR":
+                Debug.Log("Result: Magic Mirror triggered; queen notices Snow White is more beautiful.");
+                yield return ShakeQueen();
+                break;
+
+            case "Node1_N1_P2_T_BROADCAST_BIRD":
+                Debug.Log("Result: Broadcast Bird triggered; the news spreads from the window.");
+                yield return ShakeQueen();
+                break;
+
+            case "Node1_N1_P3_T_BOUNCY_CROWN":
+                Debug.Log("Result: Bouncy Crown triggered; queen feels her main-character status being stolen.");
+                yield return ShakeQueen();
+                break;
+
+            default:
+                Debug.Log($"Result: {key} has no special result; playing neutral effect.");
+                yield return new WaitForSeconds(resultDuration);
+                break;
+        }
+    }
+
+    private bool TryGetDatabase(out CardDatabase resultDatabase)
+    {
+        if (database == null)
+        {
+            database = FindAnyObjectByType<CardDatabase>();
+        }
+
+        if (database == null)
+        {
+            GameObject databaseObject = new GameObject("RuntimeCardDatabase");
+            database = databaseObject.AddComponent<CardDatabase>();
+        }
+
+        resultDatabase = database;
+        return resultDatabase != null && resultDatabase.Data != null;
     }
 
     private IEnumerator ShakeQueen()
