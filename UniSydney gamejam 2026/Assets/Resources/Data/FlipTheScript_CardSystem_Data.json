@@ -1719,7 +1719,7 @@
       "ToolCardID": "T_MAGIC_MIRROR",
       "OutcomeType": "Success",
       "ResultID": "N1_R001",
-      "ResultSummaryCN": "Magic Mirror Spotlight makes the Queen focus on Snow White and pushes the story toward the Hunter.",
+      "ResultSummaryCN": "The magic shard awakens the mirror. The mirror says, \"Snow White is the fairest girl in the world.\"",
       "NextState": "Node2"
     },
     {
@@ -1729,7 +1729,7 @@
       "ToolCardID": "T_BEAUTY_RANKING",
       "OutcomeType": "Success",
       "ResultID": "N1_R002",
-      "ResultSummaryCN": "Beauty Ranking makes the Queen focus on Snow White and pushes the story toward the Hunter.",
+      "ResultSummaryCN": "Snow White has been voted the most beautiful girl in the forest!!!",
       "NextState": "Node2"
     },
     {
@@ -1739,7 +1739,7 @@
       "ToolCardID": "T_BOUNCY_CROWN",
       "OutcomeType": "SuccessFunny",
       "ResultID": "N1_R003",
-      "ResultSummaryCN": "Bouncy Crown makes the Queen focus on Snow White and pushes the story toward the Hunter.",
+      "ResultSummaryCN": "The crown springs onto Snow White's head. The Queen sees it and becomes very unhappy.",
       "NextState": "Node2"
     },
     {
@@ -1749,7 +1749,7 @@
       "ToolCardID": "T_PAPER_CROWN_DOLL",
       "OutcomeType": "SuccessFunny",
       "ResultID": "N1_R004",
-      "ResultSummaryCN": "Paper Crown Stand-in makes the Queen focus on Snow White and pushes the story toward the Hunter.",
+      "ResultSummaryCN": "The paper crown stand-in makes the Queen imagine Snow White taking her place.",
       "NextState": "Node2"
     },
     {
@@ -1759,7 +1759,7 @@
       "ToolCardID": "T_BROADCAST_BIRD",
       "OutcomeType": "Success",
       "ResultID": "N1_R005",
-      "ResultSummaryCN": "Broadcast Bird makes the Queen focus on Snow White and pushes the story toward the Hunter.",
+      "ResultSummaryCN": "Snow White is so beautiful!!!",
       "NextState": "Node2"
     },
     {
