@@ -185,11 +185,17 @@ public class Node5ResultPlayer : MonoBehaviour
 
         string toolCardID = string.IsNullOrWhiteSpace(point.storedToolCardID)
             ? ""
-            : point.storedToolCardID;
+            : point.storedToolCardID.Trim();
+        string loggedToolCardID = string.IsNullOrWhiteSpace(toolCardID)
+            ? "(empty)"
+            : toolCardID;
 
         int delta = 0;
         string outcomeType = "InvalidPlacement";
         string summary = "";
+        string messageKey = "Default";
+
+        Debug.Log($"NODE5_TRIGGER: point={placePointID}, tool={loggedToolCardID}");
 
         if (!string.IsNullOrWhiteSpace(toolCardID)
             && TryGetPlacementResult(placePointID, toolCardID, out PlacementResultRow result))
@@ -197,11 +203,15 @@ public class Node5ResultPlayer : MonoBehaviour
             outcomeType = result.OutcomeType;
             summary = result.ResultSummaryCN;
             delta = GetDeltaFromOutcome(outcomeType);
+            messageKey = string.IsNullOrWhiteSpace(result.ResultID)
+                ? $"{placePointID}:{toolCardID}"
+                : result.ResultID;
         }
         else if (!string.IsNullOrWhiteSpace(toolCardID)
             && TryGetFallbackDelta(placePointID, toolCardID, out delta))
         {
             outcomeType = GetFallbackOutcomeType(delta);
+            messageKey = $"Fallback:{placePointID}:{toolCardID}";
         }
 
         totalScore += delta;
@@ -217,15 +227,12 @@ public class Node5ResultPlayer : MonoBehaviour
             princeLost = delta < 0;
         }
 
-        string loggedToolCardID = string.IsNullOrWhiteSpace(toolCardID)
-            ? "(empty)"
-            : toolCardID;
-
         Debug.Log($"NODE5_SCORE_RECORD: {placePointID} / {loggedToolCardID} / {outcomeType} / delta = {delta} / total = {totalScore} / {summary}");
 
         string feedbackMessage = !string.IsNullOrWhiteSpace(summary)
             ? summary
             : GetFeedbackMessage(placePointID, delta);
+        Debug.Log($"NODE5_DIALOGUE_SELECTED: point={placePointID}, tool={loggedToolCardID}, messageKey={messageKey}, scoreDelta={delta}");
 
         if (showTriggerFeedback)
         {
