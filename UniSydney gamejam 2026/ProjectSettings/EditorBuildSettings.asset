@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Node2_1_HunterHunt.unity
     guid: 1a7c43920b650584b89d0f88bb76a51d
   - enabled: 1
+    path: Assets/Scenes/Node2_2_HunterHunt.unity
+    guid: a2ae5e59116039b40812d16ae2395d99
+  - enabled: 1
     path: Assets/Scenes/Node3_DwarfHouse.unity
     guid: 17d2e5ea7fcbe1645b50d658243b8122
   - enabled: 1
