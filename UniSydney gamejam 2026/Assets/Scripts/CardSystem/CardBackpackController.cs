@@ -263,7 +263,8 @@ public class CardBackpackController : MonoBehaviour
         CardView first = openedCards[0];
         CardView second = openedCards[1];
 
-        bool success = database.TryCombine(
+        bool success = database.TryCombineForNode(
+            currentNodeId,
             first.Card.CardID,
             second.Card.CardID,
             out CardRow outputCard,
@@ -358,7 +359,7 @@ public class CardBackpackController : MonoBehaviour
                     continue;
                 }
 
-                if (database.TryCombine(first.Card.CardID, second.Card.CardID, out _, out _))
+                if (database.TryCombineForNode(currentNodeId, first.Card.CardID, second.Card.CardID, out _, out _))
                 {
                     return true;
                 }

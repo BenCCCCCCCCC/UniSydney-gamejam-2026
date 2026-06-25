@@ -120,6 +120,9 @@ public class CardDatabase : MonoBehaviour
             {
                 Debug.LogWarning($"CardDatabase: node loadout has empty AvailableBaseCardIDs: {loadout.NodeID}");
             }
+
+            ValidateLoadoutToolList(loadout, "CoreToolCardIDs", loadout.CoreToolCardIDs);
+            ValidateLoadoutToolList(loadout, "OptionalToolCardIDs", loadout.OptionalToolCardIDs);
         }
 
         Debug.Log($"CardDatabase loaded. Cards: {cardsById.Count}, Recipes: {recipesByPairKey.Count}");
@@ -154,6 +157,47 @@ public class CardDatabase : MonoBehaviour
             return false;
         }
 
+        return true;
+    }
+
+    public bool TryCombineForNode(
+        string nodeId,
+        string cardAId,
+        string cardBId,
+        out CardRow outputCard,
+        out RecipeRow recipe)
+    {
+        outputCard = null;
+        recipe = null;
+
+        if (string.IsNullOrWhiteSpace(nodeId))
+        {
+            return false;
+        }
+
+        if (!TryCombine(cardAId, cardBId, out CardRow globalOutputCard, out RecipeRow globalRecipe))
+        {
+            return false;
+        }
+
+        string pairKey = !string.IsNullOrWhiteSpace(globalRecipe.PairKey)
+            ? globalRecipe.PairKey
+            : MakePairKey(cardAId, cardBId);
+
+        if (globalRecipe.DesignedForNode != nodeId || globalOutputCard.DesignedForNode != nodeId)
+        {
+            Debug.Log($"RECIPE_NODE_MISMATCH: {pairKey} outputs {globalOutputCard.CardID} designed for {globalOutputCard.DesignedForNode}, current node is {nodeId}");
+            return false;
+        }
+
+        if (!globalOutputCard.IsCraftedTool)
+        {
+            Debug.LogWarning($"CardDatabase: recipe {pairKey} outputs non-tool card: {globalOutputCard.CardID}");
+            return false;
+        }
+
+        outputCard = globalOutputCard;
+        recipe = globalRecipe;
         return true;
     }
 
@@ -236,6 +280,37 @@ public class CardDatabase : MonoBehaviour
             && !card.IsCraftedTool
             && !string.IsNullOrWhiteSpace(card.CardID)
             && card.CardID.StartsWith("B_", System.StringComparison.Ordinal);
+    }
+
+    private void ValidateLoadoutToolList(NodeLoadoutRow loadout, string fieldName, string toolCardIDs)
+    {
+        if (loadout == null || string.IsNullOrWhiteSpace(loadout.NodeID) || string.IsNullOrWhiteSpace(toolCardIDs))
+        {
+            return;
+        }
+
+        string[] ids = toolCardIDs.Split(',');
+
+        foreach (string rawId in ids)
+        {
+            string id = rawId.Trim();
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                continue;
+            }
+
+            if (!cardsById.TryGetValue(id, out CardRow card))
+            {
+                Debug.LogWarning($"{loadout.NodeID} {fieldName} contains {id}, but that card does not exist.");
+                continue;
+            }
+
+            if (card.DesignedForNode != loadout.NodeID)
+            {
+                Debug.LogWarning($"{loadout.NodeID} {fieldName} contains {id}, but it is DesignedForNode {card.DesignedForNode}.");
+            }
+        }
     }
 
     private string MakePairKey(string cardAId, string cardBId)
