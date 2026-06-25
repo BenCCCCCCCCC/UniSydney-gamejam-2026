@@ -201,7 +201,6 @@ public class Node5ResultPlayer : MonoBehaviour
             && TryGetFallbackDelta(placePointID, toolCardID, out delta))
         {
             outcomeType = GetFallbackOutcomeType(delta);
-            summary = "Node5 fallback score rule.";
         }
 
         totalScore += delta;
@@ -223,6 +222,10 @@ public class Node5ResultPlayer : MonoBehaviour
 
         Debug.Log($"NODE5_SCORE_RECORD: {placePointID} / {loggedToolCardID} / {outcomeType} / delta = {delta} / total = {totalScore} / {summary}");
 
+        string feedbackMessage = !string.IsNullOrWhiteSpace(summary)
+            ? summary
+            : GetFeedbackMessage(placePointID, delta);
+
         if (showTriggerFeedback)
         {
             if (feedbackCoroutine != null)
@@ -232,7 +235,7 @@ public class Node5ResultPlayer : MonoBehaviour
             }
 
             feedbackCoroutine = StartCoroutine(ShowFeedbackThenHide(
-                GetFeedbackMessage(placePointID, delta),
+                feedbackMessage,
                 placePointID == "N5_P1"));
         }
         else if (placePointID == "N5_P1")
@@ -484,7 +487,7 @@ public class Node5ResultPlayer : MonoBehaviour
                 return "The prince gets lost.";
             }
 
-            return "The prince follows a beautiful flower path, but it does not really help.";
+            return "The prince is unsure where to go.";
         }
 
         if (placePointID == "N5_P2")
@@ -499,7 +502,7 @@ public class Node5ResultPlayer : MonoBehaviour
                 return "The dwarfs are thrown into trouble.";
             }
 
-            return "The dwarfs notice something, but it is not enough to change the rescue.";
+            return "The dwarfs are not sure how to help.";
         }
 
         if (placePointID == "N5_P3")
@@ -514,7 +517,7 @@ public class Node5ResultPlayer : MonoBehaviour
                 return "The seal around the crystal coffin grows stronger.";
             }
 
-            return "The crystal coffin reacts faintly, but remains closed.";
+            return "The crystal coffin does not react.";
         }
 
         return "The magic has an unclear effect.";
