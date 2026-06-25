@@ -40,6 +40,10 @@ public class Node4SimpleFlowController : MonoBehaviour
 
         yield return new WaitForSeconds(readingSeconds);
 
+        yield return new WaitForEndOfFrame();
+        GameSessionData.SetCardBackpackBackgroundSnapshot(
+            ScreenCapture.CaptureScreenshotAsTexture());
+
         GameSessionData.CurrentPhase = GameFlowPhase.CardCrafting;
         LoadSceneByName(cardBackpackSceneName);
     }

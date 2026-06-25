@@ -1694,9 +1694,9 @@
       "NodeID": "Node4",
       "NodeNameCN": "The Poisoned Apple and Crystal Coffin",
       "StoryBridgeCN": "Use tools around the apple, witch, and crystal coffin to move Snow White into the coffin sequence.",
-      "AvailableBaseCardIDs": "B_APPLE,B_POTION,B_CLOTH,B_WIND,B_BIRD,B_PAPER,B_CRYSTAL,B_PLANK,B_ROPE,B_BELL,B_MIRROR_SHARD,B_WATER,B_SPRING",
-      "CoreToolCardIDs": "T_POISON_APPLE,T_GIFT_APPLE,T_ROLLING_APPLE,T_CRYSTAL_COFFIN_FRAME,T_COFFIN_HARNESS",
-      "OptionalToolCardIDs": "T_HONEY_BAIT,T_BOUNCY_APPLE,T_LABELED_APPLE,T_APPLE_DELIVERY_BIRD,T_DILUTED_POTION,T_SLEEPING_HANDKERCHIEF,T_MIRROR_CURSE_POTION,T_SHAKING_COFFIN",
+      "AvailableBaseCardIDs": "B_APPLE,B_POTION",
+      "CoreToolCardIDs": "T_POISON_APPLE",
+      "OptionalToolCardIDs": "",
       "RequiredSuccessCount": 2,
       "NotesCN": "Tool availability and placement outcomes are controlled by this node loadout and the placement results table."
     },

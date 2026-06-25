@@ -13,8 +13,8 @@ using UnityEditor.SceneManagement;
 
 public enum Node4_1EffectType
 {
-    // TODO: 根据第四幕设计填入具体效果类型
-    InvalidPlacement
+    InvalidPlacement,
+    PoisonApple,    // T_POISON_APPLE → 成功结局：Snow 晕倒，被放入棺材
 }
 
 /// <summary>
@@ -28,11 +28,13 @@ public class Node4_1ResultPlayer : MonoBehaviour
     [SerializeField] private string retrySceneName = "Node4_1";
 
     [Header("对话设置")]
-    [SerializeField] private float messageDuration = 2f;
-    [SerializeField] [TextArea(2, 4)] private string msgInvalid = "（默认旁白：道具无效，角色继续前进）";
+    [SerializeField] private float messageDuration = 3f;
+    [SerializeField] [TextArea(2, 4)] private string msgInvalid = "Nothing seems to happen. Snow continues walking.";
+    [SerializeField] [TextArea(2, 4)] private string msgPoisonApple = "Snow took a bite of the apple... and slowly collapsed to the ground.";
 
-    [Header("结局面板")]
-    [SerializeField] [TextArea(2, 4)] private string endingMessage = "（结局文字，在 Inspector 中修改）";
+    [Header("结局面板 — 成功")]
+    [SerializeField] [TextArea(2, 4)] private string endingPoisonApple =
+        "The dwarves found Snow White lying still and, believing she was dead, lovingly placed her in a glass coffin deep in the forest.\n\nGood Ending";
 
     private GameObject canvasObject;
     private GameObject dialoguePanelObject;
@@ -76,15 +78,18 @@ public class Node4_1ResultPlayer : MonoBehaviour
 
         if (dialogueCoroutine != null) StopCoroutine(dialogueCoroutine);
 
-        // TODO: 根据 effectType 选择 ShowMessageThenEnd 或 ShowMessageThenContinue
-        dialogueCoroutine = StartCoroutine(ShowMessageThenContinue(message));
+        if (effectType == Node4_1EffectType.PoisonApple)
+            dialogueCoroutine = StartCoroutine(ShowMessageThenEnd(message, endingPoisonApple));
+        else
+            dialogueCoroutine = StartCoroutine(ShowMessageThenContinue(message));
     }
 
-    // ── 效果分类（TODO: 填入实际槽位和道具 ID）────────────────────────────────
+    // ── 效果分类 ──────────────────────────────────────────────────────────────
 
     private Node4_1EffectType GetEffectType(string placePointID, string toolCardID)
     {
-        // 示例：if (placePointID == "N4_P1" && toolCardID == "T_XXX") return Node4_1EffectType.XXX;
+        if (placePointID == "N4_P1" && toolCardID == "T_POISON_APPLE")
+            return Node4_1EffectType.PoisonApple;
         return Node4_1EffectType.InvalidPlacement;
     }
 
@@ -92,13 +97,14 @@ public class Node4_1ResultPlayer : MonoBehaviour
     {
         return effectType switch
         {
+            Node4_1EffectType.PoisonApple => msgPoisonApple,
             _ => msgInvalid
         };
     }
 
     // ── 协程：旁白 → 结局 ────────────────────────────────────────────────────
 
-    private IEnumerator ShowMessageThenEnd(string message)
+    private IEnumerator ShowMessageThenEnd(string message, string ending)
     {
         hasEnded = true;
         if (actorAutoMove != null) actorAutoMove.PauseMove();
@@ -108,7 +114,7 @@ public class Node4_1ResultPlayer : MonoBehaviour
         HideDialogue();
 
         if (actorAutoMove != null) actorAutoMove.StopMove();
-        ShowEndingPanel();
+        ShowEndingPanel(ending);
     }
 
     // ── 协程：旁白 → 恢复行走 ────────────────────────────────────────────────
@@ -136,7 +142,7 @@ public class Node4_1ResultPlayer : MonoBehaviour
 
     // ── 结局面板 ─────────────────────────────────────────────────────────────
 
-    private void ShowEndingPanel()
+    private void ShowEndingPanel(string ending)
     {
         BuildRuntimeUI();
         RectTransform canvasRect = canvasObject.GetComponent<RectTransform>();
@@ -153,7 +159,7 @@ public class Node4_1ResultPlayer : MonoBehaviour
         panelRect.anchoredPosition = Vector2.zero;
 
         CreateText("EndingText", panel.transform,
-            "Success\n\n" + endingMessage,
+            ending,
             new Vector2(0.5f, 0.66f), new Vector2(780f, 190f), 38f);
 
         Button retryBtn = CreateButton("RetryButton", panel.transform,
