@@ -16,7 +16,7 @@ public class Node3SimpleFlowController : MonoBehaviour
     [SerializeField] private string cardBackpackSceneName = "CardBackpackTest";
 
     [Header("Briefing")]
-    [SerializeField] private string briefingLine = "白雪公主在森林里迷了路，必须找到小矮人的屋子。";
+    [SerializeField] private string briefingLine = "Snow White is lost in the forest and must find the dwarfs' cottage.";
     [SerializeField] private float readingSeconds = 4f;
 
     private GameObject dialogueCanvas;
