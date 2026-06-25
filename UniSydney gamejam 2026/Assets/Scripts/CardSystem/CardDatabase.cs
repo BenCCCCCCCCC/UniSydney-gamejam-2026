@@ -160,47 +160,6 @@ public class CardDatabase : MonoBehaviour
         return true;
     }
 
-    public bool TryCombineForNode(
-        string nodeId,
-        string cardAId,
-        string cardBId,
-        out CardRow outputCard,
-        out RecipeRow recipe)
-    {
-        outputCard = null;
-        recipe = null;
-
-        if (string.IsNullOrWhiteSpace(nodeId))
-        {
-            return false;
-        }
-
-        if (!TryCombine(cardAId, cardBId, out CardRow globalOutputCard, out RecipeRow globalRecipe))
-        {
-            return false;
-        }
-
-        string pairKey = !string.IsNullOrWhiteSpace(globalRecipe.PairKey)
-            ? globalRecipe.PairKey
-            : MakePairKey(cardAId, cardBId);
-
-        if (globalRecipe.DesignedForNode != nodeId || globalOutputCard.DesignedForNode != nodeId)
-        {
-            Debug.Log($"RECIPE_NODE_MISMATCH: {pairKey} outputs {globalOutputCard.CardID} designed for {globalOutputCard.DesignedForNode}, current node is {nodeId}");
-            return false;
-        }
-
-        if (!globalOutputCard.IsCraftedTool)
-        {
-            Debug.LogWarning($"CardDatabase: recipe {pairKey} outputs non-tool card: {globalOutputCard.CardID}");
-            return false;
-        }
-
-        outputCard = globalOutputCard;
-        recipe = globalRecipe;
-        return true;
-    }
-
     public List<CardRow> GetBaseCardsForNode(string nodeId)
     {
         var result = new List<CardRow>();
