@@ -39,9 +39,10 @@ public class Node3ResultPlayer : MonoBehaviour
     [SerializeField] private float shortcutArriveDistance = 0.05f;
     [SerializeField] private bool useAutomaticDoorTriggerFallback = true;
     [SerializeField] private float minimumShortcutMoveSpeed = 6f;
-    [SerializeField] private float shortcutAdvanceDistanceAlongPath = 3f;
     [SerializeField] private float shortcutStopDistanceBeforeDoorAlongPath = 0.7f;
-    [SerializeField] private bool projectDoorTriggerOntoActorPath = true;
+    [SerializeField] private bool shortcutToAfterPoint2Trigger = true;
+    [SerializeField] private float shortcutDistanceAfterPoint2Trigger = 0.35f;
+    [SerializeField] private float fallbackShortShortcutAdvanceDistance = 1.2f;
 
     [Header("Door Visual")]
     [SerializeField] private SpriteRenderer doorRenderer;
@@ -140,7 +141,13 @@ public class Node3ResultPlayer : MonoBehaviour
             : "What's that for?";
 
         Node3PostFeedbackAction postFeedbackAction = GetPostFeedbackAction(placePointID, hasPlacementResult, result);
-        if (ShouldFailRouteImmediately(placePointID, hasPlacementResult, result))
+        if (ShouldShowLostMessageButContinue(placePointID, hasPlacementResult, result))
+        {
+            message = LostInForestMessage;
+            routeFailReason = message;
+            postFeedbackAction = Node3PostFeedbackAction.ResumeNormally;
+        }
+        else if (ShouldRoutePointFailImmediately(placePointID, hasPlacementResult, result))
         {
             message = LostInForestMessage;
             routeFailReason = message;
@@ -175,10 +182,6 @@ public class Node3ResultPlayer : MonoBehaviour
             if (placePointID == "N3_P3")
             {
                 doorSolved = true;
-            }
-            else
-            {
-                routeSolved = true;
             }
 
             return;
@@ -231,12 +234,27 @@ public class Node3ResultPlayer : MonoBehaviour
         return Node3PostFeedbackAction.ResumeNormally;
     }
 
-    private bool ShouldFailRouteImmediately(
+    private bool ShouldRoutePointFailImmediately(
         string placePointID,
         bool hasPlacementResult,
         PlacementResultRow result)
     {
-        if (placePointID != "N3_P1" && placePointID != "N3_P2")
+        if (placePointID != "N3_P2")
+        {
+            return false;
+        }
+
+        return !hasPlacementResult
+            || result == null
+            || result.OutcomeType != "ReachDoor";
+    }
+
+    private bool ShouldShowLostMessageButContinue(
+        string placePointID,
+        bool hasPlacementResult,
+        PlacementResultRow result)
+    {
+        if (placePointID != "N3_P1")
         {
             return false;
         }
@@ -369,17 +387,29 @@ public class Node3ResultPlayer : MonoBehaviour
         currentDistanceOnPath = Mathf.Clamp(currentDistanceOnPath, 0f, pathLength);
 
         float targetDistanceOnPath;
-        if (TryGetDoorReferencePosition(out Vector3 doorReferencePosition))
+        if (shortcutToAfterPoint2Trigger
+            && TryFindPlacementPointOrTriggerPosition("N3_P2", out Vector3 point2Position))
         {
-            float doorDistanceOnPath = projectDoorTriggerOntoActorPath
-                ? Vector3.Dot(doorReferencePosition - pathStart, pathDirection)
-                : currentDistanceOnPath + shortcutAdvanceDistanceAlongPath;
-
-            targetDistanceOnPath = doorDistanceOnPath - shortcutStopDistanceBeforeDoorAlongPath;
+            float point2DistanceOnPath = Vector3.Dot(point2Position - pathStart, pathDirection);
+            targetDistanceOnPath = point2DistanceOnPath + shortcutDistanceAfterPoint2Trigger;
+        }
+        else if (shortcutTargetBeforeDoorTrigger != null)
+        {
+            targetDistanceOnPath = Vector3.Dot(
+                shortcutTargetBeforeDoorTrigger.position - pathStart,
+                pathDirection);
         }
         else
         {
-            targetDistanceOnPath = currentDistanceOnPath + shortcutAdvanceDistanceAlongPath;
+            targetDistanceOnPath = currentDistanceOnPath + fallbackShortShortcutAdvanceDistance;
+        }
+
+        if (TryFindPlacementPointOrTriggerPosition("N3_P3", out Vector3 point3Position))
+        {
+            float point3DistanceOnPath = Vector3.Dot(point3Position - pathStart, pathDirection);
+            targetDistanceOnPath = Mathf.Min(
+                targetDistanceOnPath,
+                point3DistanceOnPath - shortcutStopDistanceBeforeDoorAlongPath);
         }
 
         targetDistanceOnPath = Mathf.Clamp(
@@ -392,32 +422,15 @@ public class Node3ResultPlayer : MonoBehaviour
         return true;
     }
 
-    private bool TryGetDoorReferencePosition(out Vector3 doorReferencePosition)
-    {
-        if (shortcutTargetBeforeDoorTrigger != null)
-        {
-            doorReferencePosition = shortcutTargetBeforeDoorTrigger.position;
-            return true;
-        }
-
-        if (useAutomaticDoorTriggerFallback && TryFindDoorTriggerPosition(out doorReferencePosition))
-        {
-            return true;
-        }
-
-        doorReferencePosition = Vector3.zero;
-        return false;
-    }
-
-    private bool TryFindDoorTriggerPosition(out Vector3 doorTriggerPosition)
+    private bool TryFindPlacementPointOrTriggerPosition(string placePointID, out Vector3 position)
     {
         PlacementTriggerZone[] triggerZones = FindObjectsByType<PlacementTriggerZone>();
         foreach (PlacementTriggerZone triggerZone in triggerZones)
         {
             PlacementPoint point = triggerZone != null ? triggerZone.placementPoint : null;
-            if (IsNode3DoorPoint(point))
+            if (IsNode3Point(point, placePointID))
             {
-                doorTriggerPosition = triggerZone.transform.position;
+                position = triggerZone.transform.position;
                 return true;
             }
         }
@@ -425,22 +438,22 @@ public class Node3ResultPlayer : MonoBehaviour
         PlacementPoint[] placementPoints = FindObjectsByType<PlacementPoint>();
         foreach (PlacementPoint point in placementPoints)
         {
-            if (IsNode3DoorPoint(point))
+            if (IsNode3Point(point, placePointID))
             {
-                doorTriggerPosition = point.transform.position;
+                position = point.transform.position;
                 return true;
             }
         }
 
-        doorTriggerPosition = Vector3.zero;
+        position = Vector3.zero;
         return false;
     }
 
-    private bool IsNode3DoorPoint(PlacementPoint point)
+    private bool IsNode3Point(PlacementPoint point, string placePointID)
     {
         return point != null
             && point.nodeID == nodeID
-            && point.placePointID == "N3_P3";
+            && point.placePointID == placePointID;
     }
 
     private void OnActorReachedEnd(StoryActorAutoMove actor)

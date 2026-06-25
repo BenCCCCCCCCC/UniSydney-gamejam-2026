@@ -310,6 +310,13 @@ MonoBehaviour:
   cardBackpackSceneName: CardBackpackTest
   textUI: {fileID: 3100000005}
   readingSeconds: 6
+  useDynamicReadingSeconds: 1
+  minReadingSeconds: 1.8
+  maxReadingSeconds: 5.5
+  readingWordsPerMinute: 220
+  readingPaddingSeconds: 0.7
+  punctuationExtraSeconds: 0.15
+  briefingTextOverrideForDuration: 
 --- !u!1 &264295982
 GameObject:
   m_ObjectHideFlags: 0
@@ -669,7 +676,7 @@ SpriteRenderer:
   m_SortingOrder: 30
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.37254903}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1103,6 +1110,25 @@ MonoBehaviour:
   storyActor: {fileID: 1405852954}
   textUI: {fileID: 3100000005}
   messageDuration: 1.6
+  useDynamicMessageDuration: 1
+  minMessageDuration: 1.8
+  maxMessageDuration: 5.5
+  readingWordsPerMinute: 220
+  messagePaddingSeconds: 0.7
+  punctuationExtraSeconds: 0.15
+  shortcutTargetBeforeDoorTrigger: {fileID: 0}
+  shortcutMoveSpeedMultiplier: 3.5
+  shortcutArriveDistance: 0.05
+  useAutomaticDoorTriggerFallback: 1
+  minimumShortcutMoveSpeed: 6
+  shortcutStopDistanceBeforeDoorAlongPath: 0.7
+  shortcutToAfterPoint2Trigger: 1
+  shortcutDistanceAfterPoint2Trigger: 0.35
+  fallbackShortShortcutAdvanceDistance: 1.2
+  doorRenderer: {fileID: 0}
+  closedDoorSprite: {fileID: 0}
+  openDoorSprite: {fileID: 0}
+  setClosedDoorOnStart: 1
 --- !u!1 &1331221912
 GameObject:
   m_ObjectHideFlags: 0
@@ -1185,7 +1211,7 @@ SpriteRenderer:
   m_SortingOrder: 30
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.37254903}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1571,7 +1597,7 @@ Transform:
   m_GameObject: {fileID: 1405852953}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.65, y: -0.62, z: 0}
+  m_LocalPosition: {x: -7.68, y: -1.38, z: 0}
   m_LocalScale: {x: 1.5, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1948,7 +1974,7 @@ SpriteRenderer:
   m_SortingOrder: 30
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.37254903}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2064,7 +2090,7 @@ Transform:
   m_GameObject: {fileID: 1851893869}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.85, y: -1.91, z: 0}
+  m_LocalPosition: {x: -4, y: -0.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2155,7 +2181,7 @@ Transform:
   m_GameObject: {fileID: 1994000445}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.53, y: -0.72, z: 0}
+  m_LocalPosition: {x: 5.53, y: -1.38, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2186,7 +2212,7 @@ Transform:
   m_GameObject: {fileID: 2038911015}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.65, y: -0.62, z: 0}
+  m_LocalPosition: {x: -7.68, y: -1.38, z: 0}
   m_LocalScale: {x: -8.89, y: -0.72, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
