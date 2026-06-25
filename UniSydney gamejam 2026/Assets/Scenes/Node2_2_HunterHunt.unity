@@ -184,6 +184,8 @@ MonoBehaviour:
   fallDuration: 0.35
   worldOffset: {x: 0, y: 0, z: 0}
   iconSize: {x: 1, y: 1}
+  useRevealEffect: 1
+  revealVfxConfig: {fileID: 11400000, guid: b77c6537482747042affa46e4017c2e5, type: 2}
   sortingLayerName: Default
   sortingOrder: 50
   hidePlacedCardUIAfterSpawn: 0
@@ -2177,6 +2179,7 @@ MonoBehaviour:
   slotPanelSize: {x: 820, y: 260}
   slotSize: {x: 210, y: 240}
   slotSpacing: 34
+  placementSlotSprite: {fileID: 0}
   handPanelAnchor: {x: 0.5, y: 0.2}
   handPanelSize: {x: 1000, y: 180}
   handCardSize: {x: 150, y: 150}
