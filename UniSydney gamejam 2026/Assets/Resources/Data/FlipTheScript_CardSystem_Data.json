@@ -2063,6 +2063,56 @@
       "NextState": "Retry"
     },
     {
+      "NodeID": "Node3",
+      "PlacePointID": "N3_P3",
+      "PlacePointNameCN": "小屋门前",
+      "ToolCardID": "T_BROADCAST_BIRD",
+      "OutcomeType": "Success",
+      "ResultID": "N3_R020",
+      "ResultSummaryCN": "广播鸟把求助消息传到小屋，小矮人出来接白雪。",
+      "NextState": "Node4"
+    },
+    {
+      "NodeID": "Node3",
+      "PlacePointID": "N3_P2",
+      "PlacePointNameCN": "森林岔路口",
+      "ToolCardID": "T_SPINNING_SIGN",
+      "OutcomeType": "Fail",
+      "ResultID": "N3_R021",
+      "ResultSummaryCN": "旋转路牌把方向搅乱，白雪走错了路。",
+      "NextState": "Retry"
+    },
+    {
+      "NodeID": "Node3",
+      "PlacePointID": "N3_P1",
+      "PlacePointNameCN": "森林入口",
+      "ToolCardID": "T_FAST_VINES",
+      "OutcomeType": "ReachDoor",
+      "ResultID": "N3_R022",
+      "ResultSummaryCN": "速生藤蔓把白雪一路送到小屋门前。",
+      "NextState": "N3_DoorCheck"
+    },
+    {
+      "NodeID": "Node3",
+      "PlacePointID": "N3_P2",
+      "PlacePointNameCN": "森林岔路口",
+      "ToolCardID": "T_HALLUCINATION_MUSHROOM",
+      "OutcomeType": "Fail",
+      "ResultID": "N3_R023",
+      "ResultSummaryCN": "迷幻蘑菇让白雪看错方向，迷失在森林里。",
+      "NextState": "Retry"
+    },
+    {
+      "NodeID": "Node3",
+      "PlacePointID": "N3_P2",
+      "PlacePointNameCN": "森林岔路口",
+      "ToolCardID": "T_SPORE_FOG",
+      "OutcomeType": "Fail",
+      "ResultID": "N3_R024",
+      "ResultSummaryCN": "孢子迷雾遮住道路，白雪找不到小屋。",
+      "NextState": "Retry"
+    },
+    {
       "NodeID": "Node4",
       "PlacePointID": "N4_P1",
       "PlacePointNameCN": "苹果/女巫点位",
@@ -2360,6 +2410,36 @@
       "OutcomeType": "ScoreMinus",
       "ResultID": "N5_R019",
       "ResultSummaryCN": "镜面诅咒药水强化封印；点位3 -1。",
+      "NextState": "Node5Score"
+    },
+    {
+      "NodeID": "Node5",
+      "PlacePointID": "N5_P1",
+      "PlacePointNameCN": "王子在森林中快走到空地",
+      "ToolCardID": "T_PETAL_PATH",
+      "OutcomeType": "ScorePlus",
+      "ResultID": "N5_R020",
+      "ResultSummaryCN": "花瓣路线为王子指路；点位1 +1。",
+      "NextState": "Node5Score"
+    },
+    {
+      "NodeID": "Node5",
+      "PlacePointID": "N5_P1",
+      "PlacePointNameCN": "王子在森林中快走到空地",
+      "ToolCardID": "T_BLOOMING_PATH",
+      "OutcomeType": "ScoreNeutral",
+      "ResultID": "N5_R021",
+      "ResultSummaryCN": "盛开的花路让场面更美，但没有直接改变救援；点位1 0。",
+      "NextState": "Node5Score"
+    },
+    {
+      "NodeID": "Node5",
+      "PlacePointID": "N5_P1",
+      "PlacePointNameCN": "王子在森林中快走到空地",
+      "ToolCardID": "T_FAST_VINES",
+      "OutcomeType": "ScorePlus",
+      "ResultID": "N5_R022",
+      "ResultSummaryCN": "速生藤蔓为王子开出道路；点位1 +1。",
       "NextState": "Node5Score"
     }
   ]
