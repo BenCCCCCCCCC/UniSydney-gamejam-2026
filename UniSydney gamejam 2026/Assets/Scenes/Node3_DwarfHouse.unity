@@ -215,6 +215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 1081387996}
   resultPlayer: {fileID: 2116289184}
+  triggerOnlyOnce: 1
 --- !u!61 &61986278
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -357,6 +358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 47383802}
   resultPlayer: {fileID: 2116289184}
+  triggerOnlyOnce: 1
 --- !u!61 &264295985
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1012,13 +1014,16 @@ MonoBehaviour:
   - {fileID: 47383802}
   - {fileID: 1081387996}
   - {fileID: 1729720876}
-  createRuntimeCardTable: 1
   cardArtCatalog: {fileID: 0}
   useResourcesArtFallback: 1
-  tableAnchor: {x: 0.5, y: 0.52}
-  tableSize: {x: 760, y: 250}
-  cardSize: {x: 190, y: 230}
-  cardSpacing: 28
+  slotPanelAnchor: {x: 0.5, y: 0.56}
+  slotPanelSize: {x: 820, y: 260}
+  slotSize: {x: 210, y: 240}
+  slotSpacing: 34
+  handPanelAnchor: {x: 0.5, y: 0.2}
+  handPanelSize: {x: 1000, y: 180}
+  handCardSize: {x: 150, y: 150}
+  handCardSpacing: 18
   createRuntimePlayButton: 1
   playButton: {fileID: 0}
   playButtonText: {fileID: 0}
@@ -1327,7 +1332,7 @@ Transform:
   m_GameObject: {fileID: 1405852953}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.89, y: -0.72, z: 0}
+  m_LocalPosition: {x: -8.35, y: -0.64, z: 0}
   m_LocalScale: {x: 1.5, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1693,6 +1698,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 1729720876}
   resultPlayer: {fileID: 2116289184}
+  triggerOnlyOnce: 1
 --- !u!61 &1851893872
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1866,7 +1872,7 @@ Transform:
   m_GameObject: {fileID: 2102600036}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.44, y: 0, z: 0}
+  m_LocalPosition: {x: 0.04, y: -0.012, z: 0}
   m_LocalScale: {x: 0.6666667, y: 0.33333334, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
