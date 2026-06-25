@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 // Temporary game jam bridge: drag a runtime tool-card UI item onto a Node placement point.
 public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -21,6 +22,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private Transform handParent;
     private int handSiblingIndex;
     private Vector2 handAnchoredPosition;
+    private Vector2 handSizeDelta;
     private bool hasHandHome;
 
     private string placedPointID;
@@ -108,14 +110,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             return;
         }
 
-        if (placementPoint.nodeID == "Node1")
-        {
-            Node1PlacementRules.TryPlaceTool(toolCardID, placementPoint);
-        }
-        else
-        {
-            Debug.Log($"PLACE_TEST: {toolCardID} on {placementPoint.nodeID}/{placementPoint.placePointID}");
-        }
+        NodePlacementRules.TryPlaceTool(toolCardID, placementPoint);
 
         placementPoint.SetTool(toolCardID);
         PlaceOnPoint(placementPoint);
@@ -437,9 +432,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
         rectTransform.anchoredPosition = Vector2.zero;
-        rectTransform.sizeDelta = new Vector2(150f, 64f);
-
-        transform.localScale = Vector3.one * 0.8f;
+        NodeToolHandController.ApplyPlacedCardVisual(rectTransform, GetComponent<Image>());
 
         Debug.Log($"PLACE_ANCHOR: point={placementPoint.placePointID}, visual={NodeToolHandController.GetDropSlotNameForPoint(placementPoint.placePointID)}");
         Debug.Log($"CARD_PLACED_VISUAL: {toolCardID} on {placementPoint.placePointID}");
@@ -474,6 +467,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         if (rectTransform != null)
         {
             rectTransform.anchoredPosition = targetAnchoredPosition;
+            rectTransform.sizeDelta = handSizeDelta;
         }
 
         transform.localScale = Vector3.one;
@@ -495,6 +489,7 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         handParent = transform.parent;
         handSiblingIndex = transform.GetSiblingIndex();
         handAnchoredPosition = rectTransform.anchoredPosition;
+        handSizeDelta = rectTransform.sizeDelta;
         hasHandHome = handParent != null;
     }
 }

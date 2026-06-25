@@ -15,7 +15,23 @@ public class NodeToolHandController : MonoBehaviour
     [Header("Tool Card Art")]
     [SerializeField] private CardArtCatalog cardArtCatalog;
     [SerializeField] private bool useResourcesArtFallback = true;
+
+    [Header("Tool Hand Layout")]
     [SerializeField] private Vector2 toolHandCardSize = new Vector2(120f, 160f);
+    [SerializeField] private float toolHandSpacing = 24f;
+    [SerializeField] private Vector2 handAreaAnchorMin = new Vector2(0.18f, 0.025f);
+    [SerializeField] private Vector2 handAreaAnchorMax = new Vector2(0.82f, 0.22f);
+
+    [Header("Placement Slot Layout")]
+    [SerializeField] private Vector2 placementDropSlotSize = new Vector2(170f, 220f);
+    [SerializeField] private Vector2 placedCardSize = new Vector2(120f, 160f);
+    [SerializeField] private float placedCardScale = 1f;
+    [SerializeField] private bool placedCardPreserveAspect = true;
+
+    [Header("Active Tool Text")]
+    [SerializeField] private Vector2 activeToolTextAnchor = new Vector2(0.5f, 0.17f);
+    [SerializeField] private Vector2 activeToolTextSize = new Vector2(900f, 44f);
+    [SerializeField] private float activeToolTextFontSize = 24f;
 
     private RectTransform handArea;
     private TMP_Text activeToolText;
@@ -75,6 +91,8 @@ public class NodeToolHandController : MonoBehaviour
     {
         //ToolCardDragItem.ClearPlacedCardRegistry();
 
+        ApplySceneConfig(FindAnyObjectByType<NodeToolHandSceneConfig>());
+        ApplyToolHandLayout();
         ClearPlacementPointTestValues();
         AttachPlacementPointClickBridges();
         BuildDropSlots();
@@ -96,6 +114,82 @@ public class NodeToolHandController : MonoBehaviour
         p3DropSlot = runtimeP3DropSlot;
 
         BuildDropSlots();
+        ApplyToolHandLayout();
+        ApplyActiveToolTextLayout();
+    }
+
+    public void ApplySceneConfig(NodeToolHandSceneConfig config)
+    {
+        if (config == null)
+        {
+            return;
+        }
+
+        if (config.CardArtCatalog != null)
+        {
+            cardArtCatalog = config.CardArtCatalog;
+        }
+
+        useResourcesArtFallback = config.UseResourcesArtFallback;
+        toolHandCardSize = config.ToolHandCardSize;
+        toolHandSpacing = Mathf.Max(0f, config.ToolHandSpacing);
+        handAreaAnchorMin = config.HandAreaAnchorMin;
+        handAreaAnchorMax = config.HandAreaAnchorMax;
+        placementDropSlotSize = config.PlacementDropSlotSize;
+        placedCardSize = config.PlacedCardSize;
+        placedCardScale = Mathf.Max(0.01f, config.PlacedCardScale);
+        placedCardPreserveAspect = config.PlacedCardPreserveAspect;
+        activeToolTextAnchor = config.ActiveToolTextAnchor;
+        activeToolTextSize = config.ActiveToolTextSize;
+        activeToolTextFontSize = Mathf.Max(1f, config.ActiveToolTextFontSize);
+
+        ApplyToolHandLayout();
+        ApplyActiveToolTextLayout();
+    }
+
+    private void ApplyToolHandLayout()
+    {
+        if (handArea == null)
+        {
+            return;
+        }
+
+        handArea.anchorMin = handAreaAnchorMin;
+        handArea.anchorMax = handAreaAnchorMax;
+        handArea.offsetMin = Vector2.zero;
+        handArea.offsetMax = Vector2.zero;
+
+        HorizontalLayoutGroup layout = handArea.GetComponent<HorizontalLayoutGroup>();
+        if (layout != null)
+        {
+            layout.spacing = toolHandSpacing;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+        }
+    }
+
+    private void ApplyActiveToolTextLayout()
+    {
+        if (activeToolText == null)
+        {
+            return;
+        }
+
+        activeToolText.fontSize = activeToolTextFontSize;
+
+        RectTransform rect = activeToolText.GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            return;
+        }
+
+        rect.anchorMin = activeToolTextAnchor;
+        rect.anchorMax = activeToolTextAnchor;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.sizeDelta = activeToolTextSize;
+        rect.anchoredPosition = Vector2.zero;
     }
 
     public static void TryPlaceActiveTool(PlacementPoint placementPoint)
@@ -135,6 +229,26 @@ public class NodeToolHandController : MonoBehaviour
         }
 
         return null;
+    }
+
+    public static void ApplyPlacedCardVisual(RectTransform rectTransform, Image image)
+    {
+        if (rectTransform == null)
+        {
+            return;
+        }
+
+        Vector2 size = instance != null ? instance.placedCardSize : new Vector2(120f, 160f);
+        float scale = instance != null ? Mathf.Max(0.01f, instance.placedCardScale) : 1f;
+        bool preserveAspect = instance == null || instance.placedCardPreserveAspect;
+
+        rectTransform.sizeDelta = size;
+        rectTransform.localScale = Vector3.one * scale;
+
+        if (image != null && image.sprite != null)
+        {
+            image.preserveAspect = preserveAspect;
+        }
     }
 
     public static string GetDropSlotNameForPoint(string placePointID)
@@ -184,14 +298,7 @@ public class NodeToolHandController : MonoBehaviour
             return;
         }
 
-        if (placementPoint.nodeID == "Node1")
-        {
-            Node1PlacementRules.TryPlaceTool(activeToolCardID, placementPoint);
-        }
-        else
-        {
-            Debug.Log($"PLACE_TEST: {activeToolCardID} on {placementPoint.nodeID}/{placementPoint.placePointID}");
-        }
+        NodePlacementRules.TryPlaceTool(activeToolCardID, placementPoint);
 
         placementPoint.SetTool(activeToolCardID);
         UpdateActiveToolText();
@@ -443,7 +550,7 @@ public class NodeToolHandController : MonoBehaviour
         {
             image.sprite = toolSprite;
             image.color = Color.white;
-            image.preserveAspect = false;
+            image.preserveAspect = true;
             label.gameObject.SetActive(false);
         }
     }
@@ -499,6 +606,7 @@ public class NodeToolHandController : MonoBehaviour
         public static void Build()
         {
             EnsureEventSystem();
+            NodeToolHandSceneConfig config = FindAnyObjectByType<NodeToolHandSceneConfig>();
 
             GameObject canvasObject = new GameObject(
                 "NodeToolHandCanvas",
@@ -521,21 +629,22 @@ public class NodeToolHandController : MonoBehaviour
                 "ActiveToolText",
                 canvasRect,
                 "Active Tool: None",
-                new Vector2(0.5f, 0.17f),
-                new Vector2(900f, 44f),
-                24f);
+                config != null ? config.ActiveToolTextAnchor : new Vector2(0.5f, 0.17f),
+                config != null ? config.ActiveToolTextSize : new Vector2(900f, 44f),
+                config != null ? config.ActiveToolTextFontSize : 24f);
 
-            RectTransform p1DropSlot = CreateDropSlot(canvasRect, "P1_DropSlotUI");
-            RectTransform p2DropSlot = CreateDropSlot(canvasRect, "P2_DropSlotUI");
-            RectTransform p3DropSlot = CreateDropSlot(canvasRect, "P3_DropSlotUI");
-            RectTransform handArea = CreateHandArea(canvasRect);
+            RectTransform p1DropSlot = CreateDropSlot(canvasRect, "P1_DropSlotUI", config);
+            RectTransform p2DropSlot = CreateDropSlot(canvasRect, "P2_DropSlotUI", config);
+            RectTransform p3DropSlot = CreateDropSlot(canvasRect, "P3_DropSlotUI", config);
+            RectTransform handArea = CreateHandArea(canvasRect, config);
 
             GameObject controllerObject = new GameObject("NodeToolHandController");
             NodeToolHandController controller = controllerObject.AddComponent<NodeToolHandController>();
+            controller.ApplySceneConfig(config);
             controller.ConfigureRuntime(handArea, activeToolText, p1DropSlot, p2DropSlot, p3DropSlot);
         }
 
-        private static RectTransform CreateDropSlot(Transform parent, string name)
+        private static RectTransform CreateDropSlot(Transform parent, string name, NodeToolHandSceneConfig config)
         {
             GameObject slotObject = new GameObject(name, typeof(RectTransform));
             slotObject.transform.SetParent(parent, false);
@@ -544,13 +653,13 @@ public class NodeToolHandController : MonoBehaviour
             rect.anchorMin = new Vector2(0.5f, 0.5f);
             rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.sizeDelta = new Vector2(170f, 84f);
+            rect.sizeDelta = config != null ? config.PlacementDropSlotSize : new Vector2(170f, 220f);
             rect.anchoredPosition = Vector2.zero;
 
             return rect;
         }
 
-        private static RectTransform CreateHandArea(Transform parent)
+        private static RectTransform CreateHandArea(Transform parent, NodeToolHandSceneConfig config)
         {
             GameObject areaObject = new GameObject(
                 "NodeToolHandArea",
@@ -564,13 +673,13 @@ public class NodeToolHandController : MonoBehaviour
             image.color = new Color(0.04f, 0.05f, 0.07f, 0.82f);
 
             RectTransform rect = areaObject.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.22f, 0.025f);
-            rect.anchorMax = new Vector2(0.78f, 0.14f);
+            rect.anchorMin = config != null ? config.HandAreaAnchorMin : new Vector2(0.18f, 0.025f);
+            rect.anchorMax = config != null ? config.HandAreaAnchorMax : new Vector2(0.82f, 0.22f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
             HorizontalLayoutGroup layout = areaObject.GetComponent<HorizontalLayoutGroup>();
-            layout.spacing = 24f;
+            layout.spacing = config != null ? Mathf.Max(0f, config.ToolHandSpacing) : 24f;
             layout.childAlignment = TextAnchor.MiddleCenter;
             layout.childControlWidth = true;
             layout.childControlHeight = true;

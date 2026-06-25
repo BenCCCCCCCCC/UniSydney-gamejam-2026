@@ -120,6 +120,9 @@ public class CardDatabase : MonoBehaviour
             {
                 Debug.LogWarning($"CardDatabase: node loadout has empty AvailableBaseCardIDs: {loadout.NodeID}");
             }
+
+            ValidateLoadoutToolList(loadout, "CoreToolCardIDs", loadout.CoreToolCardIDs);
+            ValidateLoadoutToolList(loadout, "OptionalToolCardIDs", loadout.OptionalToolCardIDs);
         }
 
         Debug.Log($"CardDatabase loaded. Cards: {cardsById.Count}, Recipes: {recipesByPairKey.Count}");
@@ -155,6 +158,73 @@ public class CardDatabase : MonoBehaviour
         }
 
         return true;
+    }
+
+    public bool IsToolAllowedInNode(string nodeId, string toolCardID)
+    {
+        if (string.IsNullOrWhiteSpace(nodeId) || string.IsNullOrWhiteSpace(toolCardID))
+        {
+            return false;
+        }
+
+        if (Data == null || Data.nodeLoadouts == null)
+        {
+            Debug.LogError("CardDatabase: cannot check node tool list before data is loaded.");
+            return false;
+        }
+
+        foreach (NodeLoadoutRow loadout in Data.nodeLoadouts)
+        {
+            if (loadout == null || loadout.NodeID != nodeId)
+            {
+                continue;
+            }
+
+            return ContainsCsvID(loadout.CoreToolCardIDs, toolCardID)
+                || ContainsCsvID(loadout.OptionalToolCardIDs, toolCardID);
+        }
+
+        return false;
+    }
+
+    public bool TryGetPlacementResult(
+        string nodeId,
+        string placePointID,
+        string toolCardID,
+        out PlacementResultRow result)
+    {
+        result = null;
+
+        if (string.IsNullOrWhiteSpace(nodeId)
+            || string.IsNullOrWhiteSpace(placePointID)
+            || string.IsNullOrWhiteSpace(toolCardID))
+        {
+            return false;
+        }
+
+        if (Data == null || Data.placementResults == null)
+        {
+            Debug.LogError("CardDatabase: cannot check placement results before data is loaded.");
+            return false;
+        }
+
+        foreach (PlacementResultRow row in Data.placementResults)
+        {
+            if (row == null)
+            {
+                continue;
+            }
+
+            if (row.NodeID == nodeId
+                && row.PlacePointID == placePointID
+                && row.ToolCardID == toolCardID)
+            {
+                result = row;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public List<CardRow> GetBaseCardsForNode(string nodeId)
@@ -236,6 +306,60 @@ public class CardDatabase : MonoBehaviour
             && !card.IsCraftedTool
             && !string.IsNullOrWhiteSpace(card.CardID)
             && card.CardID.StartsWith("B_", System.StringComparison.Ordinal);
+    }
+
+    private bool ContainsCsvID(string csv, string targetID)
+    {
+        if (string.IsNullOrWhiteSpace(csv) || string.IsNullOrWhiteSpace(targetID))
+        {
+            return false;
+        }
+
+        string[] ids = csv.Split(',');
+
+        foreach (string rawId in ids)
+        {
+            if (rawId.Trim() == targetID)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void ValidateLoadoutToolList(NodeLoadoutRow loadout, string fieldName, string toolCardIDs)
+    {
+        if (loadout == null || string.IsNullOrWhiteSpace(loadout.NodeID) || string.IsNullOrWhiteSpace(toolCardIDs))
+        {
+            return;
+        }
+
+        string[] ids = toolCardIDs.Split(',');
+
+        foreach (string rawId in ids)
+        {
+            string id = rawId.Trim();
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                continue;
+            }
+
+            if (!cardsById.TryGetValue(id, out CardRow card))
+            {
+                Debug.LogWarning($"{loadout.NodeID} {fieldName} contains {id}, but that card does not exist.");
+                continue;
+            }
+
+            if (card.DesignedForNode != loadout.NodeID)
+            {
+                string prefix = fieldName == "CoreToolCardIDs"
+                    ? "CROSS_NODE_CORE_TOOL"
+                    : "CROSS_NODE_OPTIONAL_TOOL";
+                Debug.Log($"{prefix}: {loadout.NodeID} {fieldName} contains {id}; primary DesignedForNode is {card.DesignedForNode}.");
+            }
+        }
     }
 
     private string MakePairKey(string cardAId, string cardBId)

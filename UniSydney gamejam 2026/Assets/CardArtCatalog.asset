@@ -133,7 +133,7 @@ MonoBehaviour:
     sprite: {fileID: 7780450870121836006, guid: 6cd2c77267db3314abaabc72e399c8ff, type: 3}
   - cardID: T_SLEEPING_HANDKERCHIEF
     sprite: {fileID: 1542998995624487220, guid: ce488c4262f89ae4b8ccebb839090d04, type: 3}
-  - cardID: T_SLEEPING_SIGN
+  - cardID: T_SPINNING_SIGN
     sprite: {fileID: -5800942342975624976, guid: 37f2745c53d41fa4bb69ee49c8bc0a9c, type: 3}
   - cardID: T_SPORE_FOG
     sprite: {fileID: 2742256560116781838, guid: 82f4193332b296e4293360837859f0b5, type: 3}
@@ -149,3 +149,15 @@ MonoBehaviour:
     sprite: {fileID: -736251774395838962, guid: 5d7e81ab19861b2409976f082bc2e42e, type: 3}
   - cardID: T_WIND_CHIME_SIGNAL
     sprite: {fileID: -6415814434738763982, guid: 757863ea186fd7942a9211d8621a120d, type: 3}
+  - cardID: T_GLOWING_FLOWER_PATH
+    sprite: {fileID: -3705295431661629005, guid: 461343cab169d9a40b08b174b3dc92c2, type: 3}
+  - cardID: T_BLOOMING_PATH
+    sprite: {fileID: 1778077228091104352, guid: d69c79256ebfa7749abd644125ec8d42, type: 3}
+  - cardID: T_LAUNCH_PLANK
+    sprite: {fileID: 2802683280088530782, guid: fb7e95f7ef436524f9c4b701add9f95d, type: 3}
+  - cardID: T_SHAKING_COFFIN
+    sprite: {fileID: -1021674643421900921, guid: 348cecd867160eb4ba2fb7f26967b461, type: 3}
+  - cardID: T_SEALEDA_COFFIN
+    sprite: {fileID: 7113978937093574563, guid: 186bdad239ebef44493b8bd67b865c22, type: 3}
+  - cardID: T_BROADCAST_BIRD
+    sprite: {fileID: -220151198244820131, guid: 82e5656f20496be4da3bcbae897ded34, type: 3}
