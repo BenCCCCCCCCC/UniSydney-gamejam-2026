@@ -1435,6 +1435,139 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &1714120153
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1714120155}
+  - component: {fileID: 1714120154}
+  - component: {fileID: 1714120156}
+  m_Layer: 0
+  m_Name: NodeIconPresenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1714120154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1714120153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39013c5032d5b2046a25ae2028ed19cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlacedToolIconPresenter
+  toolIconCatalog: {fileID: 11400000, guid: 89303714453ed8948b1aa1dd23f12245, type: 2}
+  iconWorldParent: {fileID: 0}
+  placementBindings:
+  - placePointID: N1_P1
+    placementPoint: {fileID: 47383802}
+    iconTarget: {fileID: 47383801}
+    placedCardUIObjectToHide: {fileID: 47383800}
+  - placePointID: N1_P2
+    placementPoint: {fileID: 1081387996}
+    iconTarget: {fileID: 1081387995}
+    placedCardUIObjectToHide: {fileID: 1081387994}
+  - placePointID: N1_P3
+    placementPoint: {fileID: 1729720876}
+    iconTarget: {fileID: 1729720874}
+    placedCardUIObjectToHide: {fileID: 1729720873}
+  fallHeight: 1.5
+  fallDuration: 0.35
+  worldOffset: {x: 0, y: 0, z: 0}
+  iconSize: {x: 1, y: 1}
+  sortingLayerName: Default
+  sortingOrder: 50
+  hidePlacedCardUIAfterSpawn: 0
+  clearOldIconsBeforePlay: 1
+--- !u!4 &1714120155
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1714120153}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.17171, y: 0.36522, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1714120156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1714120153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94b9df6b02e40724a827b9f51e10d1bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlacedToolIconAutoPlayTrigger
+  iconPresenter: {fileID: 1714120154}
+  triggerOnce: 1
+  triggerDelaySeconds: 0
+  autoFindPresenter: 1
+--- !u!1 &1724772761
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1724772763}
+  - component: {fileID: 1724772762}
+  m_Layer: 0
+  m_Name: NodeIconPlayHook
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1724772762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724772761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50d16bee7d084f6439368ebceae94286, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RuntimePlayButtonIconHook
+  iconPresenter: {fileID: 1714120154}
+  playButtonOverride: {fileID: 0}
+  playButtonNameContains: Play
+  bindDelaySeconds: 0.1
+  logBinding: 1
+--- !u!4 &1724772763
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724772761}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.93334, y: 0.27595, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1729720873
 GameObject:
   m_ObjectHideFlags: 0
@@ -2052,3 +2185,5 @@ SceneRoots:
   m_Roots:
   - {fileID: 837009141}
   - {fileID: 2089790158}
+  - {fileID: 1714120155}
+  - {fileID: 1724772763}
