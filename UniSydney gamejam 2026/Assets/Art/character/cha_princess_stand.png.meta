@@ -106,12 +106,12 @@ TextureImporter:
       name: cha_princess_stand_0
       rect:
         serializedVersion: 2
-        x: 148
-        y: 14
+        x: 128
+        y: 34
         width: 279
         height: 450
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5241636, y: 0.4925093}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -128,12 +128,12 @@ TextureImporter:
       name: cha_princess_stand_1
       rect:
         serializedVersion: 2
-        x: 689
-        y: 23
+        x: 672
+        y: 53
         width: 279
         height: 441
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -150,7 +150,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 25fe6cab1f5b1dc4ca7d2c0c1308f848
     internalID: 0
     vertices: []
     indices: 
