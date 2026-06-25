@@ -22,6 +22,10 @@ public class PlacedToolIconPresenter : MonoBehaviour
     [SerializeField] private Vector3 worldOffset;
     [SerializeField] private Vector2 iconSize = new Vector2(1f, 1f);
 
+    [Header("Reveal Effect")]
+    [SerializeField] private bool useRevealEffect = false;
+    [SerializeField] private PlacementRevealVfxConfig revealVfxConfig;
+
     [Header("Rendering")]
     [SerializeField] private string sortingLayerName = "Default";
     [SerializeField] private int sortingOrder = 50;
@@ -71,22 +75,7 @@ public class PlacedToolIconPresenter : MonoBehaviour
                 continue;
             }
 
-            Transform target = binding.IconTarget != null ? binding.IconTarget : binding.PlacementPoint.transform;
-            Vector3 endPosition = target.position + worldOffset;
-            Vector3 startPosition = endPosition + Vector3.up * fallHeight;
-
-            GameObject iconObject = new GameObject($"PlacedIcon_{pointID}_{toolCardID}", typeof(SpriteRenderer), typeof(PlacedToolIconView));
-            iconObject.transform.SetParent(iconWorldParent != null ? iconWorldParent : transform, true);
-
-            spawnedIcons.Add(iconObject);
-
-            PlacedToolIconView view = iconObject.GetComponent<PlacedToolIconView>();
-            view.Play(icon, startPosition, endPosition, fallDuration, iconSize, sortingLayerName, sortingOrder);
-
-            if (hidePlacedCardUIAfterSpawn && binding.PlacedCardUIObjectToHide != null)
-            {
-                binding.PlacedCardUIObjectToHide.SetActive(false);
-            }
+            PlayIconForBinding(binding, pointID, toolCardID, icon);
         }
     }
 
@@ -136,6 +125,49 @@ public class PlacedToolIconPresenter : MonoBehaviour
         }
 
         return "(unknown point)";
+    }
+
+    private void PlayIconForBinding(PlacementIconBinding binding, string pointID, string toolCardID, Sprite icon)
+    {
+        Transform parent = iconWorldParent != null ? iconWorldParent : transform;
+        Transform target = binding.IconTarget != null ? binding.IconTarget : binding.PlacementPoint.transform;
+        Vector3 endPosition = target.position + worldOffset;
+
+        if (useRevealEffect && revealVfxConfig != null)
+        {
+            Vector3 revealStartPosition = endPosition + Vector3.up * revealVfxConfig.IconFallHeight;
+            GameObject effectObject = new GameObject($"RevealEffect_{pointID}_{toolCardID}", typeof(PlacedToolRevealEffectView));
+            effectObject.transform.SetParent(parent, true);
+            spawnedIcons.Add(effectObject);
+
+            Debug.Log($"REVEAL_EFFECT_STARTED: {toolCardID} at {pointID}");
+
+            PlacedToolRevealEffectView revealView = effectObject.GetComponent<PlacedToolRevealEffectView>();
+            revealView.Play(
+                binding.PlacedCardUIObjectToHide,
+                icon,
+                revealStartPosition,
+                endPosition,
+                iconSize,
+                revealVfxConfig,
+                parent,
+                pointID,
+                toolCardID);
+            return;
+        }
+
+        Vector3 startPosition = endPosition + Vector3.up * fallHeight;
+        GameObject iconObject = new GameObject($"PlacedIcon_{pointID}_{toolCardID}", typeof(SpriteRenderer), typeof(PlacedToolIconView));
+        iconObject.transform.SetParent(parent, true);
+        spawnedIcons.Add(iconObject);
+
+        PlacedToolIconView view = iconObject.GetComponent<PlacedToolIconView>();
+        view.Play(icon, startPosition, endPosition, fallDuration, iconSize, sortingLayerName, sortingOrder);
+
+        if (hidePlacedCardUIAfterSpawn && binding.PlacedCardUIObjectToHide != null)
+        {
+            binding.PlacedCardUIObjectToHide.SetActive(false);
+        }
     }
 }
 
