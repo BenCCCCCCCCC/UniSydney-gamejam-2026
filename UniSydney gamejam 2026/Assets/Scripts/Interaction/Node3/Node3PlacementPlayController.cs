@@ -404,11 +404,12 @@ public class Node3PlacementPlayController : MonoBehaviour
         placedCards[slotIndex] = card;
 
         PlacementPoint point = requiredPlacementPoints[slotIndex];
+        bool isValidPlacement = NodePlacementRules.TryPlaceTool(card.ToolCardID, point);
         point.SetTool(card.ToolCardID);
 
         card.PlaceInSlot(slotIndex, slotRects[slotIndex]);
 
-        Debug.Log($"NODE3_MANUAL_PLACE: {card.ToolCardID} -> {point.placePointID}");
+        Debug.Log($"NODE3_MANUAL_PLACE: {card.ToolCardID} -> {point.placePointID}, valid = {isValidPlacement}");
 
         RefreshPlayButtonState();
     }

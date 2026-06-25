@@ -6,16 +6,16 @@ using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 #endif
 
-public class Node1SimpleFlowController : MonoBehaviour
+public class Node5SimpleFlowController : MonoBehaviour
 {
     [Header("Node")]
-    [SerializeField] private string nodeID = "Node1";
-    [SerializeField] private string nodeSceneName = "Node1_QueenCastle";
+    [SerializeField] private string nodeID = "Node5";
+    [SerializeField] private string nodeSceneName = "Node5";
     [SerializeField] private string cardBackpackSceneName = "CardBackpackTest";
 
     [Header("Briefing")]
     [SerializeField] private SceneTextUIController textUI;
-    [SerializeField] private float briefingDuration = 2.4f;
+    [SerializeField] private float briefingDuration = 3.2f;
 
     private IEnumerator Start()
     {
@@ -37,7 +37,7 @@ public class Node1SimpleFlowController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Node1SimpleFlowController: SceneTextUIController is not assigned.");
+            Debug.LogWarning("Node5SimpleFlowController: SceneTextUIController is not assigned.");
         }
 
         yield return new WaitForSeconds(briefingDuration);
@@ -49,14 +49,14 @@ public class Node1SimpleFlowController : MonoBehaviour
 
         GameSessionData.CurrentPhase = GameFlowPhase.CardCrafting;
 
-        Debug.Log($"Node1SimpleFlowController: loading scene {cardBackpackSceneName}");
+        Debug.Log($"Node5SimpleFlowController: loading scene {cardBackpackSceneName}");
 
         LoadSceneByName(cardBackpackSceneName);
     }
 
     private void LoadSceneByName(string sceneName)
     {
-        Debug.Log($"Node1SimpleFlowController loading scene: {sceneName}");
+        Debug.Log($"Node5SimpleFlowController loading scene: {sceneName}");
 
 #if UNITY_EDITOR
         string scenePath = $"Assets/Scenes/{sceneName}.unity";

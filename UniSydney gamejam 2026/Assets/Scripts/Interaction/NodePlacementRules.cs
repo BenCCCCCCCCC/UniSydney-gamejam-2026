@@ -4,8 +4,8 @@ using UnityEngine;
 // Node usability comes from nodeLoadouts; valid point/tool matches come from placementResults.
 public static class NodePlacementRules
 {
-    private const string WrongPointLine = "孩子：这个道具好像不是放在这里的。";
-    private const string WrongNodeLine = "孩子：这个道具应该属于别的故事片段。";
+    private const string WrongPointLine = "This tool does not belong here.";
+    private const string WrongNodeLine = "This tool belongs to another story node.";
 
     private static CardDatabase cachedDatabase;
 
