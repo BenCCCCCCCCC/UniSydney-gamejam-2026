@@ -117,7 +117,7 @@ MonoBehaviour:
     sprite: {fileID: 4480382998747184970, guid: 2f5953cc9bcc4824d9c0b08a77d53c71, type: 3}
   - cardID: T_MAGIC_MIRROR
     sprite: {fileID: -2077453115925867722, guid: e43d971ff0ace5746bb33c0848beef92, type: 3}
-  - cardID: T_MAGIC_SEAL
+  - cardID: T_MIRROR_SEAL
     sprite: {fileID: 1027726689647761724, guid: 73c0d3ce068f8cb4f83350e0b915a3e5, type: 3}
   - cardID: T_PAPER_CROWN_DOLL
     sprite: {fileID: -591695658248330065, guid: cb98dc8f8df6bf74c9eed56b8b4cf49e, type: 3}
@@ -139,8 +139,8 @@ MonoBehaviour:
     sprite: {fileID: 2742256560116781838, guid: 82f4193332b296e4293360837859f0b5, type: 3}
   - cardID: T_STICKY_PLANK
     sprite: {fileID: 3275718832649954336, guid: 3fb30156d7e27e8449fd63e553bc53c2, type: 3}
-  - cardID: T_STICKY_PLANK
-    sprite: {fileID: 3275718832649954336, guid: 3fb30156d7e27e8449fd63e553bc53c2, type: 3}
+  - cardID: T_STICKY_ROPE
+    sprite: {fileID: -3086040879537626461, guid: d69d9fcff7894ce43b50fa6c51f444a9, type: 3}
   - cardID: T_TALKING_SIGN
     sprite: {fileID: -2615759701313701882, guid: 1adb8501dfc511c4a95d290663d69ac0, type: 3}
   - cardID: T_UNLOCK_KIT

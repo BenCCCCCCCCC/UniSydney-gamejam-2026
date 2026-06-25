@@ -77,7 +77,7 @@ MonoBehaviour:
     iconSprite: {fileID: 3525618764255335234, guid: 98068c6541245744fae2d5990d0c4d0a, type: 3}
   - toolCardID: T_MAGIC_MIRROR
     iconSprite: {fileID: 2042823853694462013, guid: 7b0599770bff2054e88b3ec24bd88301, type: 3}
-  - toolCardID: T_MIRROR_CURSE_POSTION
+  - toolCardID: T_MIRROR_CURSE_POTION
     iconSprite: {fileID: 3270749175355775669, guid: fef75824c05868c408bf6a7e28e10591, type: 3}
   - toolCardID: T_MIRROR_SEAL
     iconSprite: {fileID: 2963478739821791478, guid: 667636e112af2be45be27e89ef54e9ba, type: 3}
@@ -113,3 +113,5 @@ MonoBehaviour:
     iconSprite: {fileID: -6701094504770547140, guid: ac16f524ad6e58a4cb96225fda27a96e, type: 3}
   - toolCardID: T_WIND_CHIME_SIGNAL
     iconSprite: {fileID: 1863977691214506469, guid: cabb5f77f5f0ae346aaa28522b93f59e, type: 3}
+  - toolCardID: T_UNLOCK_KIT
+    iconSprite: {fileID: -6424516378088327578, guid: e7812718c12e89742bc4416f9eea01cb, type: 3}

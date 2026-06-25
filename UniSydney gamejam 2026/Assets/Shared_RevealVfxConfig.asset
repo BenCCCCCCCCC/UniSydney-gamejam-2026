@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96ccf9d4e5a9de24396a9169344aa25d, type: 3}
+  m_Name: Shared_RevealVfxConfig
+  m_EditorClassIdentifier: Assembly-CSharp::PlacementRevealVfxConfig
+  smokeFrames:
+  - {fileID: 4597524613824959163, guid: b451b5292726c7c4d91b8cb3e8686512, type: 3}
+  smokeFrameRate: 12
+  smokeScaleStart: 0.4
+  smokeScaleEnd: 2.8
+  smokeDuration: 1
+  smokeSize: {x: 2, y: 2}
+  smokeSortingOrder: 160
+  cardShrinkDuration: 0.18
+  cardFadeDuration: 0.18
+  hidePlacedCardAfterEffect: 0
+  iconSpawnDelay: 0.35
+  iconFallHeight: 1.2
+  iconFallDuration: 0.45
+  iconSortingOrder: 150
+  sortingLayerName: Default
+  usePlaceholderWhenNoSmokeFrames: 1

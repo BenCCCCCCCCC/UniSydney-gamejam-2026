@@ -1719,7 +1719,7 @@
       "ToolCardID": "T_MAGIC_MIRROR",
       "OutcomeType": "Success",
       "ResultID": "N1_R001",
-      "ResultSummaryCN": "Magic Mirror Spotlight makes the Queen focus on Snow White and pushes the story toward the Hunter.",
+      "ResultSummaryCN": "The magic shard awakens the mirror. The mirror says, \"Snow White is the fairest girl in the world.\"",
       "NextState": "Node2"
     },
     {
@@ -1729,7 +1729,7 @@
       "ToolCardID": "T_BEAUTY_RANKING",
       "OutcomeType": "Success",
       "ResultID": "N1_R002",
-      "ResultSummaryCN": "Beauty Ranking makes the Queen focus on Snow White and pushes the story toward the Hunter.",
+      "ResultSummaryCN": "Snow White has been voted the most beautiful girl in the forest!!!",
       "NextState": "Node2"
     },
     {
@@ -1739,7 +1739,7 @@
       "ToolCardID": "T_BOUNCY_CROWN",
       "OutcomeType": "SuccessFunny",
       "ResultID": "N1_R003",
-      "ResultSummaryCN": "Bouncy Crown makes the Queen focus on Snow White and pushes the story toward the Hunter.",
+      "ResultSummaryCN": "The crown springs onto Snow White's head. The Queen sees it and becomes very unhappy.",
       "NextState": "Node2"
     },
     {
@@ -1749,7 +1749,7 @@
       "ToolCardID": "T_PAPER_CROWN_DOLL",
       "OutcomeType": "SuccessFunny",
       "ResultID": "N1_R004",
-      "ResultSummaryCN": "Paper Crown Stand-in makes the Queen focus on Snow White and pushes the story toward the Hunter.",
+      "ResultSummaryCN": "The paper crown stand-in makes the Queen imagine Snow White taking her place.",
       "NextState": "Node2"
     },
     {
@@ -1759,7 +1759,7 @@
       "ToolCardID": "T_BROADCAST_BIRD",
       "OutcomeType": "Success",
       "ResultID": "N1_R005",
-      "ResultSummaryCN": "Broadcast Bird makes the Queen focus on Snow White and pushes the story toward the Hunter.",
+      "ResultSummaryCN": "Snow White is so beautiful!!!",
       "NextState": "Node2"
     },
     {
@@ -1879,7 +1879,7 @@
       "ToolCardID": "T_LEAF_GLIDER",
       "OutcomeType": "ReachDoor",
       "ResultID": "N3_R001",
-      "ResultSummaryCN": "Leaf Glider helps Snow White reach the cottage door.",
+      "ResultSummaryCN": "Snow White is carried to the cottage door by Leaf Glider.",
       "NextState": "N3_DoorCheck"
     },
     {
@@ -1889,7 +1889,7 @@
       "ToolCardID": "T_FLYING_CLOAK",
       "OutcomeType": "ReachDoor",
       "ResultID": "N3_R002",
-      "ResultSummaryCN": "Flying Cloak helps Snow White reach the cottage door.",
+      "ResultSummaryCN": "Snow White is carried to the cottage door by Flying Cloak.",
       "NextState": "N3_DoorCheck"
     },
     {
@@ -1899,7 +1899,7 @@
       "ToolCardID": "T_BOUNCY_MUSHROOM",
       "OutcomeType": "ReachDoor",
       "ResultID": "N3_R003",
-      "ResultSummaryCN": "Bouncy Mushroom helps Snow White reach the cottage door.",
+      "ResultSummaryCN": "Snow White is carried to the cottage door by Bouncy Mushroom.",
       "NextState": "N3_DoorCheck"
     },
     {
@@ -1909,7 +1909,7 @@
       "ToolCardID": "T_LAUNCH_PLANK",
       "OutcomeType": "ReachDoor",
       "ResultID": "N3_R004",
-      "ResultSummaryCN": "Launch Plank helps Snow White reach the cottage door.",
+      "ResultSummaryCN": "Snow White is carried to the cottage door by Launch Plank.",
       "NextState": "N3_DoorCheck"
     },
     {
@@ -1919,7 +1919,7 @@
       "ToolCardID": "T_ELASTIC_ROPE",
       "OutcomeType": "ReachDoor",
       "ResultID": "N3_R005",
-      "ResultSummaryCN": "Elastic Rope helps Snow White reach the cottage door.",
+      "ResultSummaryCN": "Snow White is carried to the cottage door by Elastic Rope.",
       "NextState": "N3_DoorCheck"
     },
     {
@@ -1929,7 +1929,7 @@
       "ToolCardID": "T_GUIDE_BIRD",
       "OutcomeType": "ReachDoor",
       "ResultID": "N3_R006",
-      "ResultSummaryCN": "Guide Bird helps Snow White reach the cottage door.",
+      "ResultSummaryCN": "Guide Bird points Snow White toward the cottage.",
       "NextState": "N3_DoorCheck"
     },
     {
@@ -1939,7 +1939,7 @@
       "ToolCardID": "T_TALKING_SIGN",
       "OutcomeType": "ReachDoor",
       "ResultID": "N3_R007",
-      "ResultSummaryCN": "Talking Signpost helps Snow White reach the cottage door.",
+      "ResultSummaryCN": "Talking Signpost points Snow White toward the cottage.",
       "NextState": "N3_DoorCheck"
     },
     {
@@ -1949,7 +1949,7 @@
       "ToolCardID": "T_GLOWING_SIGN",
       "OutcomeType": "ReachDoor",
       "ResultID": "N3_R008",
-      "ResultSummaryCN": "Glowing Signpost helps Snow White reach the cottage door.",
+      "ResultSummaryCN": "Glowing Signpost points Snow White toward the cottage.",
       "NextState": "N3_DoorCheck"
     },
     {
@@ -1959,7 +1959,7 @@
       "ToolCardID": "T_PETAL_PATH",
       "OutcomeType": "ReachDoor",
       "ResultID": "N3_R009",
-      "ResultSummaryCN": "Petal Path helps Snow White reach the cottage door.",
+      "ResultSummaryCN": "Petal Path points Snow White toward the cottage.",
       "NextState": "N3_DoorCheck"
     },
     {
@@ -1969,7 +1969,7 @@
       "ToolCardID": "T_GLOWING_FLOWER_PATH",
       "OutcomeType": "ReachDoor",
       "ResultID": "N3_R010",
-      "ResultSummaryCN": "Glowing Flower Path helps Snow White reach the cottage door.",
+      "ResultSummaryCN": "Glowing Flower Path points Snow White toward the cottage.",
       "NextState": "N3_DoorCheck"
     },
     {
@@ -1979,7 +1979,7 @@
       "ToolCardID": "T_BLOOMING_PATH",
       "OutcomeType": "ReachDoor",
       "ResultID": "N3_R011",
-      "ResultSummaryCN": "Blooming Path helps Snow White reach the cottage door.",
+      "ResultSummaryCN": "Blooming Path points Snow White toward the cottage.",
       "NextState": "N3_DoorCheck"
     },
     {
@@ -1989,7 +1989,7 @@
       "ToolCardID": "T_FLOWER_KEY",
       "OutcomeType": "Success",
       "ResultID": "N3_R012",
-      "ResultSummaryCN": "Flower Key helps Snow White enter the dwarfs cottage.",
+      "ResultSummaryCN": "Flower Key helps Snow White open the door.",
       "NextState": "Node4"
     },
     {
@@ -1999,7 +1999,7 @@
       "ToolCardID": "T_DOORBELL_BIRD",
       "OutcomeType": "Success",
       "ResultID": "N3_R013",
-      "ResultSummaryCN": "Doorbell Bird helps Snow White enter the dwarfs cottage.",
+      "ResultSummaryCN": "Doorbell Bird helps Snow White open the door.",
       "NextState": "Node4"
     },
     {
@@ -2009,7 +2009,7 @@
       "ToolCardID": "T_WIND_CHIME_SIGNAL",
       "OutcomeType": "Success",
       "ResultID": "N3_R014",
-      "ResultSummaryCN": "Wind Chime Signal helps Snow White enter the dwarfs cottage.",
+      "ResultSummaryCN": "Wind Chime Signal helps Snow White open the door.",
       "NextState": "Node4"
     },
     {
@@ -2019,7 +2019,7 @@
       "ToolCardID": "T_UNLOCK_KIT",
       "OutcomeType": "Success",
       "ResultID": "N3_R015",
-      "ResultSummaryCN": "Unlock Kit helps Snow White enter the dwarfs cottage.",
+      "ResultSummaryCN": "Unlock Kit helps Snow White open the door.",
       "NextState": "Node4"
     },
     {
@@ -2029,7 +2029,7 @@
       "ToolCardID": "T_LOCKPICK_TOOLS",
       "OutcomeType": "Success",
       "ResultID": "N3_R016",
-      "ResultSummaryCN": "Lockpick Tools helps Snow White enter the dwarfs cottage.",
+      "ResultSummaryCN": "Lockpick Tools helps Snow White open the door.",
       "NextState": "Node4"
     },
     {
@@ -2039,7 +2039,7 @@
       "ToolCardID": "T_WELCOME_CURTAIN",
       "OutcomeType": "Success",
       "ResultID": "N3_R017",
-      "ResultSummaryCN": "Welcome Curtain helps Snow White enter the dwarfs cottage.",
+      "ResultSummaryCN": "Welcome Curtain helps Snow White open the door.",
       "NextState": "Node4"
     },
     {
@@ -2049,7 +2049,7 @@
       "ToolCardID": "T_RESCUE_BEACON",
       "OutcomeType": "Success",
       "ResultID": "N3_R018",
-      "ResultSummaryCN": "Rescue Beacon helps Snow White enter the dwarfs cottage.",
+      "ResultSummaryCN": "Rescue Beacon helps Snow White open the door.",
       "NextState": "Node4"
     },
     {
@@ -2059,7 +2059,7 @@
       "ToolCardID": "T_BARRICADE_DOOR",
       "OutcomeType": "Fail",
       "ResultID": "N3_R019",
-      "ResultSummaryCN": "Barricade Door causes Snow White to fail at this point.",
+      "ResultSummaryCN": "Snow White fails to open the door.",
       "NextState": "Retry"
     },
     {
@@ -2069,7 +2069,7 @@
       "ToolCardID": "T_BROADCAST_BIRD",
       "OutcomeType": "Success",
       "ResultID": "N3_R020",
-      "ResultSummaryCN": "Broadcast Bird helps Snow White enter the dwarfs cottage.",
+      "ResultSummaryCN": "Broadcast Bird helps Snow White open the door.",
       "NextState": "Node4"
     },
     {
@@ -2079,7 +2079,7 @@
       "ToolCardID": "T_SPINNING_SIGN",
       "OutcomeType": "Fail",
       "ResultID": "N3_R021",
-      "ResultSummaryCN": "Spinning Signpost causes Snow White to fail at this point.",
+      "ResultSummaryCN": "Snow White gets lost in the forest.",
       "NextState": "Retry"
     },
     {
@@ -2089,7 +2089,7 @@
       "ToolCardID": "T_FAST_VINES",
       "OutcomeType": "ReachDoor",
       "ResultID": "N3_R022",
-      "ResultSummaryCN": "Fast-Growing Vines helps Snow White reach the cottage door.",
+      "ResultSummaryCN": "Snow White is carried to the cottage door by Fast-Growing Vines.",
       "NextState": "N3_DoorCheck"
     },
     {
@@ -2099,7 +2099,7 @@
       "ToolCardID": "T_HALLUCINATION_MUSHROOM",
       "OutcomeType": "Fail",
       "ResultID": "N3_R023",
-      "ResultSummaryCN": "Hallucination Mushroom causes Snow White to fail at this point.",
+      "ResultSummaryCN": "Snow White gets lost in the forest.",
       "NextState": "Retry"
     },
     {
@@ -2109,7 +2109,7 @@
       "ToolCardID": "T_SPORE_FOG",
       "OutcomeType": "Fail",
       "ResultID": "N3_R024",
-      "ResultSummaryCN": "Spore Fog causes Snow White to fail at this point.",
+      "ResultSummaryCN": "Snow White gets lost in the forest.",
       "NextState": "Retry"
     },
     {

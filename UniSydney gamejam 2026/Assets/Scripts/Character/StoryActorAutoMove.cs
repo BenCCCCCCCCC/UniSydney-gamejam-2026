@@ -16,6 +16,12 @@ public class StoryActorAutoMove : MonoBehaviour
     private bool isMoving;
     private bool hasReachedEnd;
 
+    public bool IsMoving => isMoving;
+    public bool HasReachedEnd => hasReachedEnd;
+    public Transform StartPoint => startPoint;
+    public Transform EndPoint => endPoint;
+    public float MoveSpeed => moveSpeed;
+
     // 到达终点时触发，Node2_1ResultPlayer 等外部逻辑订阅此事件
     public System.Action OnReachedEnd;
 

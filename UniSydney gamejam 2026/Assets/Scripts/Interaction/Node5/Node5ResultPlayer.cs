@@ -21,13 +21,25 @@ public class Node5ResultPlayer : MonoBehaviour
     [SerializeField] private GameObject dwarfVisualRoot;
     [SerializeField] private Transform dwarfStartPoint;
     [SerializeField] private Transform dwarfEndPoint;
-    [SerializeField] private Vector3 princeFollowOffset = new Vector3(-0.8f, 0f, 0f);
+
+    [Header("Prince-Dwarf Join")]
+    [SerializeField] private bool dwarfFollowsPrinceWhenNotLost = true;
+    [SerializeField] private Transform princeDwarfJoinPoint;
+    [SerializeField] private Vector3 princeDwarfJoinOffsetFromDwarf = new Vector3(0.8f, 0f, 0f);
+    [SerializeField] private float princeDwarfJoinDistance = 0.15f;
+    [SerializeField] private Vector3 dwarfFollowOffsetFromPrince = new Vector3(-0.8f, 0f, 0f);
 
     [Header("Text UI")]
     [SerializeField] private SceneTextUIController textUI;
     [SerializeField] private Node5TextBank textBank;
     [SerializeField] private bool showTriggerFeedback = true;
     [SerializeField] private float triggerFeedbackDuration = 1.2f;
+    [SerializeField] private bool useDynamicFeedbackDuration = true;
+    [SerializeField] private float minFeedbackDuration = 1.8f;
+    [SerializeField] private float maxFeedbackDuration = 5.5f;
+    [SerializeField] private float readingWordsPerMinute = 220f;
+    [SerializeField] private float feedbackPaddingSeconds = 0.8f;
+    [SerializeField] private float punctuationExtraSeconds = 0.15f;
 
     private int totalScore;
     private bool princeCalled;
@@ -36,7 +48,8 @@ public class Node5ResultPlayer : MonoBehaviour
     private bool n5P1Resolved;
     private bool princeLost;
     private bool dwarfPhaseStarted;
-    private bool princeFollowingDwarf;
+    private bool waitingForPrinceToReachDwarfJoin;
+    private bool dwarfFollowingPrinceVisualOnly;
 
     private void OnEnable()
     {
@@ -105,6 +118,10 @@ public class Node5ResultPlayer : MonoBehaviour
             dwarfActor.PauseMove();
         }
 
+        SetPrinceTriggerEnabled(true);
+        waitingForPrinceToReachDwarfJoin = false;
+        dwarfFollowingPrinceVisualOnly = false;
+
         if (database == null)
         {
             database = FindAnyObjectByType<CardDatabase>();
@@ -129,12 +146,15 @@ public class Node5ResultPlayer : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!princeFollowingDwarf || princeVisualRoot == null || dwarfVisualRoot == null)
+        if (waitingForPrinceToReachDwarfJoin)
         {
-            return;
+            TryStartDwarfVisualFollow();
         }
 
-        princeVisualRoot.transform.position = dwarfVisualRoot.transform.position + princeFollowOffset;
+        if (dwarfFollowingPrinceVisualOnly)
+        {
+            UpdateDwarfVisualFollowPosition();
+        }
     }
 
     public void PlayResult(PlacementPoint point)
@@ -155,9 +175,9 @@ public class Node5ResultPlayer : MonoBehaviour
         }
         else if (placePointID == "N5_P2" || placePointID == "N5_P3")
         {
-            if (!dwarfPhaseStarted)
+            if (!n5P1Resolved)
             {
-                Debug.LogWarning($"NODE5_TRIGGER_IGNORED_BEFORE_DWARF_PHASE: {placePointID}");
+                Debug.LogWarning($"NODE5_TRIGGER_IGNORED_BEFORE_N5_P1: {placePointID}");
                 return;
             }
         }
@@ -242,7 +262,7 @@ public class Node5ResultPlayer : MonoBehaviour
 
         textUI.ShowDialogue(message);
 
-        yield return new WaitForSeconds(triggerFeedbackDuration);
+        yield return new WaitForSeconds(GetFeedbackDuration(message));
 
         textUI.HideDialogue();
         feedbackCoroutine = null;
@@ -263,6 +283,19 @@ public class Node5ResultPlayer : MonoBehaviour
         {
             activeActor.ResumeMove();
         }
+    }
+
+    private float GetFeedbackDuration(string message)
+    {
+        return DialogReadingTimeUtility.GetDuration(
+            message,
+            useDynamicFeedbackDuration,
+            triggerFeedbackDuration,
+            minFeedbackDuration,
+            maxFeedbackDuration,
+            readingWordsPerMinute,
+            feedbackPaddingSeconds,
+            punctuationExtraSeconds);
     }
 
     private bool TryGetPlacementResult(string placePointID, string toolCardID, out PlacementResultRow result)
@@ -500,35 +533,35 @@ public class Node5ResultPlayer : MonoBehaviour
 
     private void StartDwarfPhase()
     {
+        if (princeLost)
+        {
+            StartLostPrinceDwarfPhase();
+            return;
+        }
+
+        ContinuePrinceWithDwarfVisualJoin();
+    }
+
+    private void StartLostPrinceDwarfPhase()
+    {
         if (dwarfPhaseStarted)
         {
             return;
         }
 
         dwarfPhaseStarted = true;
-        DisablePrinceTrigger();
+        waitingForPrinceToReachDwarfJoin = false;
+        dwarfFollowingPrinceVisualOnly = false;
+        SetPrinceTriggerEnabled(false);
 
         if (princeActor != null)
         {
             princeActor.PauseMove();
         }
 
-        if (princeLost)
+        if (princeVisualRoot != null)
         {
-            princeFollowingDwarf = false;
-            if (princeVisualRoot != null)
-            {
-                princeVisualRoot.SetActive(false);
-            }
-        }
-        else
-        {
-            if (princeVisualRoot != null)
-            {
-                princeVisualRoot.SetActive(true);
-            }
-
-            princeFollowingDwarf = true;
+            princeVisualRoot.SetActive(false);
         }
 
         if (dwarfActor == null)
@@ -554,6 +587,40 @@ public class Node5ResultPlayer : MonoBehaviour
         StartCoroutine(StartDwarfActorAfterActivation());
     }
 
+    private void ContinuePrinceWithDwarfVisualJoin()
+    {
+        dwarfPhaseStarted = false;
+        waitingForPrinceToReachDwarfJoin = dwarfFollowsPrinceWhenNotLost;
+        dwarfFollowingPrinceVisualOnly = false;
+        SetPrinceTriggerEnabled(true);
+        SetDwarfTriggerEnabled(false);
+
+        if (princeVisualRoot != null)
+        {
+            princeVisualRoot.SetActive(true);
+        }
+
+        if (dwarfVisualRoot == null && dwarfActor != null)
+        {
+            dwarfVisualRoot = dwarfActor.gameObject;
+        }
+
+        if (dwarfVisualRoot != null)
+        {
+            dwarfVisualRoot.SetActive(true);
+        }
+
+        if (dwarfActor != null)
+        {
+            dwarfActor.PauseMove();
+        }
+
+        if (princeActor != null)
+        {
+            princeActor.ResumeMove();
+        }
+    }
+
     private IEnumerator StartDwarfActorAfterActivation()
     {
         yield return null;
@@ -573,7 +640,7 @@ public class Node5ResultPlayer : MonoBehaviour
 
     private StoryActorAutoMove GetActiveActor()
     {
-        if (dwarfPhaseStarted && dwarfActor != null)
+        if (princeLost && dwarfPhaseStarted && dwarfActor != null)
         {
             return dwarfActor;
         }
@@ -581,7 +648,92 @@ public class Node5ResultPlayer : MonoBehaviour
         return princeActor != null ? princeActor : storyActor;
     }
 
-    private void DisablePrinceTrigger()
+    private void TryStartDwarfVisualFollow()
+    {
+        if (princeActor == null)
+        {
+            waitingForPrinceToReachDwarfJoin = false;
+            return;
+        }
+
+        if (!TryGetPrinceDwarfJoinTarget(out Vector3 joinTarget))
+        {
+            return;
+        }
+
+        float distanceToJoin = Vector3.Distance(princeActor.transform.position, joinTarget);
+        if (distanceToJoin > princeDwarfJoinDistance)
+        {
+            return;
+        }
+
+        waitingForPrinceToReachDwarfJoin = false;
+        dwarfFollowingPrinceVisualOnly = true;
+
+        if (dwarfVisualRoot == null && dwarfActor != null)
+        {
+            dwarfVisualRoot = dwarfActor.gameObject;
+        }
+
+        if (dwarfVisualRoot != null)
+        {
+            dwarfVisualRoot.SetActive(true);
+        }
+
+        SetDwarfTriggerEnabled(false);
+
+        if (dwarfActor != null)
+        {
+            dwarfActor.PauseMove();
+        }
+    }
+
+    private bool TryGetPrinceDwarfJoinTarget(out Vector3 joinTarget)
+    {
+        if (princeDwarfJoinPoint != null)
+        {
+            joinTarget = princeDwarfJoinPoint.position;
+            return true;
+        }
+
+        if (dwarfVisualRoot != null)
+        {
+            joinTarget = dwarfVisualRoot.transform.position + princeDwarfJoinOffsetFromDwarf;
+            return true;
+        }
+
+        if (dwarfActor != null)
+        {
+            joinTarget = dwarfActor.transform.position + princeDwarfJoinOffsetFromDwarf;
+            return true;
+        }
+
+        joinTarget = Vector3.zero;
+        return false;
+    }
+
+    private void UpdateDwarfVisualFollowPosition()
+    {
+        if (dwarfVisualRoot == null)
+        {
+            return;
+        }
+
+        Transform followTarget = princeVisualRoot != null
+            ? princeVisualRoot.transform
+            : princeActor != null
+                ? princeActor.transform
+                : null;
+
+        if (followTarget == null)
+        {
+            return;
+        }
+
+        dwarfVisualRoot.transform.position = followTarget.position + dwarfFollowOffsetFromPrince;
+    }
+
+    private void SetPrinceTriggerEnabled(bool enabled)
     {
         if (princeActor == null)
         {
@@ -591,7 +743,7 @@ public class Node5ResultPlayer : MonoBehaviour
         Collider2D[] colliders = princeActor.GetComponents<Collider2D>();
         foreach (Collider2D actorCollider in colliders)
         {
-            actorCollider.enabled = false;
+            actorCollider.enabled = enabled;
         }
     }
 

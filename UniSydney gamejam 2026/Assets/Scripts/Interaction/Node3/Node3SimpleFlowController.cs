@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,6 +17,13 @@ public class Node3SimpleFlowController : MonoBehaviour
     [Header("Briefing")]
     [SerializeField] private SceneTextUIController textUI;
     [SerializeField] private float readingSeconds = 4f;
+    [SerializeField] private bool useDynamicReadingSeconds = true;
+    [SerializeField] private float minReadingSeconds = 1.8f;
+    [SerializeField] private float maxReadingSeconds = 5.5f;
+    [SerializeField] private float readingWordsPerMinute = 220f;
+    [SerializeField] private float readingPaddingSeconds = 0.7f;
+    [SerializeField] private float punctuationExtraSeconds = 0.15f;
+    [SerializeField, TextArea] private string briefingTextOverrideForDuration;
 
     private IEnumerator Start()
     {
@@ -41,7 +49,7 @@ public class Node3SimpleFlowController : MonoBehaviour
             Debug.LogWarning("Node3SimpleFlowController: SceneTextUIController is not assigned.");
         }
 
-        yield return new WaitForSeconds(readingSeconds);
+        yield return new WaitForSeconds(GetBriefingDuration());
 
         if (textUI != null)
         {
@@ -70,5 +78,43 @@ public class Node3SimpleFlowController : MonoBehaviour
 #endif
 
         SceneManager.LoadScene(sceneName);
+    }
+
+    private float GetBriefingDuration()
+    {
+        string briefingText = GetBriefingTextForDuration();
+        return DialogReadingTimeUtility.GetDuration(
+            briefingText,
+            useDynamicReadingSeconds,
+            readingSeconds,
+            minReadingSeconds,
+            maxReadingSeconds,
+            readingWordsPerMinute,
+            readingPaddingSeconds,
+            punctuationExtraSeconds);
+    }
+
+    private string GetBriefingTextForDuration()
+    {
+        if (!string.IsNullOrWhiteSpace(briefingTextOverrideForDuration))
+        {
+            return briefingTextOverrideForDuration;
+        }
+
+        if (textUI == null)
+        {
+            return "";
+        }
+
+        TMP_Text[] texts = textUI.GetComponentsInChildren<TMP_Text>(true);
+        foreach (TMP_Text text in texts)
+        {
+            if (text != null && text.name.Contains("Briefing"))
+            {
+                return text.text;
+            }
+        }
+
+        return "";
     }
 }
