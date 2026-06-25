@@ -15,7 +15,12 @@ public class NodeToolHandController : MonoBehaviour
     [Header("Tool Card Art")]
     [SerializeField] private CardArtCatalog cardArtCatalog;
     [SerializeField] private bool useResourcesArtFallback = true;
+
+    [Header("Tool Hand Layout")]
     [SerializeField] private Vector2 toolHandCardSize = new Vector2(120f, 160f);
+    [SerializeField] private float toolHandSpacing = 24f;
+    [SerializeField] private Vector2 handAreaAnchorMin = new Vector2(0.18f, 0.025f);
+    [SerializeField] private Vector2 handAreaAnchorMax = new Vector2(0.82f, 0.22f);
 
     private RectTransform handArea;
     private TMP_Text activeToolText;
@@ -75,6 +80,8 @@ public class NodeToolHandController : MonoBehaviour
     {
         //ToolCardDragItem.ClearPlacedCardRegistry();
 
+        ApplySceneConfig(FindAnyObjectByType<NodeToolHandSceneConfig>());
+        ApplyToolHandLayout();
         ClearPlacementPointTestValues();
         AttachPlacementPointClickBridges();
         BuildDropSlots();
@@ -96,6 +103,51 @@ public class NodeToolHandController : MonoBehaviour
         p3DropSlot = runtimeP3DropSlot;
 
         BuildDropSlots();
+        ApplyToolHandLayout();
+    }
+
+    public void ApplySceneConfig(NodeToolHandSceneConfig config)
+    {
+        if (config == null)
+        {
+            return;
+        }
+
+        if (config.CardArtCatalog != null)
+        {
+            cardArtCatalog = config.CardArtCatalog;
+        }
+
+        useResourcesArtFallback = config.UseResourcesArtFallback;
+        toolHandCardSize = config.ToolHandCardSize;
+        toolHandSpacing = Mathf.Max(0f, config.ToolHandSpacing);
+        handAreaAnchorMin = config.HandAreaAnchorMin;
+        handAreaAnchorMax = config.HandAreaAnchorMax;
+
+        ApplyToolHandLayout();
+    }
+
+    private void ApplyToolHandLayout()
+    {
+        if (handArea == null)
+        {
+            return;
+        }
+
+        handArea.anchorMin = handAreaAnchorMin;
+        handArea.anchorMax = handAreaAnchorMax;
+        handArea.offsetMin = Vector2.zero;
+        handArea.offsetMax = Vector2.zero;
+
+        HorizontalLayoutGroup layout = handArea.GetComponent<HorizontalLayoutGroup>();
+        if (layout != null)
+        {
+            layout.spacing = toolHandSpacing;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+        }
     }
 
     public static void TryPlaceActiveTool(PlacementPoint placementPoint)
@@ -443,7 +495,7 @@ public class NodeToolHandController : MonoBehaviour
         {
             image.sprite = toolSprite;
             image.color = Color.white;
-            image.preserveAspect = false;
+            image.preserveAspect = true;
             label.gameObject.SetActive(false);
         }
     }
@@ -499,6 +551,7 @@ public class NodeToolHandController : MonoBehaviour
         public static void Build()
         {
             EnsureEventSystem();
+            NodeToolHandSceneConfig config = FindAnyObjectByType<NodeToolHandSceneConfig>();
 
             GameObject canvasObject = new GameObject(
                 "NodeToolHandCanvas",
@@ -528,10 +581,11 @@ public class NodeToolHandController : MonoBehaviour
             RectTransform p1DropSlot = CreateDropSlot(canvasRect, "P1_DropSlotUI");
             RectTransform p2DropSlot = CreateDropSlot(canvasRect, "P2_DropSlotUI");
             RectTransform p3DropSlot = CreateDropSlot(canvasRect, "P3_DropSlotUI");
-            RectTransform handArea = CreateHandArea(canvasRect);
+            RectTransform handArea = CreateHandArea(canvasRect, config);
 
             GameObject controllerObject = new GameObject("NodeToolHandController");
             NodeToolHandController controller = controllerObject.AddComponent<NodeToolHandController>();
+            controller.ApplySceneConfig(config);
             controller.ConfigureRuntime(handArea, activeToolText, p1DropSlot, p2DropSlot, p3DropSlot);
         }
 
@@ -550,7 +604,7 @@ public class NodeToolHandController : MonoBehaviour
             return rect;
         }
 
-        private static RectTransform CreateHandArea(Transform parent)
+        private static RectTransform CreateHandArea(Transform parent, NodeToolHandSceneConfig config)
         {
             GameObject areaObject = new GameObject(
                 "NodeToolHandArea",
@@ -564,13 +618,13 @@ public class NodeToolHandController : MonoBehaviour
             image.color = new Color(0.04f, 0.05f, 0.07f, 0.82f);
 
             RectTransform rect = areaObject.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.22f, 0.025f);
-            rect.anchorMax = new Vector2(0.78f, 0.14f);
+            rect.anchorMin = config != null ? config.HandAreaAnchorMin : new Vector2(0.18f, 0.025f);
+            rect.anchorMax = config != null ? config.HandAreaAnchorMax : new Vector2(0.82f, 0.22f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
             HorizontalLayoutGroup layout = areaObject.GetComponent<HorizontalLayoutGroup>();
-            layout.spacing = 24f;
+            layout.spacing = config != null ? Mathf.Max(0f, config.ToolHandSpacing) : 24f;
             layout.childAlignment = TextAnchor.MiddleCenter;
             layout.childControlWidth = true;
             layout.childControlHeight = true;

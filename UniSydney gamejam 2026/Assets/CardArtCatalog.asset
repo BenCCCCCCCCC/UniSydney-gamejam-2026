@@ -133,7 +133,7 @@ MonoBehaviour:
     sprite: {fileID: 7780450870121836006, guid: 6cd2c77267db3314abaabc72e399c8ff, type: 3}
   - cardID: T_SLEEPING_HANDKERCHIEF
     sprite: {fileID: 1542998995624487220, guid: ce488c4262f89ae4b8ccebb839090d04, type: 3}
-  - cardID: T_SLEEPING_SIGN
+  - cardID: T_SPININIING_SIGN
     sprite: {fileID: -5800942342975624976, guid: 37f2745c53d41fa4bb69ee49c8bc0a9c, type: 3}
   - cardID: T_SPORE_FOG
     sprite: {fileID: 2742256560116781838, guid: 82f4193332b296e4293360837859f0b5, type: 3}
