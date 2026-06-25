@@ -351,9 +351,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 47383802}
-  resultPlayer: {fileID: 0}
-  node2_1ResultPlayer: {fileID: 2116289184}
-  node2_2ResultPlayer: {fileID: 0}
   triggerOnlyOnce: 1
 --- !u!61 &264295985
 BoxCollider2D:
@@ -706,7 +703,7 @@ Transform:
   m_GameObject: {fileID: 1331221912}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.12, z: 0}
+  m_LocalPosition: {x: 1.08, y: 0.12, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1067,6 +1064,7 @@ Transform:
   m_Children:
   - {fileID: 2116289183}
   - {fileID: 1969341266}
+  - {fileID: 3001000002}
   m_Father: {fileID: 2089790158}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1969341265
@@ -1389,7 +1387,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Node2_1ResultPlayer
   hunterActor: {fileID: 1405852954}
-  pauseDuration: 1.5
+  retrySceneName: Node2_1_HunterHunt
+  messageDuration: 2
+  msgHoneyApple: 'The wild boar charged out, following the scent of honey!
+
+    The
+    hunter was knocked away! Snow narrowly esacped a disaster.'
+  msgInvalid: This thing is useless.
+  endingMessage: Snow White successfully escaped the forest!
 --- !u!1 &2126450171
 GameObject:
   m_ObjectHideFlags: 0
@@ -1505,6 +1510,70 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &3001000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3001000002}
+  - component: {fileID: 3001000003}
+  m_Layer: 0
+  m_Name: Node2_1_PlacementPlayController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3001000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3001000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1837204890}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3001000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3001000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daf313c9700d9ba4d87ecdd9b6744ad1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Node3PlacementPlayController
+  nodeID: Node2
+  storyActor: {fileID: 1405852954}
+  requiredPlacementPoints:
+  - {fileID: 47383802}
+  cardArtCatalog: {fileID: 11400000, guid: 129c2306ebcc5ab4483abc86d5aec4fa, type: 2}
+  useResourcesArtFallback: 1
+  slotPanelAnchor: {x: 0.5, y: 0.56}
+  slotPanelSize: {x: 820, y: 260}
+  slotSize: {x: 210, y: 240}
+  slotSpacing: 34
+  handPanelAnchor: {x: 0.5, y: 0.2}
+  handPanelSize: {x: 1000, y: 180}
+  handCardSize: {x: 150, y: 150}
+  handCardSpacing: 18
+  createRuntimePlayButton: 1
+  playButton: {fileID: 0}
+  playButtonText: {fileID: 0}
+  buttonAnchor: {x: 0.88, y: 0.24}
+  buttonSize: {x: 220, y: 70}
+  showUIImmediately: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

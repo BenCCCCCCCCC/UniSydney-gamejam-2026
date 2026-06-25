@@ -1517,8 +1517,75 @@ Transform:
   m_Children:
   - {fileID: 1840161087}
   - {fileID: 761421986}
+  - {fileID: 3002000002}
   m_Father: {fileID: 2089790158}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3002000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3002000002}
+  - component: {fileID: 3002000003}
+  m_Layer: 0
+  m_Name: Node2_2_PlacementPlayController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3002000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3002000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1837204890}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3002000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3002000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daf313c9700d9ba4d87ecdd9b6744ad1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Node3PlacementPlayController
+  nodeID: Node2
+  storyActor: {fileID: 0}
+  requiredPlacementPoints:
+  - {fileID: 2041744737}
+  - {fileID: 2002107727}
+  - {fileID: 2109103807}
+  cardArtCatalog: {fileID: 11400000, guid: 129c2306ebcc5ab4483abc86d5aec4fa, type: 2}
+  useResourcesArtFallback: 1
+  slotPanelAnchor: {x: 0.5, y: 0.56}
+  slotPanelSize: {x: 820, y: 260}
+  slotSize: {x: 210, y: 240}
+  slotSpacing: 34
+  handPanelAnchor: {x: 0.5, y: 0.2}
+  handPanelSize: {x: 1000, y: 180}
+  handCardSize: {x: 150, y: 150}
+  handCardSpacing: 18
+  createRuntimePlayButton: 1
+  playButton: {fileID: 0}
+  playButtonText: {fileID: 0}
+  buttonAnchor: {x: 0.88, y: 0.24}
+  buttonSize: {x: 220, y: 70}
+  showUIImmediately: 0
 --- !u!1 &1840161086
 GameObject:
   m_ObjectHideFlags: 0
@@ -1868,8 +1935,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementPoint
   nodeID: Node2
-  placePointID: N2_P3
-  storedToolCardID: 
+  placePointID: N2_P4
+  storedToolCardID:
 --- !u!4 &2109103808
 Transform:
   m_ObjectHideFlags: 0

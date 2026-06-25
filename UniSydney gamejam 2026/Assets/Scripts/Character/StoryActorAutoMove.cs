@@ -127,6 +127,7 @@ public class StoryActorAutoMove : MonoBehaviour
     {
         startPoint = newStart;
         endPoint = newEnd;
+        hasReachedEnd = false;
     }
 
     // 向下兼容旧调用（等同于 PauseMove）

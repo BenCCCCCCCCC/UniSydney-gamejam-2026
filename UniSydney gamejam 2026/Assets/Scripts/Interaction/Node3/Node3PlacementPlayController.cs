@@ -40,6 +40,10 @@ public class Node3PlacementPlayController : MonoBehaviour
     [SerializeField] private Vector2 buttonAnchor = new Vector2(0.88f, 0.24f);
     [SerializeField] private Vector2 buttonSize = new Vector2(220f, 70f);
 
+    [Header("Deferred Show")]
+    [Tooltip("false = 构建后立即隐藏，等外部调用 ShowPlacementUI() 再显示（用于 Node2_2 等先旁白后放牌的场景）")]
+    [SerializeField] private bool showUIImmediately = true;
+
     private GameObject tableCanvasObject;
     private GameObject playButtonCanvasObject;
     private RectTransform canvasRect;
@@ -48,6 +52,8 @@ public class Node3PlacementPlayController : MonoBehaviour
     private Node3CentralToolCardDragItem[] placedCards;
 
     private bool hasStartedPlay;
+    public bool HasStartedPlay => hasStartedPlay;
+
 
     private IEnumerator Start()
     {
@@ -58,7 +64,8 @@ public class Node3PlacementPlayController : MonoBehaviour
 
         ApplySceneConfig(FindAnyObjectByType<NodeToolHandSceneConfig>());
 
-        if (GameSessionData.CurrentPhase != GameFlowPhase.Placement)
+        if (GameSessionData.CurrentPhase != GameFlowPhase.Placement
+            && GameSessionData.CurrentPhase != GameFlowPhase.AutoPlay)
         {
             HidePlayButton();
             yield break;
@@ -77,6 +84,9 @@ public class Node3PlacementPlayController : MonoBehaviour
         if (createRuntimePlayButton && playButton == null)
         {
             BuildRuntimePlayButton();
+            // showUIImmediately=false 时，Play 按钮 canvas 也延迟显示，和 tableCanvasObject 保持一致
+            if (!showUIImmediately && playButtonCanvasObject != null)
+                playButtonCanvasObject.SetActive(false);
         }
 
         RefreshPlayButtonState();
@@ -157,7 +167,7 @@ public class Node3PlacementPlayController : MonoBehaviour
         }
     }
 
-    private void BuildPlacementTable()
+private void BuildPlacementTable()
     {
         if (tableCanvasObject != null)
         {
@@ -173,6 +183,11 @@ public class Node3PlacementPlayController : MonoBehaviour
             typeof(CanvasScaler),
             typeof(GraphicRaycaster));
 
+        // 确保 canvas 在组件所在的场景里，而不是当前 active scene
+        // （转场期间 active scene 可能是旧场景，卸载时会一并销毁此 canvas）
+        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(
+            tableCanvasObject, gameObject.scene);
+
         Canvas canvas = tableCanvasObject.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
@@ -185,6 +200,17 @@ public class Node3PlacementPlayController : MonoBehaviour
 
         BuildSlotPanel();
         BuildHandPanel();
+
+        if (!showUIImmediately)
+            tableCanvasObject.SetActive(false);
+    }
+
+    public void ShowPlacementUI()
+    {
+        if (tableCanvasObject != null)
+            tableCanvasObject.SetActive(true);
+        if (playButtonCanvasObject != null)
+            playButtonCanvasObject.SetActive(true);
     }
 
     private void BuildSlotPanel()
@@ -215,7 +241,7 @@ public class Node3PlacementPlayController : MonoBehaviour
         layout.childForceExpandWidth = false;
         layout.childForceExpandHeight = false;
 
-        int slotCount = Mathf.Max(3, requiredPlacementPoints != null ? requiredPlacementPoints.Length : 3);
+        int slotCount = requiredPlacementPoints != null ? requiredPlacementPoints.Length : 3;
 
         slotRects = new RectTransform[slotCount];
         placedCards = new Node3CentralToolCardDragItem[slotCount];
@@ -566,7 +592,7 @@ public class Node3PlacementPlayController : MonoBehaviour
         }
     }
 
-    private void BuildRuntimePlayButton()
+private void BuildRuntimePlayButton()
     {
         EnsureEventSystem();
 
@@ -576,6 +602,10 @@ public class Node3PlacementPlayController : MonoBehaviour
             typeof(Canvas),
             typeof(CanvasScaler),
             typeof(GraphicRaycaster));
+
+        // 与 tableCanvasObject 相同：强制移入组件所在场景，防止转场卸载时被销毁
+        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(
+            playButtonCanvasObject, gameObject.scene);
 
         Canvas canvas = playButtonCanvasObject.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;

@@ -26,6 +26,8 @@ public class Node2_2FlowController : MonoBehaviour
     private GameObject dialogueCanvas;
     private bool waitingForSpace;
     private StoryActorAutoMove hunterActor;
+    private Node3PlacementPlayController placementCtrl;
+
 
     private void Start()
     {
@@ -68,10 +70,12 @@ public class Node2_2FlowController : MonoBehaviour
     }
 
     // 旁白定时消失，消失后等待玩家按 Space
-    private IEnumerator AutoDismissBriefing()
+private IEnumerator AutoDismissBriefing()
     {
         yield return new WaitForSeconds(readingSeconds);
         HideDialogueBubble();
+        placementCtrl = FindAnyObjectByType<Node3PlacementPlayController>();
+        placementCtrl?.ShowPlacementUI();
         waitingForSpace = true;
     }
 
@@ -79,19 +83,47 @@ public class Node2_2FlowController : MonoBehaviour
     {
         if (!waitingForSpace) return;
         if (Keyboard.current == null) return;
-        if (!Keyboard.current.spaceKey.wasPressedThisFrame) return;
+
+        bool spacePressed = Keyboard.current.spaceKey.wasPressedThisFrame;
+        bool playClicked = placementCtrl != null && placementCtrl.HasStartedPlay;
+
+        if (!spacePressed && !playClicked) return;
 
         waitingForSpace = false;
 
-        // 猎人从当前位置走向终点，玩家可拖卡到槽位
+        // N2_P4 有蜜糖苹果时直接触发坏结局，猎人不启动
+        if (CheckHoneyBaitOnP4())
+        {
+            enabled = false;
+            return;
+        }
+
         if (hunterActor != null)
         {
             if (actorEnd != null)
                 hunterActor.SetMovePath(hunterActor.transform, actorEnd);
+
+            // 猎人开始第二段行走，通知 ResultPlayer 可以监听终点事件了
+            FindAnyObjectByType<Node2_2ResultPlayer>()?.EnableEndTrigger();
+
             hunterActor.StartPlay();
         }
 
         enabled = false;
+    }
+
+    private bool CheckHoneyBaitOnP4()
+    {
+        foreach (var point in FindObjectsByType<PlacementPoint>(FindObjectsInactive.Exclude))
+        {
+            if (point.placePointID == "N2_P4" && point.storedToolCardID == "T_HONEY_BAIT")
+            {
+                var resultPlayer = FindAnyObjectByType<Node2_2ResultPlayer>();
+                resultPlayer?.PlayResult(point);
+                return true;
+            }
+        }
+        return false;
     }
 
     private void ShowDialogueBubble()

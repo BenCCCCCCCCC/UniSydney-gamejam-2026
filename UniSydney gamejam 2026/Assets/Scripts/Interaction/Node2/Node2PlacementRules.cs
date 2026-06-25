@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Node2（Node2_1 + Node2_2）放置规则验证。
-/// 有效道具：T_HONEY_APPLE（蜜糖苹果）/ T_MAGIC_CLOAK（迷幻斗篷）/ T_HALLUCINOGEN_WINE（致幻酒）
+/// 有效道具：T_HONEY_BAIT（蜜糖苹果）/ T_MAGIC_CLOAK（迷幻斗篷）/ T_HALLUCINOGEN_WINE（致幻酒）
 /// </summary>
 public static class Node2PlacementRules
 {
@@ -11,7 +11,7 @@ public static class Node2PlacementRules
 
     public static bool IsNode2Tool(string toolCardID)
     {
-        return toolCardID == "T_HONEY_APPLE"
+        return toolCardID == "T_HONEY_BAIT"
             || toolCardID == "T_MAGIC_CLOAK"
             || toolCardID == "T_HALLUCINOGEN_WINE";
     }
@@ -21,7 +21,7 @@ public static class Node2PlacementRules
         futureLine = string.Empty;
 
         // Node2_1
-        if (toolCardID == "T_HONEY_APPLE" && placePointID == "N2_P1")
+        if (toolCardID == "T_HONEY_BAIT" && placePointID == "N2_P1")
         {
             futureLine = "野猪：那是我的苹果！";
             return true;
