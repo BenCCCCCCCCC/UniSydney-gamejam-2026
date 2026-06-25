@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class StoryActorAutoMove : MonoBehaviour
 {
+    public static event Action<StoryActorAutoMove> ActorReachedEnd;
+
     [Header("Movement Points")]
     [SerializeField] private Transform startPoint;
     [SerializeField] private Transform endPoint;
@@ -11,6 +14,7 @@ public class StoryActorAutoMove : MonoBehaviour
     [SerializeField] private float arriveDistance = 0.05f;
 
     private bool isMoving;
+    private bool hasReachedEnd;
 
     private void Start()
     {
@@ -44,8 +48,10 @@ public class StoryActorAutoMove : MonoBehaviour
         {
             transform.position = endPoint.position;
             isMoving = false;
+            hasReachedEnd = true;
 
             Debug.Log("Actor reached end point.");
+            ActorReachedEnd?.Invoke(this);
         }
     }
 
@@ -69,12 +75,16 @@ public class StoryActorAutoMove : MonoBehaviour
             return;
         }
 
+        if (hasReachedEnd)
+        {
+            return;
+        }
+
         isMoving = true;
 
         Debug.Log($"STORY_ACTOR_RESUME: {gameObject.name}, from {transform.position}, to {endPoint.position}, speed = {moveSpeed}");
     }
 
-    // Compatibility method for older test scripts like TemporaryPlayStarter.
     public void StartPlay()
     {
         ResumeMove();
@@ -93,6 +103,8 @@ public class StoryActorAutoMove : MonoBehaviour
         }
 
         transform.position = startPoint.position;
+        hasReachedEnd = false;
+        isMoving = false;
     }
 
     public void StopAtEnd()
@@ -102,6 +114,7 @@ public class StoryActorAutoMove : MonoBehaviour
             transform.position = endPoint.position;
         }
 
+        hasReachedEnd = true;
         isMoving = false;
     }
 }

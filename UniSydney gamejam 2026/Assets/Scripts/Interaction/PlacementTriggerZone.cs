@@ -5,8 +5,9 @@ public class PlacementTriggerZone : MonoBehaviour
     [Header("Placement")]
     public PlacementPoint placementPoint;
 
-    [Header("Optional Result Player")]
-    public Node1ResultPlayer resultPlayer;
+    [Header("Optional Result Players")]
+    public Node1ResultPlayer node1ResultPlayer;
+    public Node3ResultPlayer node3ResultPlayer;
 
     [Header("Debug")]
     [SerializeField] private bool triggerOnlyOnce = true;
@@ -43,12 +44,31 @@ public class PlacementTriggerZone : MonoBehaviour
 
         if (nodeID == "Node3")
         {
-            Debug.Log($"NODE3_TRIGGER_CARD: {placePointID} touched, card = {toolCardID}");
+            if (node3ResultPlayer == null)
+            {
+                node3ResultPlayer = FindAnyObjectByType<Node3ResultPlayer>();
+            }
+
+            if (node3ResultPlayer != null)
+            {
+                node3ResultPlayer.PlayResult(placementPoint);
+            }
+            else
+            {
+                Debug.LogWarning($"{gameObject.name}: Node3ResultPlayer is missing.");
+            }
+
+            return;
         }
 
-        if (resultPlayer != null)
+        if (node1ResultPlayer == null)
         {
-            resultPlayer.PlayResult(placementPoint);
+            node1ResultPlayer = FindAnyObjectByType<Node1ResultPlayer>();
+        }
+
+        if (node1ResultPlayer != null)
+        {
+            node1ResultPlayer.PlayResult(placementPoint);
         }
     }
 
