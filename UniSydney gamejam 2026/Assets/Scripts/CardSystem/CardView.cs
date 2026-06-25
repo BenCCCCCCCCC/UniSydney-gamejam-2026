@@ -26,6 +26,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private Action<CardView> onClicked;
     private bool clickable;
     private bool hasBackSprite;
+    private bool hasFullFrontSprite;
     private Vector3 normalScale = Vector3.one;
 
     private void Awake()
@@ -82,12 +83,12 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
         if (iconImage != null)
         {
-            iconImage.gameObject.SetActive(faceUp && iconImage.sprite != null);
+            iconImage.gameObject.SetActive(false);
         }
 
         if (nameText != null)
         {
-            nameText.gameObject.SetActive(faceUp);
+            nameText.gameObject.SetActive(faceUp && !hasFullFrontSprite);
             nameText.text = CardDisplayNameHelper.ToEnglishName(Card?.CardID);
         }
 
@@ -215,12 +216,16 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             frontImage.sprite = frontSprite;
             frontImage.color = frontSprite == null ? frontColor : Color.white;
+            frontImage.preserveAspect = false;
+            StretchToParent(frontImage.rectTransform);
+            hasFullFrontSprite = frontSprite != null;
         }
 
         if (iconImage != null)
         {
             iconImage.sprite = iconSprite;
-            iconImage.color = iconSprite == null ? new Color(1f, 1f, 1f, 0f) : Color.white;
+            iconImage.color = new Color(1f, 1f, 1f, 0f);
+            iconImage.gameObject.SetActive(false);
         }
     }
 
@@ -245,10 +250,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (iconImage == null)
         {
             iconImage = CreateChildImage("IconImage");
-            RectTransform iconRect = iconImage.rectTransform;
-            iconRect.anchorMin = new Vector2(0.5f, 0.56f);
-            iconRect.anchorMax = new Vector2(0.5f, 0.56f);
-            iconRect.sizeDelta = new Vector2(56f, 56f);
+            iconImage.gameObject.SetActive(false);
         }
 
         if (nameText == null)
@@ -304,5 +306,18 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         imageRect.offsetMax = Vector2.zero;
 
         return image;
+    }
+
+    private static void StretchToParent(RectTransform rect)
+    {
+        if (rect == null)
+        {
+            return;
+        }
+
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
     }
 }

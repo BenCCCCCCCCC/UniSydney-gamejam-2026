@@ -3,29 +3,32 @@ using UnityEngine;
 public class StoryActorAutoMove : MonoBehaviour
 {
     [Header("Movement Points")]
-    public Transform startPoint;
-    public Transform endPoint;
+    [SerializeField] private Transform startPoint;
+    [SerializeField] private Transform endPoint;
 
     [Header("Movement Settings")]
-    public float moveSpeed = 2f;
+    [SerializeField] private float moveSpeed = 2f;
+    [SerializeField] private float arriveDistance = 0.05f;
 
-    public System.Action OnReachedEnd;
-
-    private bool isPlaying = false;
-    private bool isPaused = false;
+    private bool isMoving;
 
     private void Start()
     {
-        if (startPoint != null)
-        {
-            transform.position = startPoint.position;
-        }
+        MoveToStart();
+        PauseMove();
     }
 
     private void Update()
     {
-        if (!isPlaying || isPaused || endPoint == null)
+        if (!isMoving)
         {
+            return;
+        }
+
+        if (endPoint == null)
+        {
+            Debug.LogError($"{gameObject.name}: End Point is missing.");
+            isMoving = false;
             return;
         }
 
@@ -35,45 +38,71 @@ public class StoryActorAutoMove : MonoBehaviour
             moveSpeed * Time.deltaTime
         );
 
-        if (Vector3.Distance(transform.position, endPoint.position) < 0.05f)
+        float distanceToEnd = Vector3.Distance(transform.position, endPoint.position);
+
+        if (distanceToEnd <= arriveDistance)
         {
-            isPlaying = false;
+            transform.position = endPoint.position;
+            isMoving = false;
+
             Debug.Log("Actor reached end point.");
             OnReachedEnd?.Invoke();
         }
     }
 
+    public void ResumeMove()
+    {
+        if (startPoint == null)
+        {
+            Debug.LogError($"{gameObject.name}: Start Point is missing.");
+            return;
+        }
+
+        if (endPoint == null)
+        {
+            Debug.LogError($"{gameObject.name}: End Point is missing.");
+            return;
+        }
+
+        if (moveSpeed <= 0f)
+        {
+            Debug.LogError($"{gameObject.name}: Move Speed must be greater than 0.");
+            return;
+        }
+
+        isMoving = true;
+
+        Debug.Log($"STORY_ACTOR_RESUME: {gameObject.name}, from {transform.position}, to {endPoint.position}, speed = {moveSpeed}");
+    }
+
+    // Compatibility method for older test scripts like TemporaryPlayStarter.
     public void StartPlay()
     {
-        if (startPoint != null)
-        {
-            transform.position = startPoint.position;
-        }
-
-        // 重置场景内所有触发区，确保重播时每个槽都能再次触发
-        foreach (var zone in FindObjectsByType<PlacementTriggerZone>())
-        {
-            zone.ResetTrigger();
-        }
-
-        isPlaying = true;
-        isPaused = false;
-        Debug.Log("Play started.");
+        ResumeMove();
     }
 
     public void PauseMove()
     {
-        isPaused = true;
+        isMoving = false;
     }
 
-    public void ResumeMove()
+    public void MoveToStart()
     {
-        isPaused = false;
+        if (startPoint == null)
+        {
+            return;
+        }
+
+        transform.position = startPoint.position;
     }
 
-    public void StopMove()
+    public void StopAtEnd()
     {
-        isPlaying = false;
-        isPaused = false;
+        if (endPoint != null)
+        {
+            transform.position = endPoint.position;
+        }
+
+        isMoving = false;
     }
 }
