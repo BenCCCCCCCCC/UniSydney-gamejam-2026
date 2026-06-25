@@ -170,22 +170,22 @@ MonoBehaviour:
   placementBindings:
   - placePointID: N2_P2
     placementPoint: {fileID: 2041744737}
-    iconTarget: {fileID: 0}
+    iconTarget: {fileID: 1628268335}
     placedCardUIObjectToHide: {fileID: 0}
   - placePointID: N2_P3
     placementPoint: {fileID: 2002107727}
-    iconTarget: {fileID: 0}
+    iconTarget: {fileID: 284602907}
     placedCardUIObjectToHide: {fileID: 0}
   - placePointID: N2_P4
     placementPoint: {fileID: 2109103807}
-    iconTarget: {fileID: 0}
+    iconTarget: {fileID: 840004196}
     placedCardUIObjectToHide: {fileID: 0}
   fallHeight: 1.5
   fallDuration: 0.35
   worldOffset: {x: 0, y: 0, z: 0}
   iconSize: {x: 1, y: 1}
-  useRevealEffect: 1
-  revealVfxConfig: {fileID: 11400000, guid: b77c6537482747042affa46e4017c2e5, type: 2}
+  useRevealEffect: 0
+  revealVfxConfig: {fileID: 0}
   sortingLayerName: Default
   sortingOrder: 50
   hidePlacedCardUIAfterSpawn: 0

@@ -1127,6 +1127,7 @@ MonoBehaviour:
   slotPanelSize: {x: 820, y: 260}
   slotSize: {x: 210, y: 240}
   slotSpacing: 34
+  placementSlotSprite: {fileID: 0}
   handPanelAnchor: {x: 0.5, y: 0.2}
   handPanelSize: {x: 1000, y: 180}
   handCardSize: {x: 150, y: 150}
@@ -2154,19 +2155,21 @@ MonoBehaviour:
   - placePointID: N5_P1
     placementPoint: {fileID: 47383802}
     iconTarget: {fileID: 264295983}
-    placedCardUIObjectToHide: {fileID: 47383800}
+    placedCardUIObjectToHide: {fileID: 0}
   - placePointID: N5_P2
     placementPoint: {fileID: 1081387996}
     iconTarget: {fileID: 61986276}
-    placedCardUIObjectToHide: {fileID: 1081387994}
+    placedCardUIObjectToHide: {fileID: 0}
   - placePointID: N5_P3
     placementPoint: {fileID: 1729720876}
     iconTarget: {fileID: 1851893870}
-    placedCardUIObjectToHide: {fileID: 1729720873}
+    placedCardUIObjectToHide: {fileID: 0}
   fallHeight: 1.5
   fallDuration: 0.35
   worldOffset: {x: 0, y: 0, z: 0}
   iconSize: {x: 1, y: 1}
+  useRevealEffect: 1
+  revealVfxConfig: {fileID: 11400000, guid: b77c6537482747042affa46e4017c2e5, type: 2}
   sortingLayerName: Default
   sortingOrder: 50
   hidePlacedCardUIAfterSpawn: 0
@@ -4112,7 +4115,7 @@ BoxCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
-    border: {x: 0, y: 0}
+    border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1, y: 2}
     newSize: {x: 1, y: 2}
@@ -4159,7 +4162,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 801bf467c5fbe8e4a9d17258fdd9510d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoryActorAutoMove
   startPoint: {fileID: 3300000101}
   endPoint: {fileID: 1994000446}

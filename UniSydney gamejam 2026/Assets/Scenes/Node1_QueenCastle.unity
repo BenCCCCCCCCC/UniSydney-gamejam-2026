@@ -1468,15 +1468,15 @@ MonoBehaviour:
   - placePointID: N1_P1
     placementPoint: {fileID: 47383802}
     iconTarget: {fileID: 1331221913}
-    placedCardUIObjectToHide: {fileID: 47383800}
+    placedCardUIObjectToHide: {fileID: 0}
   - placePointID: N1_P2
     placementPoint: {fileID: 1081387996}
     iconTarget: {fileID: 629975696}
-    placedCardUIObjectToHide: {fileID: 1081387994}
+    placedCardUIObjectToHide: {fileID: 0}
   - placePointID: N1_P3
     placementPoint: {fileID: 1729720876}
     iconTarget: {fileID: 1729910020}
-    placedCardUIObjectToHide: {fileID: 1729720873}
+    placedCardUIObjectToHide: {fileID: 0}
   fallHeight: 1.5
   fallDuration: 0.35
   worldOffset: {x: 0, y: 0, z: 0}

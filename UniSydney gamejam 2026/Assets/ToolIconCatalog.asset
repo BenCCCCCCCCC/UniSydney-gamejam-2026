@@ -113,3 +113,5 @@ MonoBehaviour:
     iconSprite: {fileID: -6701094504770547140, guid: ac16f524ad6e58a4cb96225fda27a96e, type: 3}
   - toolCardID: T_WIND_CHIME_SIGNAL
     iconSprite: {fileID: 1863977691214506469, guid: cabb5f77f5f0ae346aaa28522b93f59e, type: 3}
+  - toolCardID: T_UNLOCK_KIT
+    iconSprite: {fileID: -6424516378088327578, guid: e7812718c12e89742bc4416f9eea01cb, type: 3}
