@@ -134,7 +134,7 @@ public class Node5ResultPlayer : MonoBehaviour
 
         if (textUI != null)
         {
-            textUI.ConfigureEndingButtons(RetryNode5, RetryNode5, HandleNextLevel);
+            textUI.ConfigureEndingButtons(RetryNode5, RetryNode5, null);
             textUI.HideDialogue();
             textUI.HideEnding();
         }
@@ -528,7 +528,7 @@ public class Node5ResultPlayer : MonoBehaviour
             return;
         }
 
-        textUI.ShowEnding(title, $"{body}\n\nFinal Score: {totalScore}", true);
+        textUI.ShowFinalEnding(title, $"{body}\n\nFinal Score: {totalScore}");
     }
 
     private void StartDwarfPhase()
@@ -769,11 +769,6 @@ public class Node5ResultPlayer : MonoBehaviour
         GameSessionData.ToolCardIDs.Clear();
 
         LoadSceneByName(retrySceneName);
-    }
-
-    private void HandleNextLevel()
-    {
-        Debug.Log("NODE5_NEXT_LEVEL_NOT_IMPLEMENTED");
     }
 
     private void LoadSceneByName(string sceneName)

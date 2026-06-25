@@ -83,6 +83,18 @@ public class SceneTextUIController : MonoBehaviour
         SetActiveOrWarn(endingPanel, true, nameof(endingPanel));
     }
 
+    public void ShowFinalEnding(string title, string body)
+    {
+        SetTextOrWarn(endingTitleText, title, nameof(endingTitleText));
+        SetTextOrWarn(endingBodyText, body, nameof(endingBodyText));
+
+        SetActiveIfPresent(retryButton != null ? retryButton.gameObject : null, true);
+        SetActiveIfPresent(tryAnotherWayButton != null ? tryAnotherWayButton.gameObject : null, true);
+        SetActiveIfPresent(nextLevelButton != null ? nextLevelButton.gameObject : null, false);
+
+        SetActiveOrWarn(endingPanel, true, nameof(endingPanel));
+    }
+
     public void HideEnding()
     {
         SetActiveIfPresent(endingPanel, false);
