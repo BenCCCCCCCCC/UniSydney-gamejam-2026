@@ -614,6 +614,58 @@ Transform:
   - {fileID: 1405852958}
   m_Father: {fileID: 2089790158}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1077027710
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1077027712}
+  - component: {fileID: 1077027711}
+  m_Layer: 0
+  m_Name: GameAudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1077027711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077027710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fed3aa80a0de2034d94b4bdfb39b7bbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameAudioManager
+  bgmClip: {fileID: 8300000, guid: c8c4ff5bee43e3c47b254e8b927d0801, type: 3}
+  bgmVolume: 0.2
+  playBgmOnStart: 1
+  clickClip: {fileID: 8300000, guid: d24aedf8c52c7a045ba2fa7e67dc11be, type: 3}
+  clickVolume: 1
+  playClickOnLeftMouseDown: 1
+  bgmSource: {fileID: 0}
+  clickSource: {fileID: 0}
+--- !u!4 &1077027712
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077027710}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.73938, y: -0.43144, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1089344936
 GameObject:
   m_ObjectHideFlags: 0
@@ -1159,58 +1211,6 @@ Transform:
   - {fileID: 2126450172}
   m_Father: {fileID: 866007366}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1506486329
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1506486331}
-  - component: {fileID: 1506486330}
-  m_Layer: 0
-  m_Name: GameAudioManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1506486330
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1506486329}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fed3aa80a0de2034d94b4bdfb39b7bbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameAudioManager
-  bgmClip: {fileID: 8300000, guid: c8c4ff5bee43e3c47b254e8b927d0801, type: 3}
-  bgmVolume: 0.35
-  playBgmOnStart: 1
-  clickClip: {fileID: 8300000, guid: d24aedf8c52c7a045ba2fa7e67dc11be, type: 3}
-  clickVolume: 0.8
-  playClickOnLeftMouseDown: 1
-  bgmSource: {fileID: 0}
-  clickSource: {fileID: 0}
---- !u!4 &1506486331
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1506486329}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.73938, y: -0.43144, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1748196660
 GameObject:
   m_ObjectHideFlags: 0
@@ -1611,6 +1611,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Node2_1ResultPlayer
   hunterActor: {fileID: 1405852954}
   retrySceneName: Node2_1_HunterHunt
+  nextSceneName: Node3_DwarfHouse
   messageDuration: 2
   msgHoneyApple: 'The wild boar charged out, following the scent of honey!
 
@@ -1808,4 +1809,4 @@ SceneRoots:
   - {fileID: 2089790158}
   - {fileID: 19016513}
   - {fileID: 1151786027}
-  - {fileID: 1506486331}
+  - {fileID: 1077027712}
