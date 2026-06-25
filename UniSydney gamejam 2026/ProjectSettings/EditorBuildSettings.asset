@@ -6,14 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
-  - enabled: 1
-    path: Assets/Scenes/CardBackpackTest.unity
-    guid: 3ff1c959898a81d41a8d9c785fb34628
+    path: Assets/Scenes/MainMenu.unity
+    guid: 007f7fb1030872a40a529842f7a3a769
   - enabled: 1
     path: Assets/Scenes/Node1_QueenCastle.unity
-    guid: 295a78ba7a321ff47bedb5ff32b3ed4c
+    guid: aa45f408080d48e4f97bc0f8772d474e
   - enabled: 1
     path: Assets/Scenes/Node2_1_HunterHunt.unity
     guid: 1a7c43920b650584b89d0f88bb76a51d
@@ -21,7 +18,10 @@ EditorBuildSettings:
     path: Assets/Scenes/Node2_2_HunterHunt.unity
     guid: a2ae5e59116039b40812d16ae2395d99
   - enabled: 1
-    path: Assets/Scenes/CardCraftTest.unity
-    guid: fcb25f26bb93dd3489dc4e424fc6573b
+    path: Assets/Scenes/Node3_DwarfHouse.unity
+    guid: 17d2e5ea7fcbe1645b50d658243b8122
+  - enabled: 1
+    path: Assets/Scenes/Node5.unity
+    guid: 28f4be242ddd9ea478b41789a66505d5
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

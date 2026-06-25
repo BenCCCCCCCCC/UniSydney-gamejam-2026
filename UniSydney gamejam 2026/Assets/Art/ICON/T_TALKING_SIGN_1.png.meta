@@ -109,10 +109,10 @@ TextureImporter:
       name: T_TALKING_SIGN_1_0
       rect:
         serializedVersion: 2
-        x: 31
+        x: 32
         y: 1
-        width: 209
-        height: 273
+        width: 216
+        height: 275
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -175,7 +175,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 682fb50e091add84791cb1a7aaa8658a
+    spriteID: 805a71c059b17eb43bdf94b873de40ac
     internalID: 0
     vertices: []
     indices: 

@@ -29,6 +29,13 @@ public class Node2_2FlowController : MonoBehaviour
     private Node3PlacementPlayController placementCtrl;
 
 
+    private void Awake()
+    {
+        // Awake 先于所有 Start() 运行，确保 Phase 在 PlacedToolIconAutoPlayTrigger.Start() 前重置
+        // 否则后者在 AutoPlay 阶段看到 Phase 就会立刻触发（此时卡槽尚无卡片）
+        GameSessionData.CurrentPhase = GameFlowPhase.Placement;
+    }
+
     private void Start()
     {
         // 告诉转场管理器：步骤7完成后调用 OnActorReady，并跳过自动 StartPlay

@@ -29,6 +29,7 @@ public class Node2_2ResultPlayer : MonoBehaviour
     [Header("场景引用")]
     public StoryActorAutoMove hunterActor;
     [SerializeField] private string retrySceneName = "Node2_1_HunterHunt";
+    [SerializeField] private string nextSceneName = "Node3_DwarfHouse";
 
     [Header("对话设置")]
     [SerializeField] private float messageDuration = 2f;
@@ -224,8 +225,7 @@ public class Node2_2ResultPlayer : MonoBehaviour
 
             Button nextBtn = CreateButton("NextButton", panel.transform,
                 "Next Level", new Vector2(0.67f, 0.22f), new Vector2(220f, 76f));
-            nextBtn.onClick.AddListener(() =>
-                Debug.Log("Node2_2 Next Level clicked. Next scene not yet configured."));
+            nextBtn.onClick.AddListener(HandleNextLevel);
         }
         else
         {
@@ -242,6 +242,20 @@ public class Node2_2ResultPlayer : MonoBehaviour
         GameSessionData.CurrentPhase = GameFlowPhase.Briefing;
         GameSessionData.ToolCardIDs.Clear();
         LoadScene(retrySceneName);
+    }
+
+    private void HandleNextLevel()
+    {
+        if (string.IsNullOrWhiteSpace(nextSceneName))
+        {
+            Debug.LogWarning("Node2_2ResultPlayer: nextSceneName is empty.");
+            return;
+        }
+
+        GameSessionData.CurrentNodeSceneName = nextSceneName;
+        GameSessionData.CurrentPhase = GameFlowPhase.Briefing;
+
+        LoadScene(nextSceneName);
     }
 
     private void LoadScene(string sceneName)

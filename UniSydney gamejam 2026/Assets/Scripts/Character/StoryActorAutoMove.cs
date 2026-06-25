@@ -59,7 +59,7 @@ public class StoryActorAutoMove : MonoBehaviour
             isMoving = false;
             hasReachedEnd = true;
 
-            Debug.Log("Actor reached end point.");
+            Debug.Log($"Actor reached end point: {gameObject.name} → {endPoint.name}");
             OnReachedEnd?.Invoke();
             ActorReachedEnd?.Invoke(this);
         }
