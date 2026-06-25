@@ -216,6 +216,7 @@ MonoBehaviour:
   placementPoint: {fileID: 1081387996}
   node1ResultPlayer: {fileID: 2116289184}
   node3ResultPlayer: {fileID: 0}
+  node5ResultPlayer: {fileID: 0}
   triggerOnlyOnce: 1
 --- !u!61 &61986278
 BoxCollider2D:
@@ -361,6 +362,7 @@ MonoBehaviour:
   placementPoint: {fileID: 47383802}
   node1ResultPlayer: {fileID: 2116289184}
   node3ResultPlayer: {fileID: 0}
+  node5ResultPlayer: {fileID: 0}
   triggerOnlyOnce: 1
 --- !u!61 &264295985
 BoxCollider2D:
@@ -1470,15 +1472,15 @@ MonoBehaviour:
   placementBindings:
   - placePointID: N1_P1
     placementPoint: {fileID: 47383802}
-    iconTarget: {fileID: 47383801}
+    iconTarget: {fileID: 1331221913}
     placedCardUIObjectToHide: {fileID: 47383800}
   - placePointID: N1_P2
     placementPoint: {fileID: 1081387996}
-    iconTarget: {fileID: 1081387995}
+    iconTarget: {fileID: 629975696}
     placedCardUIObjectToHide: {fileID: 1081387994}
   - placePointID: N1_P3
     placementPoint: {fileID: 1729720876}
-    iconTarget: {fileID: 1729720874}
+    iconTarget: {fileID: 1729910020}
     placedCardUIObjectToHide: {fileID: 1729720873}
   fallHeight: 1.5
   fallDuration: 0.35
@@ -1951,6 +1953,7 @@ MonoBehaviour:
   placementPoint: {fileID: 1729720876}
   node1ResultPlayer: {fileID: 2116289184}
   node3ResultPlayer: {fileID: 0}
+  node5ResultPlayer: {fileID: 0}
   triggerOnlyOnce: 1
 --- !u!61 &1851893872
 BoxCollider2D:
