@@ -83,6 +83,28 @@ public class SceneTextUIController : MonoBehaviour
         SetActiveOrWarn(endingPanel, true, nameof(endingPanel));
     }
 
+    public void ShowFinalEnding(string title, string body)
+    {
+        SetTextOrWarn(endingTitleText, title, nameof(endingTitleText));
+        SetTextOrWarn(endingBodyText, body, nameof(endingBodyText));
+
+        SetActiveIfPresent(retryButton != null ? retryButton.gameObject : null, false);
+        SetActiveIfPresent(tryAnotherWayButton != null ? tryAnotherWayButton.gameObject : null, true);
+        SetActiveIfPresent(nextLevelButton != null ? nextLevelButton.gameObject : null, true);
+
+        SetActiveOrWarn(endingPanel, true, nameof(endingPanel));
+    }
+
+    public void ConfigureFinalEndingButtons(UnityAction tryAnotherWayAction, UnityAction mainMenuAction)
+    {
+        ConfigureButton(retryButton, null, nameof(retryButton));
+        ConfigureButton(tryAnotherWayButton, tryAnotherWayAction, nameof(tryAnotherWayButton));
+        ConfigureButton(nextLevelButton, mainMenuAction, nameof(nextLevelButton));
+
+        SetButtonLabel(tryAnotherWayButton, "Try Another Way");
+        SetButtonLabel(nextLevelButton, "Main Menu");
+    }
+
     public void HideEnding()
     {
         SetActiveIfPresent(endingPanel, false);
@@ -108,6 +130,27 @@ public class SceneTextUIController : MonoBehaviour
         if (action != null)
         {
             button.onClick.AddListener(action);
+        }
+    }
+
+    private void SetButtonLabel(Button button, string label)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        TMP_Text tmpText = button.GetComponentInChildren<TMP_Text>(true);
+        if (tmpText != null)
+        {
+            tmpText.text = label;
+            return;
+        }
+
+        Text legacyText = button.GetComponentInChildren<Text>(true);
+        if (legacyText != null)
+        {
+            legacyText.text = label;
         }
     }
 

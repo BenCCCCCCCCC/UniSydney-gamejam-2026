@@ -1107,6 +1107,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Node3ResultPlayer
   nodeID: Node3
   retrySceneName: Node3_DwarfHouse
+  nextSceneName: Node4_1
+  useAsyncLoad: 0
   storyActor: {fileID: 1405852954}
   textUI: {fileID: 3100000005}
   messageDuration: 1.6

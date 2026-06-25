@@ -26,6 +26,9 @@ public class Node4_1ResultPlayer : MonoBehaviour
     [Header("场景引用")]
     public StoryActorAutoMove actorAutoMove;
     [SerializeField] private string retrySceneName = "Node4_1";
+    [SerializeField] private string nextSceneName = "Node5";
+    [SerializeField] private bool useAsyncLoad = false;
+    [SerializeField] private bool disableNextButtonAfterClick = true;
 
     [Header("对话设置")]
     [SerializeField] private float messageDuration = 3f;
@@ -39,9 +42,11 @@ public class Node4_1ResultPlayer : MonoBehaviour
     private GameObject canvasObject;
     private GameObject dialoguePanelObject;
     private TMP_Text dialogueText;
+    private Button nextButton;
 
     private Coroutine dialogueCoroutine;
     private bool hasEnded;
+    private bool isLoadingNextScene;
 
     private void OnEnable()  => PlacementTriggerZone.OnToolPlaced += HandleToolPlaced;
     private void OnDisable() => PlacementTriggerZone.OnToolPlaced -= HandleToolPlaced;
@@ -168,8 +173,8 @@ public class Node4_1ResultPlayer : MonoBehaviour
 
         Button nextBtn = CreateButton("NextButton", panel.transform,
             "Next Level", new Vector2(0.67f, 0.22f), new Vector2(220f, 76f));
-        nextBtn.onClick.AddListener(() =>
-            SceneTransitionManager.Instance?.PanToNextScene("Node4_2"));
+        nextButton = nextBtn;
+        nextBtn.onClick.AddListener(HandleNextLevel);
     }
 
     private void RetryNode4_1()
@@ -181,7 +186,38 @@ public class Node4_1ResultPlayer : MonoBehaviour
         LoadScene(retrySceneName);
     }
 
+    private void HandleNextLevel()
+    {
+        if (isLoadingNextScene)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(nextSceneName))
+        {
+            Debug.LogWarning("Node4_1ResultPlayer: nextSceneName is empty.");
+            return;
+        }
+
+        isLoadingNextScene = true;
+
+        if (disableNextButtonAfterClick && nextButton != null)
+        {
+            nextButton.interactable = false;
+        }
+
+        GameSessionData.CurrentNodeSceneName = nextSceneName;
+        GameSessionData.CurrentPhase = GameFlowPhase.Briefing;
+
+        LoadScene(nextSceneName, useAsyncLoad);
+    }
+
     private void LoadScene(string sceneName)
+    {
+        LoadScene(sceneName, false);
+    }
+
+    private void LoadScene(string sceneName, bool asyncLoad)
     {
 #if UNITY_EDITOR
         string path = $"Assets/Scenes/{sceneName}.unity";
@@ -191,6 +227,12 @@ public class Node4_1ResultPlayer : MonoBehaviour
             return;
         }
 #endif
+        if (asyncLoad)
+        {
+            SceneManager.LoadSceneAsync(sceneName);
+            return;
+        }
+
         SceneManager.LoadScene(sceneName);
     }
 

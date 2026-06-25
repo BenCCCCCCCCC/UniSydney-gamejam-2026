@@ -21,6 +21,8 @@ public class Node3ResultPlayer : MonoBehaviour
     [Header("Scene")]
     [SerializeField] private string nodeID = "Node3";
     [SerializeField] private string retrySceneName = "Node3_DwarfHouse";
+    [SerializeField] private string nextSceneName = "Node4_1";
+    [SerializeField] private bool useAsyncLoad = false;
     [SerializeField] private StoryActorAutoMove storyActor;
 
     [Header("Dialogue")]
@@ -53,6 +55,7 @@ public class Node3ResultPlayer : MonoBehaviour
     private bool routeSolved;
     private bool doorSolved;
     private bool hasEnded;
+    private bool isLoadingNextScene;
     private CardDatabase cachedDatabase;
 
     private string routeFailReason = "Snow White is lost.";
@@ -568,7 +571,23 @@ public class Node3ResultPlayer : MonoBehaviour
 
     private void HandleNextLevel()
     {
-        Debug.Log("Next Level button clicked. Not implemented yet.");
+        if (isLoadingNextScene)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(nextSceneName))
+        {
+            Debug.LogWarning("Node3ResultPlayer: nextSceneName is empty.");
+            return;
+        }
+
+        isLoadingNextScene = true;
+
+        GameSessionData.CurrentNodeSceneName = nextSceneName;
+        GameSessionData.CurrentPhase = GameFlowPhase.Briefing;
+
+        LoadSceneByName(nextSceneName, useAsyncLoad);
     }
 
     private bool IsRunningInRetryScene()
@@ -613,6 +632,11 @@ public class Node3ResultPlayer : MonoBehaviour
 
     private void LoadSceneByName(string sceneName)
     {
+        LoadSceneByName(sceneName, false);
+    }
+
+    private void LoadSceneByName(string sceneName, bool asyncLoad)
+    {
         Debug.Log($"Node3ResultPlayer loading scene: {sceneName}");
 
 #if UNITY_EDITOR
@@ -624,6 +648,12 @@ public class Node3ResultPlayer : MonoBehaviour
             return;
         }
 #endif
+
+        if (asyncLoad)
+        {
+            SceneManager.LoadSceneAsync(sceneName);
+            return;
+        }
 
         SceneManager.LoadScene(sceneName);
     }
