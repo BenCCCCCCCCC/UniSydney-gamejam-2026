@@ -7,6 +7,16 @@ public class Node1ResultPlayer : MonoBehaviour
     public StoryActorAutoMove storyActor;
     public Transform queenPlaceholder;
 
+    private void OnEnable()  => PlacementTriggerZone.OnToolPlaced += HandleToolPlaced;
+    private void OnDisable() => PlacementTriggerZone.OnToolPlaced -= HandleToolPlaced;
+
+    private void HandleToolPlaced(PlacementPoint point)
+    {
+        // 只处理本场景发出的事件，与其他节点完全隔离
+        if (point == null || point.gameObject.scene != gameObject.scene) return;
+        PlayResult(point);
+    }
+
     [Header("Result Settings")]
     public float resultDuration = 1.2f;
 

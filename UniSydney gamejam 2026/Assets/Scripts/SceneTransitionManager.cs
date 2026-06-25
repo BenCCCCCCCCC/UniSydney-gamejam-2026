@@ -14,6 +14,19 @@ namespace FairyTale.Core
     {
         public static SceneTransitionManager Instance { get; private set; }
 
+        /// <summary>
+        /// 设为 true 后，平移转场完成时不自动调用 actor.StartPlay()。
+        /// 由目标场景（如 Node2_2FlowController）的 Start() 提前设置，
+        /// 转场结束后自动重置为 false。
+        /// </summary>
+        public static bool SkipActorAutoStartAfterPan;
+
+        /// <summary>
+        /// 平移转场步骤7（SetMovePath + MoveToStart）完成后触发，转场结束前。
+        /// 目标场景可订阅此回调接管 actor 的移动路径。用后自动清空。
+        /// </summary>
+        public static System.Action OnActorReadyInNewScene;
+
         [Tooltip("淡黑转场的淡入/淡出时长（秒）")]
         public float fadeDuration = 0.35f;
 
@@ -139,18 +152,19 @@ namespace FairyTale.Core
             // ── 步骤 4：摄像机移入新场景（否则旧场景卸载时会一并销毁它）──
             SceneManager.MoveGameObjectToScene(cam.gameObject, nextScene);
 
-            // ── 步骤 5：新场景所有根对象（含摄像机）复位到世界原点（同一帧，无视觉跳帧）──
-            foreach (var go in nextScene.GetRootGameObjects())
-                go.transform.position -= Vector3.right * screenWidthWorld;
-
-            // ── 步骤 6：激活新场景，卸载旧场景 ──
-            // DontDestroyOnLoad 的 actor 不受 Unload 影响，旧场景其他逻辑全部销毁。
+            // ── 步骤 5：先激活并卸载旧场景——此时摄像机仍在右移后的位置，
+            //    Node2_1 在视野左侧外，卸载不会产生任何可见闪烁。
             SceneManager.SetActiveScene(nextScene);
             var unload = SceneManager.UnloadSceneAsync(fromSceneName);
             if (unload != null)
                 while (!unload.isDone) yield return null;
             else
                 Debug.LogWarning($"PanToNextScene: 无法卸载场景 '{fromSceneName}'。");
+
+            // ── 步骤 6：旧场景已消失后再复位坐标——摄像机与 Node2_2 同帧移回原点，
+            //    因为此时只有 Node2_2 存在，不会出现两个场景叠加的闪烁帧。
+            foreach (var go in nextScene.GetRootGameObjects())
+                go.transform.position -= Vector3.right * screenWidthWorld;
 
             // ── 步骤 7：把携带的 actor 移入新场景，更新路径引用 ──
             Transform newStart = FindNamedTransform(nextScene, "ActorStart");
@@ -163,20 +177,32 @@ namespace FairyTale.Core
 
                 var mover = a.GetComponent<StoryActorAutoMove>();
                 if (mover == null) continue;
-                if (newStart != null) mover.startPoint = newStart;
-                if (newEnd   != null) mover.endPoint   = newEnd;
+                // startPoint / endPoint 现在是 private，通过 SetMovePath 更新
+                if (newStart != null && newEnd != null)
+                    mover.SetMovePath(newStart, newEnd);
+                mover.MoveToStart(); // 瞬移到新起点（黑幕内完成，玩家不可见）
             }
+
+            // actor 就位完毕，通知订阅者（如 Node2_2FlowController）接管路径
+            var readyCallback = OnActorReadyInNewScene;
+            OnActorReadyInNewScene = null; // 先清空，防止回调内再次触发
+            readyCallback?.Invoke();
 
             _fade.blocksRaycasts = false;
 
             // ── 步骤 8：短暂停顿后让 actor 从新场景左侧走入 ──
+            // 若目标场景已设 SkipActorAutoStartAfterPan，则由场景自己控制启动时机（等待旁白/玩家输入）。
             yield return new WaitForSeconds(0.3f);
-            foreach (var a in actors)
+            if (!SkipActorAutoStartAfterPan)
             {
-                if (a == null) continue;
-                var mover = a.GetComponent<StoryActorAutoMove>();
-                if (mover != null) mover.StartPlay();
+                foreach (var a in actors)
+                {
+                    if (a == null) continue;
+                    var mover = a.GetComponent<StoryActorAutoMove>();
+                    if (mover != null) mover.StartPlay();
+                }
             }
+            SkipActorAutoStartAfterPan = false; // 消费标志，恢复默认行为
 
             _busy = false;  // 放在最后，防止 StartPlay 触发的逻辑重入
         }

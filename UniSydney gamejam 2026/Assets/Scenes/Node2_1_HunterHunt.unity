@@ -245,7 +245,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2683143132933899092, guid: e38d3b78cae5ba04e8c4a23a8c15ee11, type: 3}
+  m_Sprite: {fileID: -2683143132933899092, guid: 67372d6b085529040bfeb0a37e15f612, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -353,6 +353,8 @@ MonoBehaviour:
   placementPoint: {fileID: 47383802}
   resultPlayer: {fileID: 0}
   node2_1ResultPlayer: {fileID: 2116289184}
+  node2_2ResultPlayer: {fileID: 0}
+  triggerOnlyOnce: 1
 --- !u!61 &264295985
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -636,7 +638,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -8756948578836180329, guid: 70a9f6ea0f651d44c85cc8fbb7915293, type: 3}
+  m_Sprite: {fileID: -8756948578836180329, guid: 8b4a0625f70818340b3fba20b6b32b76, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -839,6 +841,7 @@ MonoBehaviour:
   startPoint: {fileID: 2038911016}
   endPoint: {fileID: 1994000446}
   moveSpeed: 2
+  arriveDistance: 0.05
 --- !u!50 &1405852955
 Rigidbody2D:
   serializedVersion: 5
@@ -1063,8 +1066,59 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2116289183}
+  - {fileID: 1969341266}
   m_Father: {fileID: 2089790158}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1969341265
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1969341266}
+  - component: {fileID: 1969341267}
+  m_Layer: 0
+  m_Name: Node2_FlowController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1969341266
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969341265}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1837204890}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1969341267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969341265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1588bf0c6a866c4d97ef030ed38b4aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Node2SimpleFlowController
+  nodeID: Node2
+  nodeSceneName: Node2_1_HunterHunt
+  cardBackpackSceneName: CardBackpackTest
+  briefingLine: The hunter obeys the queen's command and comes to the forest to see
+    for Snow
+  readingSeconds: 4
 --- !u!1 &1994000445
 GameObject:
   m_ObjectHideFlags: 0
@@ -1206,9 +1260,9 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 15
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -7070912192024506987, guid: dbc06faa1b64d36479a6510b4ae9606d, type: 3}
+  m_Sprite: {fileID: -7070912192024506987, guid: b746039f136c55e4ba5328324a550f08, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1438,14 +1492,14 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1372827342920791485, guid: 3558c358ebd781342962c786c76cc908, type: 3}
+  m_Sprite: {fileID: 1372827342920791485, guid: 5b4e069020373c84f8e7972dbb02a746, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.61, y: 3.85}
+  m_Size: {x: 5.4, y: 5.4}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

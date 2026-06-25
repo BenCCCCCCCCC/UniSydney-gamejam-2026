@@ -30,6 +30,23 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         PlacedCardsByPointID.Clear();
     }
 
+    // 道具使用后立即销毁指定槽的卡牌 UI
+    public static void ConsumeCardOnPoint(string placePointID)
+    {
+        if (string.IsNullOrWhiteSpace(placePointID)) return;
+        if (!PlacedCardsByPointID.TryGetValue(placePointID, out ToolCardDragItem card) || card == null) return;
+        PlacedCardsByPointID.Remove(placePointID);
+        Destroy(card.gameObject);
+    }
+
+    // 场景切换时清空所有已放置卡牌，避免残留到下一场景
+    public static void ConsumeAllPlacedCards()
+    {
+        foreach (var card in PlacedCardsByPointID.Values)
+            if (card != null) Destroy(card.gameObject);
+        PlacedCardsByPointID.Clear();
+    }
+
     public void Setup(string cardID)
     {
         toolCardID = cardID;
@@ -368,10 +385,10 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         float halfSize = size * 0.5f;
 
         return Rect.MinMaxRect(
-            screenPoint.x - halfSize,
-            screenPoint.y - halfSize,
-            screenPoint.x + halfSize,
-            screenPoint.y + halfSize);
+            screenX - halfSize,
+            screenY - halfSize,
+            screenX + halfSize,
+            screenY + halfSize);
     }
 
     private static PlacementPoint GetPlacementPointFromCollider(Collider2D hit)

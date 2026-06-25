@@ -14,6 +14,15 @@ public class Node2_1ResultPlayer : MonoBehaviour
     [Header("结果设置")]
     public float pauseDuration = 1.5f;
 
+    private void OnEnable()  => PlacementTriggerZone.OnToolPlaced += HandleToolPlaced;
+    private void OnDisable() => PlacementTriggerZone.OnToolPlaced -= HandleToolPlaced;
+
+    private void HandleToolPlaced(PlacementPoint point)
+    {
+        if (point == null || point.gameObject.scene != gameObject.scene) return;
+        PlayResult(point);
+    }
+
     private void Start()
     {
         if (hunterActor != null)
@@ -44,6 +53,9 @@ public class Node2_1ResultPlayer : MonoBehaviour
     {
         if (hunterActor != null)
             hunterActor.PauseMove();
+
+        // 道具已使用，立即从手牌 UI 中销毁这张卡
+        ToolCardDragItem.ConsumeCardOnPoint(point.placePointID);
 
         switch (point.storedToolCardID)
         {

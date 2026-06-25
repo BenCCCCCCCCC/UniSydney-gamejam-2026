@@ -74,13 +74,37 @@ public class NodeToolHandController : MonoBehaviour
 
     private void Start()
     {
-        //ToolCardDragItem.ClearPlacedCardRegistry();
+        SceneManager.sceneLoaded += OnNewSceneLoaded;
 
         ClearPlacementPointTestValues();
         AttachPlacementPointClickBridges();
         BuildDropSlots();
         // 不在 Start 里对齐——等 LateUpdate 首帧（CanvasScaler 已在 Update 运行后）再对齐
         BuildToolButtons();
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnNewSceneLoaded;
+    }
+
+    // 新场景加载后重新扫描当前场景的放置点，更新 drop slot 映射和对齐
+    private void OnNewSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 清除上一场景遗留的已放置卡牌，防止它们被带入新场景
+        ToolCardDragItem.ConsumeAllPlacedCards();
+        EnsureEventSystem(); // EventSystem 可能随旧场景卸载而消失，在此补建
+        AttachPlacementPointClickBridges();
+        BuildDropSlots();
+        slotsAligned = false; // 触发 LateUpdate 重新对齐
+    }
+
+    // 确保场景中始终有 EventSystem；若新建则跨场景存活
+    private static void EnsureEventSystem()
+    {
+        if (FindAnyObjectByType<EventSystem>() != null) return;
+        var go = new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
+        DontDestroyOnLoad(go);
     }
 
     private void LateUpdate()
@@ -565,7 +589,11 @@ public class NodeToolHandController : MonoBehaviour
             RectTransform p3DropSlot = CreateDropSlot(canvasRect, "P3_DropSlotUI");
             RectTransform handArea = CreateHandArea(canvasRect);
 
+            // Canvas 和 Controller 跨场景存活，转场时手牌持续显示
+            DontDestroyOnLoad(canvasObject);
+
             GameObject controllerObject = new GameObject("NodeToolHandController");
+            DontDestroyOnLoad(controllerObject);
             NodeToolHandController controller = controllerObject.AddComponent<NodeToolHandController>();
             controller.ConfigureRuntime(handArea, activeToolText, p1DropSlot, p2DropSlot, p3DropSlot);
         }
@@ -617,17 +645,7 @@ public class NodeToolHandController : MonoBehaviour
 
         private static void EnsureEventSystem()
         {
-            if (FindAnyObjectByType<EventSystem>() != null)
-            {
-                return;
-            }
-
-            GameObject eventSystemObject = new GameObject(
-                "EventSystem",
-                typeof(EventSystem),
-                typeof(InputSystemUIInputModule));
-
-            eventSystemObject.SetActive(true);
+            NodeToolHandController.EnsureEventSystem();
         }
     }
 }
