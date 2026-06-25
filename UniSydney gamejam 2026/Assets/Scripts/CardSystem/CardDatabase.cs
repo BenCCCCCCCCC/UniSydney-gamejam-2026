@@ -160,6 +160,73 @@ public class CardDatabase : MonoBehaviour
         return true;
     }
 
+    public bool IsToolAllowedInNode(string nodeId, string toolCardID)
+    {
+        if (string.IsNullOrWhiteSpace(nodeId) || string.IsNullOrWhiteSpace(toolCardID))
+        {
+            return false;
+        }
+
+        if (Data == null || Data.nodeLoadouts == null)
+        {
+            Debug.LogError("CardDatabase: cannot check node tool list before data is loaded.");
+            return false;
+        }
+
+        foreach (NodeLoadoutRow loadout in Data.nodeLoadouts)
+        {
+            if (loadout == null || loadout.NodeID != nodeId)
+            {
+                continue;
+            }
+
+            return ContainsCsvID(loadout.CoreToolCardIDs, toolCardID)
+                || ContainsCsvID(loadout.OptionalToolCardIDs, toolCardID);
+        }
+
+        return false;
+    }
+
+    public bool TryGetPlacementResult(
+        string nodeId,
+        string placePointID,
+        string toolCardID,
+        out PlacementResultRow result)
+    {
+        result = null;
+
+        if (string.IsNullOrWhiteSpace(nodeId)
+            || string.IsNullOrWhiteSpace(placePointID)
+            || string.IsNullOrWhiteSpace(toolCardID))
+        {
+            return false;
+        }
+
+        if (Data == null || Data.placementResults == null)
+        {
+            Debug.LogError("CardDatabase: cannot check placement results before data is loaded.");
+            return false;
+        }
+
+        foreach (PlacementResultRow row in Data.placementResults)
+        {
+            if (row == null)
+            {
+                continue;
+            }
+
+            if (row.NodeID == nodeId
+                && row.PlacePointID == placePointID
+                && row.ToolCardID == toolCardID)
+            {
+                result = row;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public List<CardRow> GetBaseCardsForNode(string nodeId)
     {
         var result = new List<CardRow>();
@@ -239,6 +306,26 @@ public class CardDatabase : MonoBehaviour
             && !card.IsCraftedTool
             && !string.IsNullOrWhiteSpace(card.CardID)
             && card.CardID.StartsWith("B_", System.StringComparison.Ordinal);
+    }
+
+    private bool ContainsCsvID(string csv, string targetID)
+    {
+        if (string.IsNullOrWhiteSpace(csv) || string.IsNullOrWhiteSpace(targetID))
+        {
+            return false;
+        }
+
+        string[] ids = csv.Split(',');
+
+        foreach (string rawId in ids)
+        {
+            if (rawId.Trim() == targetID)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void ValidateLoadoutToolList(NodeLoadoutRow loadout, string fieldName, string toolCardIDs)
