@@ -8,6 +8,7 @@ public class PlacementTriggerZone : MonoBehaviour
     [Header("Optional Result Players")]
     public Node1ResultPlayer node1ResultPlayer;
     public Node3ResultPlayer node3ResultPlayer;
+    public Node5ResultPlayer node5ResultPlayer;
 
     [Header("Debug")]
     [SerializeField] private bool triggerOnlyOnce = true;
@@ -64,6 +65,25 @@ public class PlacementTriggerZone : MonoBehaviour
             else
             {
                 Debug.LogWarning($"{gameObject.name}: Node3ResultPlayer is missing.");
+            }
+
+            return;
+        }
+
+        if (nodeID == "Node5")
+        {
+            if (node5ResultPlayer == null)
+            {
+                node5ResultPlayer = FindAnyObjectByType<Node5ResultPlayer>();
+            }
+
+            if (node5ResultPlayer != null)
+            {
+                node5ResultPlayer.PlayResult(placementPoint);
+            }
+            else
+            {
+                Debug.LogWarning($"{gameObject.name}: Node5ResultPlayer is missing.");
             }
 
             return;
