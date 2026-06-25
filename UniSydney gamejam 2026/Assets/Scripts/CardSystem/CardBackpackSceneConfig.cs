@@ -15,7 +15,7 @@ public class CardBackpackSceneConfig : MonoBehaviour
     [SerializeField] private RectOffset baseCardAreaPadding;
 
     [Header("Tool Hand Layout")]
-    [SerializeField] private Vector2 toolHandCardSize = new Vector2(120f, 160f);
+    [SerializeField] private Vector2 toolHandCardSize = new Vector2(210f, 294f);
 
     [Header("Timing")]
     [SerializeField] private float previewSeconds = 3f;
@@ -30,7 +30,7 @@ public class CardBackpackSceneConfig : MonoBehaviour
     public Vector2 BaseCardSpacing => baseCardSpacing;
     public int MaxBaseCardsPerRow => maxBaseCardsPerRow;
     public RectOffset BaseCardAreaPadding => GetSafeBaseCardAreaPadding();
-    public Vector2 ToolHandCardSize => toolHandCardSize;
+    public Vector2 ToolHandCardSize => HandCardPresentationApplier.ResolveCardSize(toolHandCardSize);
     public float PreviewSeconds => previewSeconds;
     public bool UseManualBaseCardSlots => useManualBaseCardSlots;
 
