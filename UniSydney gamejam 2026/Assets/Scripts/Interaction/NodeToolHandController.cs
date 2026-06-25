@@ -19,6 +19,7 @@ public class NodeToolHandController : MonoBehaviour
     private RectTransform p3DropSlot;
     private readonly Dictionary<string, RectTransform> dropSlotsByPointID = new();
     private string activeToolCardID;
+    private bool slotsAligned = false;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void RegisterSceneLoadedHandler()
@@ -59,8 +60,17 @@ public class NodeToolHandController : MonoBehaviour
         ClearPlacementPointTestValues();
         AttachPlacementPointClickBridges();
         BuildDropSlots();
-        AlignDropSlotsToPlacementPoints();
+        // 不在 Start 里对齐——等 LateUpdate 首帧（CanvasScaler 已在 Update 运行后）再对齐
         BuildToolButtons();
+    }
+
+    private void LateUpdate()
+    {
+        if (!slotsAligned)
+        {
+            AlignDropSlotsToPlacementPoints();
+            slotsAligned = true;
+        }
     }
 
     public void ConfigureRuntime(
@@ -245,7 +255,12 @@ public class NodeToolHandController : MonoBehaviour
             }
 
             Vector3 worldPosition = GetPlacementWorldCenter(point);
-            Vector2 screenPosition = sceneCamera.WorldToScreenPoint(worldPosition);
+
+            // WorldToViewportPoint 返回 [0,1] 归一化坐标，再乘 Screen 尺寸得到屏幕坐标
+            // 避免 camera.pixelWidth vs Screen.width 不一致（如编辑器缩放、DPI 缩放）导致偏移
+            Vector3 viewportPoint = sceneCamera.WorldToViewportPoint(worldPosition);
+            Vector2 screenPosition = new Vector2(viewportPoint.x * Screen.width, viewportPoint.y * Screen.height);
+
             Camera uiCamera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
 
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPosition, uiCamera, out Vector2 localPoint))
@@ -254,13 +269,20 @@ public class NodeToolHandController : MonoBehaviour
                 slot.anchorMax = new Vector2(0.5f, 0.5f);
                 slot.pivot = new Vector2(0.5f, 0.5f);
                 slot.anchoredPosition = localPoint;
-                Debug.Log($"DROP_SLOT_ALIGNED: {point.placePointID} world={FormatVector3(worldPosition)} screen={FormatVector2(screenPosition)} local={FormatVector2(localPoint)}");
+                Debug.Log($"DROP_SLOT_ALIGNED: {point.placePointID} world={FormatVector3(worldPosition)} viewport=({viewportPoint.x:0.00},{viewportPoint.y:0.00}) screen={FormatVector2(screenPosition)} local={FormatVector2(localPoint)}");
             }
         }
     }
 
     private static Vector3 GetPlacementWorldCenter(PlacementPoint point)
     {
+        // 优先用 ToolSlotVisual 的世界位置，让 UI 放置区和玩家看到的槽位指示器对齐
+        Transform slotVisual = FindToolSlotVisual(point);
+        if (slotVisual != null)
+        {
+            return slotVisual.position;
+        }
+
         Collider2D triggerCollider = FindTriggerZoneCollider(point);
         if (triggerCollider != null)
         {
@@ -274,6 +296,19 @@ public class NodeToolHandController : MonoBehaviour
         }
 
         return point.transform.position;
+    }
+
+    private static Transform FindToolSlotVisual(PlacementPoint point)
+    {
+        for (int i = 0; i < point.transform.childCount; i++)
+        {
+            Transform child = point.transform.GetChild(i);
+            if (child.name.Contains("ToolSlotVisual"))
+            {
+                return child;
+            }
+        }
+        return null;
     }
 
     private static Collider2D FindTriggerZoneCollider(PlacementPoint point)

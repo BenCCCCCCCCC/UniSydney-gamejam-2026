@@ -124,19 +124,8 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         float nearestDistance = float.MaxValue;
         float nearestOverlapDistance = float.MaxValue;
 
-        PlacementTriggerZone[] triggerZones = FindObjectsByType<PlacementTriggerZone>();
-        foreach (PlacementTriggerZone zone in triggerZones)
-        {
-            if (zone == null || zone.placementPoint == null)
-            {
-                continue;
-            }
-
-            Collider2D zoneCollider = zone.GetComponentInChildren<Collider2D>();
-            PlacementCandidate candidate = CreateCandidate(camera, zone.placementPoint, zoneCollider, zone.transform.position);
-            ConsiderCandidate(cardCenterScreen, cardScreenRect, candidate, ref nearest, ref nearestDistance, ref hasNearest, ref nearestOverlapping, ref nearestOverlapDistance, ref hasOverlap);
-        }
-
+        // 只遍历 PlacementPoint，用 ToolSlotVisual 世界坐标做 snap 目标
+        // 避免 TriggerZone 和 PlacementPoint 父节点产生重复候选干扰
         PlacementPoint[] placementPoints = FindObjectsByType<PlacementPoint>();
         foreach (PlacementPoint point in placementPoints)
         {
@@ -145,8 +134,8 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
                 continue;
             }
 
-            Collider2D pointCollider = point.GetComponentInChildren<Collider2D>();
-            PlacementCandidate candidate = CreateCandidate(camera, point, pointCollider, point.transform.position);
+            Vector3 snapWorldPos = FindToolSlotVisualPosition(point);
+            PlacementCandidate candidate = CreateCandidateFromWorldPoint(camera, point, snapWorldPos);
             ConsiderCandidate(cardCenterScreen, cardScreenRect, candidate, ref nearest, ref nearestDistance, ref hasNearest, ref nearestOverlapping, ref nearestOverlapDistance, ref hasOverlap);
         }
 
@@ -167,6 +156,29 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         }
 
         return null;
+    }
+
+    private static Vector3 FindToolSlotVisualPosition(PlacementPoint point)
+    {
+        for (int i = 0; i < point.transform.childCount; i++)
+        {
+            Transform child = point.transform.GetChild(i);
+            if (child.name.Contains("ToolSlotVisual"))
+            {
+                return child.position;
+            }
+        }
+        return point.transform.position;
+    }
+
+    private static PlacementCandidate CreateCandidateFromWorldPoint(Camera camera, PlacementPoint point, Vector3 worldPosition)
+    {
+        return new PlacementCandidate
+        {
+            point = point,
+            collider = null,
+            screenRect = PointToScreenRect(camera, worldPosition, 200f)
+        };
     }
 
     private void ConsiderCandidate(
@@ -198,20 +210,6 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         }
     }
 
-    private static PlacementCandidate CreateCandidate(Camera camera, PlacementPoint point, Collider2D collider, Vector3 fallbackWorldPosition)
-    {
-        Vector3 centerWorldPosition = collider != null ? collider.bounds.center : fallbackWorldPosition;
-        Rect screenRect = collider != null
-            ? BoundsToScreenRect(camera, collider.bounds)
-            : PointToScreenRect(camera, centerWorldPosition, 160f);
-
-        return new PlacementCandidate
-        {
-            point = point,
-            collider = collider,
-            screenRect = screenRect
-        };
-    }
 
     private Rect GetCardScreenRect()
     {
@@ -283,32 +281,13 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private static Rect PointToScreenRect(Camera camera, Vector3 worldPosition, float size)
     {
-        Vector3 screenPoint = camera.WorldToScreenPoint(worldPosition);
+        // 用 ViewportPoint → Screen 坐标，与 GetCardScreenRect() 的 Screen 坐标系保持一致
+        // 避免 camera.pixelWidth vs Screen.width 不一致（编辑器缩放/DPI）导致 snap 偏移
+        Vector3 viewportPoint = camera.WorldToViewportPoint(worldPosition);
+        float screenX = viewportPoint.x * Screen.width;
+        float screenY = viewportPoint.y * Screen.height;
         float halfSize = size * 0.5f;
-        return Rect.MinMaxRect(screenPoint.x - halfSize, screenPoint.y - halfSize, screenPoint.x + halfSize, screenPoint.y + halfSize);
-    }
-
-    private static PlacementPoint GetPlacementPointFromCollider(Collider2D hit)
-    {
-        PlacementTriggerZone triggerZone = hit.GetComponentInParent<PlacementTriggerZone>();
-        if (triggerZone != null && triggerZone.placementPoint != null)
-        {
-            return triggerZone.placementPoint;
-        }
-
-        PlacementPoint point = hit.GetComponentInParent<PlacementPoint>();
-        if (point != null)
-        {
-            return point;
-        }
-
-        PlacementPointClickBridge bridge = hit.GetComponentInParent<PlacementPointClickBridge>();
-        if (bridge != null && bridge.PlacementPoint != null)
-        {
-            return bridge.PlacementPoint;
-        }
-
-        return null;
+        return Rect.MinMaxRect(screenX - halfSize, screenY - halfSize, screenX + halfSize, screenY + halfSize);
     }
 
     private static Camera FindSceneCamera()

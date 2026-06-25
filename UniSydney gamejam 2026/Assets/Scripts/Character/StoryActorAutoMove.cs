@@ -9,6 +9,8 @@ public class StoryActorAutoMove : MonoBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 2f;
 
+    public System.Action OnReachedEnd;
+
     private bool isPlaying = false;
     private bool isPaused = false;
 
@@ -37,6 +39,7 @@ public class StoryActorAutoMove : MonoBehaviour
         {
             isPlaying = false;
             Debug.Log("Actor reached end point.");
+            OnReachedEnd?.Invoke();
         }
     }
 
@@ -45,6 +48,12 @@ public class StoryActorAutoMove : MonoBehaviour
         if (startPoint != null)
         {
             transform.position = startPoint.position;
+        }
+
+        // 重置场景内所有触发区，确保重播时每个槽都能再次触发
+        foreach (var zone in FindObjectsByType<PlacementTriggerZone>())
+        {
+            zone.ResetTrigger();
         }
 
         isPlaying = true;

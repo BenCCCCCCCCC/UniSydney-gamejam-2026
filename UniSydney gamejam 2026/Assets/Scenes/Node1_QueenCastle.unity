@@ -195,7 +195,7 @@ Transform:
   m_GameObject: {fileID: 61986275}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.26, y: -1.76, z: 0}
+  m_LocalPosition: {x: 0.08, y: -3.03, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -215,6 +215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 1081387996}
   resultPlayer: {fileID: 2116289184}
+  node2_1ResultPlayer: {fileID: 0}
 --- !u!61 &61986278
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -259,7 +260,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2, y: 3.5}
   m_EdgeRadius: 0
 --- !u!1 &264295982
 GameObject:
@@ -288,7 +289,7 @@ Transform:
   m_GameObject: {fileID: 264295982}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.26, y: -2.99, z: 0}
+  m_LocalPosition: {x: -4.12, y: -4.28, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -308,6 +309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 47383802}
   resultPlayer: {fileID: 2116289184}
+  node2_1ResultPlayer: {fileID: 0}
 --- !u!61 &264295985
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -352,7 +354,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2, y: 3.5}
   m_EdgeRadius: 0
 --- !u!1 &324246141
 GameObject:
@@ -1341,7 +1343,7 @@ Transform:
   m_GameObject: {fileID: 1729720873}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.47, y: -1.07, z: 0}
+  m_LocalPosition: {x: 4, y: -1.07, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1436,7 +1438,7 @@ Transform:
   m_GameObject: {fileID: 1729910019}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.11, y: 0.38, z: 0}
+  m_LocalPosition: {x: 0, y: 0.38, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1606,7 +1608,7 @@ Transform:
   m_GameObject: {fileID: 1851893869}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.51, y: 0.2, z: 0}
+  m_LocalPosition: {x: 0, y: -0.78, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1626,6 +1628,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 1729720876}
   resultPlayer: {fileID: 2116289184}
+  node2_1ResultPlayer: {fileID: 0}
 --- !u!61 &1851893872
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1670,7 +1673,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2, y: 3.5}
   m_EdgeRadius: 0
 --- !u!1 &1994000445
 GameObject:
