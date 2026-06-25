@@ -32,6 +32,23 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         PlacedCardsByPointID.Clear();
     }
 
+    // 道具使用后立即销毁指定槽的卡牌 UI
+    public static void ConsumeCardOnPoint(string placePointID)
+    {
+        if (string.IsNullOrWhiteSpace(placePointID)) return;
+        if (!PlacedCardsByPointID.TryGetValue(placePointID, out ToolCardDragItem card) || card == null) return;
+        PlacedCardsByPointID.Remove(placePointID);
+        Destroy(card.gameObject);
+    }
+
+    // 场景切换时清空所有已放置卡牌，避免残留到下一场景
+    public static void ConsumeAllPlacedCards()
+    {
+        foreach (var card in PlacedCardsByPointID.Values)
+            if (card != null) Destroy(card.gameObject);
+        PlacedCardsByPointID.Clear();
+    }
+
     public void Setup(string cardID)
     {
         toolCardID = cardID;
@@ -212,6 +229,29 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         return null;
     }
 
+    private static Vector3 FindToolSlotVisualPosition(PlacementPoint point)
+    {
+        for (int i = 0; i < point.transform.childCount; i++)
+        {
+            Transform child = point.transform.GetChild(i);
+            if (child.name.Contains("ToolSlotVisual"))
+            {
+                return child.position;
+            }
+        }
+        return point.transform.position;
+    }
+
+    private static PlacementCandidate CreateCandidateFromWorldPoint(Camera camera, PlacementPoint point, Vector3 worldPosition)
+    {
+        return new PlacementCandidate
+        {
+            point = point,
+            collider = null,
+            screenRect = PointToScreenRect(camera, worldPosition, 200f)
+        };
+    }
+
     private void ConsiderCandidate(
         Vector2 cardCenterScreen,
         Rect cardScreenRect,
@@ -332,14 +372,18 @@ public class ToolCardDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private static Rect PointToScreenRect(Camera camera, Vector3 worldPosition, float size)
     {
-        Vector3 screenPoint = camera.WorldToScreenPoint(worldPosition);
+        // 用 ViewportPoint → Screen 坐标，与 GetCardScreenRect() 的 Screen 坐标系保持一致
+        // 避免 camera.pixelWidth vs Screen.width 不一致（编辑器缩放/DPI）导致 snap 偏移
+        Vector3 viewportPoint = camera.WorldToViewportPoint(worldPosition);
+        float screenX = viewportPoint.x * Screen.width;
+        float screenY = viewportPoint.y * Screen.height;
         float halfSize = size * 0.5f;
 
         return Rect.MinMaxRect(
-            screenPoint.x - halfSize,
-            screenPoint.y - halfSize,
-            screenPoint.x + halfSize,
-            screenPoint.y + halfSize);
+            screenX - halfSize,
+            screenY - halfSize,
+            screenX + halfSize,
+            screenY + halfSize);
     }
 
     private static PlacementPoint GetPlacementPointFromCollider(Collider2D hit)

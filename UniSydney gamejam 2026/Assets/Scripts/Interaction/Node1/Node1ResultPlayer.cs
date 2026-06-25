@@ -25,11 +25,19 @@ public class Node1ResultPlayer : MonoBehaviour
     private void OnEnable()
     {
         StoryActorAutoMove.ActorReachedEnd += OnActorReachedEnd;
+        PlacementTriggerZone.OnToolPlaced += HandleToolPlaced;
     }
 
     private void OnDisable()
     {
         StoryActorAutoMove.ActorReachedEnd -= OnActorReachedEnd;
+        PlacementTriggerZone.OnToolPlaced -= HandleToolPlaced;
+    }
+
+    private void HandleToolPlaced(PlacementPoint point)
+    {
+        if (point == null || point.nodeID != nodeID) return;
+        PlayResult(point);
     }
 
     private void Start()

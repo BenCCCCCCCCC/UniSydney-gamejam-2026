@@ -16,6 +16,9 @@ public class StoryActorAutoMove : MonoBehaviour
     private bool isMoving;
     private bool hasReachedEnd;
 
+    // 到达终点时触发，Node2_1ResultPlayer 等外部逻辑订阅此事件
+    public System.Action OnReachedEnd;
+
     private void Start()
     {
         MoveToStart();
@@ -51,6 +54,7 @@ public class StoryActorAutoMove : MonoBehaviour
             hasReachedEnd = true;
 
             Debug.Log("Actor reached end point.");
+            OnReachedEnd?.Invoke();
             ActorReachedEnd?.Invoke(this);
         }
     }
@@ -116,5 +120,19 @@ public class StoryActorAutoMove : MonoBehaviour
 
         hasReachedEnd = true;
         isMoving = false;
+    }
+
+    // 供转场系统动态更换路径（携带角色跨场景时使用）
+    public void SetMovePath(Transform newStart, Transform newEnd)
+    {
+        startPoint = newStart;
+        endPoint = newEnd;
+        hasReachedEnd = false;
+    }
+
+    // 向下兼容旧调用（等同于 PauseMove）
+    public void StopMove()
+    {
+        PauseMove();
     }
 }
