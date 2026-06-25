@@ -9,7 +9,7 @@ public class NodeToolHandSceneConfig : MonoBehaviour
     [SerializeField] private bool useResourcesArtFallback = true;
 
     [Header("Tool Hand Layout")]
-    [SerializeField] private Vector2 toolHandCardSize = new Vector2(120f, 160f);
+    [SerializeField] private Vector2 toolHandCardSize = new Vector2(210f, 294f);
     [SerializeField] private float toolHandSpacing = 24f;
     [SerializeField] private Vector2 handAreaAnchorMin = new Vector2(0.18f, 0.025f);
     [SerializeField] private Vector2 handAreaAnchorMax = new Vector2(0.82f, 0.22f);
@@ -28,7 +28,7 @@ public class NodeToolHandSceneConfig : MonoBehaviour
 
     public CardArtCatalog CardArtCatalog => cardArtCatalog;
     public bool UseResourcesArtFallback => useResourcesArtFallback;
-    public Vector2 ToolHandCardSize => toolHandCardSize;
+    public Vector2 ToolHandCardSize => HandCardPresentationApplier.ResolveCardSize(toolHandCardSize);
     public float ToolHandSpacing => toolHandSpacing;
     public Vector2 HandAreaAnchorMin => handAreaAnchorMin;
     public Vector2 HandAreaAnchorMax => handAreaAnchorMax;

@@ -17,7 +17,7 @@ public class NodeToolHandController : MonoBehaviour
     [SerializeField] private bool useResourcesArtFallback = true;
 
     [Header("Tool Hand Layout")]
-    [SerializeField] private Vector2 toolHandCardSize = new Vector2(120f, 160f);
+    [SerializeField] private Vector2 toolHandCardSize = new Vector2(210f, 294f);
     [SerializeField] private float toolHandSpacing = 24f;
     [SerializeField] private Vector2 handAreaAnchorMin = new Vector2(0.18f, 0.025f);
     [SerializeField] private Vector2 handAreaAnchorMax = new Vector2(0.82f, 0.22f);
@@ -39,11 +39,13 @@ public class NodeToolHandController : MonoBehaviour
     private RectTransform p1DropSlot;
     private RectTransform p2DropSlot;
     private RectTransform p3DropSlot;
+    private CardDatabase runtimeCardDatabase;
 
     private readonly Dictionary<string, RectTransform> dropSlotsByPointID = new();
 
     private string activeToolCardID;
     private bool slotsAligned = false;
+    private HandCardPresentationSettings handPresentationSettings;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void RegisterSceneLoadedHandler()
@@ -166,7 +168,7 @@ public class NodeToolHandController : MonoBehaviour
         }
 
         useResourcesArtFallback = config.UseResourcesArtFallback;
-        toolHandCardSize = config.ToolHandCardSize;
+        toolHandCardSize = HandCardPresentationApplier.ResolveCardSize(config.ToolHandCardSize);
         toolHandSpacing = Mathf.Max(0f, config.ToolHandSpacing);
         handAreaAnchorMin = config.HandAreaAnchorMin;
         handAreaAnchorMax = config.HandAreaAnchorMax;
@@ -195,15 +197,9 @@ public class NodeToolHandController : MonoBehaviour
         handArea.offsetMin = Vector2.zero;
         handArea.offsetMax = Vector2.zero;
 
-        HorizontalLayoutGroup layout = handArea.GetComponent<HorizontalLayoutGroup>();
-        if (layout != null)
-        {
-            layout.spacing = toolHandSpacing;
-            layout.childControlWidth = true;
-            layout.childControlHeight = true;
-            layout.childForceExpandWidth = false;
-            layout.childForceExpandHeight = false;
-        }
+        handPresentationSettings = HandCardPresentationApplier.ResolveSettings(
+            HandCardPresentationApplier.GetCurrentOrDefaults());
+        HandCardPresentationApplier.ApplyHandArea(handArea, handPresentationSettings);
     }
 
     private void ApplyActiveToolTextLayout()
@@ -567,53 +563,62 @@ public class NodeToolHandController : MonoBehaviour
 
     private void CreateToolButton(string toolCardID)
     {
-        GameObject buttonObject = new GameObject(
-            toolCardID,
-            typeof(RectTransform),
-            typeof(Image),
-            typeof(Button),
-            typeof(CanvasGroup),
-            typeof(LayoutElement),
-            typeof(ToolCardDragItem));
+        Sprite toolSprite = CardArtLoader.GetSprite(toolCardID, cardArtCatalog, useResourcesArtFallback);
+        CardRow card = GetToolCard(toolCardID);
+        if (card == null)
+        {
+            return;
+        }
 
-        buttonObject.transform.SetParent(handArea, false);
+        Canvas canvas = handArea.GetComponentInParent<Canvas>();
+        CardView cardView = HandCardViewFactory.Create(
+            handArea,
+            card,
+            null,
+            toolSprite,
+            handPresentationSettings,
+            canvas);
 
-        RectTransform rect = buttonObject.GetComponent<RectTransform>();
-        rect.sizeDelta = toolHandCardSize;
+        if (cardView == null)
+        {
+            return;
+        }
 
-        LayoutElement layoutElement = buttonObject.GetComponent<LayoutElement>();
-        layoutElement.preferredWidth = toolHandCardSize.x;
-        layoutElement.preferredHeight = toolHandCardSize.y;
-        layoutElement.flexibleWidth = 0f;
-        layoutElement.flexibleHeight = 0f;
-
-        Image image = buttonObject.GetComponent<Image>();
-        image.color = new Color(0.22f, 0.36f, 0.55f, 0.95f);
-
-        Button button = buttonObject.GetComponent<Button>();
+        cardView.gameObject.name = toolCardID;
+        Button button = cardView.GetComponent<Button>();
+        button.interactable = true;
         button.onClick.AddListener(() => SelectTool(toolCardID));
 
-        ToolCardDragItem dragItem = buttonObject.GetComponent<ToolCardDragItem>();
+        ToolCardDragItem dragItem = cardView.gameObject.AddComponent<ToolCardDragItem>();
         dragItem.Setup(toolCardID);
+    }
 
-        TMP_Text label = CreateText(
-            "Label",
-            buttonObject.transform,
-            CardDisplayNameHelper.ToEnglishName(toolCardID),
-            new Vector2(0.5f, 0.5f),
-            new Vector2(Mathf.Max(40f, toolHandCardSize.x - 10f), Mathf.Max(30f, toolHandCardSize.y - 10f)),
-            18f);
+    private CardRow GetToolCard(string toolCardID)
+    {
+        CardDatabase database = GetRuntimeCardDatabase();
+        CardRow card = null;
+        bool found = database != null && database.TryGetCard(toolCardID, out card);
 
-        label.color = Color.white;
-
-        Sprite toolSprite = CardArtLoader.GetSprite(toolCardID, cardArtCatalog, useResourcesArtFallback);
-        if (toolSprite != null)
+        if (!found)
         {
-            image.sprite = toolSprite;
-            image.color = Color.white;
-            image.preserveAspect = true;
-            label.gameObject.SetActive(false);
+            Debug.LogWarning($"NodeToolHandController: card data missing for {toolCardID}.");
+            return null;
         }
+
+        return card;
+    }
+
+    private CardDatabase GetRuntimeCardDatabase()
+    {
+        if (runtimeCardDatabase != null)
+        {
+            return runtimeCardDatabase;
+        }
+
+        GameObject databaseObject = new GameObject("RuntimeToolHandCardDatabase");
+        databaseObject.transform.SetParent(transform, false);
+        runtimeCardDatabase = databaseObject.AddComponent<CardDatabase>();
+        return runtimeCardDatabase;
     }
 
     private void UpdateActiveToolText()
@@ -765,21 +770,18 @@ public class NodeToolHandController : MonoBehaviour
             areaObject.transform.SetParent(parent, false);
 
             Image image = areaObject.GetComponent<Image>();
-            image.color = new Color(0.04f, 0.05f, 0.07f, 0.82f);
+            image.color = Color.clear;
+            image.raycastTarget = false;
 
             RectTransform rect = areaObject.GetComponent<RectTransform>();
-            rect.anchorMin = config != null ? config.HandAreaAnchorMin : new Vector2(0.18f, 0.025f);
-            rect.anchorMax = config != null ? config.HandAreaAnchorMax : new Vector2(0.82f, 0.22f);
+            rect.anchorMin = config != null ? config.HandAreaAnchorMin : new Vector2(0.18f, 0f);
+            rect.anchorMax = config != null ? config.HandAreaAnchorMax : new Vector2(0.82f, 0.195f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
-            HorizontalLayoutGroup layout = areaObject.GetComponent<HorizontalLayoutGroup>();
-            layout.spacing = config != null ? Mathf.Max(0f, config.ToolHandSpacing) : 24f;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = true;
-            layout.childControlHeight = true;
-            layout.childForceExpandWidth = false;
-            layout.childForceExpandHeight = false;
+            HandCardPresentationApplier.ApplyHandArea(
+                rect,
+                HandCardPresentationApplier.GetCurrentOrDefaults());
 
             return rect;
         }

@@ -119,6 +119,160 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &5122025
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5122027}
+  - component: {fileID: 5122026}
+  m_Layer: 0
+  m_Name: CardMergeEffectPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &5122026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5122025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a0d436ec3e8b40478abafe9a88d279e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardMergeEffectPlayer
+  inputCardMoveDuration: 0.38
+  inputCardStartScale: 1
+  inputCardCenterScale: 1.08
+  inputCardMergeShrinkScale: 0.72
+  inputCardCenterOffset: 42
+  resultCardPopDuration: 0.2
+  resultCardStartScale: 0.78
+  resultCardPeakScale: 1.5
+  resultCardFinalCenterScale: 2
+  resultCardCenterHoldDuration: 0.5
+  resultCardMoveToHandDuration: 0.46
+  resultCardHandArrivalScale: 1
+  inputCardFadeDuration: 0.18
+  inputCardRotationAmount: 8
+  inputCardMoveEasing:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  inputCardFadeEasing:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  resultCardPopEasing:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  resultCardMoveEasing:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!4 &5122027
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5122025}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.24409, y: 0.0144, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1193152206
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,15 +305,15 @@ MonoBehaviour:
   cardArtCatalog: {fileID: 11400000, guid: 129c2306ebcc5ab4483abc86d5aec4fa, type: 2}
   cardBackSprite: {fileID: 512254459641587961, guid: 13b3c41efc231ad4e9713c600e955d95, type: 3}
   useResourcesArtFallback: 1
-  baseCardSize: {x: 145, y: 205}
+  baseCardSize: {x: 158, y: 220}
   baseCardSpacing: {x: 18, y: 18}
-  maxBaseCardsPerRow: 11
+  maxBaseCardsPerRow: 6
   baseCardAreaPadding:
     m_Left: 16
     m_Right: 16
     m_Top: 16
     m_Bottom: 16
-  toolHandCardSize: {x: 120, y: 160}
+  toolHandCardSize: {x: 210, y: 294}
   previewSeconds: 3
   useManualBaseCardSlots: 0
 --- !u!4 &1193152208
@@ -366,3 +520,4 @@ SceneRoots:
   - {fileID: 1393542570}
   - {fileID: 1372680701}
   - {fileID: 1193152208}
+  - {fileID: 5122027}

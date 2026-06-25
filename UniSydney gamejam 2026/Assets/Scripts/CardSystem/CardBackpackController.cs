@@ -53,7 +53,7 @@ public class CardBackpackController : MonoBehaviour
     [SerializeField] private int maxBaseCardsPerRow = DefaultMaxBaseCardsPerRow;
     [SerializeField] private RectOffset baseCardAreaPadding;
     [SerializeField] private bool useManualBaseCardSlots;
-    [SerializeField] private Vector2 toolHandCardSize = new Vector2(120f, 160f);
+    [SerializeField] private Vector2 toolHandCardSize = new Vector2(210f, 294f);
 
     [Header("Tool Hand Crop")]
     [SerializeField] private HandCardCropAlignment handCardCropAlignment = HandCardCropAlignment.ShowUpperPart;
@@ -73,6 +73,7 @@ public class CardBackpackController : MonoBehaviour
     [SerializeField] private float previewSeconds = 3f;
 
     private readonly List<CardView> baseCardViews = new();
+    private readonly List<CardView> roundBaseCardViews = new();
     private readonly List<CardView> openedCards = new();
     private readonly List<CardView> toolCards = new();
 
@@ -80,6 +81,7 @@ public class CardBackpackController : MonoBehaviour
     private CardMergeEffectPlayer mergeEffectPlayer;
     private MemoryCountdownUI memoryCountdownUI;
     private Canvas memoryCountdownFallbackCanvas;
+    private HandCardPresentationSettings handPresentationSettings;
     private bool inputLocked;
     private bool isContinuing;
 
@@ -95,8 +97,7 @@ public class CardBackpackController : MonoBehaviour
             return;
         }
 
-        ConfigureToolHandClipping();
-        RefreshHandCardHoverSettings();
+        ApplySharedHandPresentation();
         LayoutRebuilder.ForceRebuildLayoutImmediate(toolHandArea);
     }
 
@@ -144,7 +145,7 @@ public class CardBackpackController : MonoBehaviour
             return;
         }
 
-        ConfigureToolHandClipping();
+        ApplySharedHandPresentation();
 
         continueButton.gameObject.SetActive(true);
         continueButton.interactable = false;
@@ -182,7 +183,7 @@ public class CardBackpackController : MonoBehaviour
         baseCardSpacing = config.BaseCardSpacing;
         maxBaseCardsPerRow = Mathf.Max(1, config.MaxBaseCardsPerRow);
         baseCardAreaPadding = CopyPadding(config.BaseCardAreaPadding);
-        toolHandCardSize = config.ToolHandCardSize;
+        toolHandCardSize = HandCardPresentationApplier.ResolveCardSize(config.ToolHandCardSize);
         previewSeconds = Mathf.Max(0f, config.PreviewSeconds);
         useManualBaseCardSlots = config.UseManualBaseCardSlots;
 
@@ -210,6 +211,7 @@ public class CardBackpackController : MonoBehaviour
         UpdateContinueButtonState();
 
         ClearChildren(toolHandArea);
+        CleanupRoundBaseCardViews();
         baseCardViews.Clear();
         openedCards.Clear();
         toolCards.Clear();
@@ -248,6 +250,7 @@ public class CardBackpackController : MonoBehaviour
                 new Color(0.16f, 0.18f, 0.25f, 1f));
 
             baseCardViews.Add(view);
+            roundBaseCardViews.Add(view);
         }
 
         yield return RunMemoryCountdown();
@@ -398,17 +401,14 @@ public class CardBackpackController : MonoBehaviour
             Sprite toolSprite = CardArtLoader.GetSprite(outputCard.CardID, cardArtCatalog, useResourcesArtFallback);
             CardMergeEffectPlayer effectPlayer = GetOrCreateMergeEffectPlayer();
             Canvas canvas = toolHandArea.GetComponentInParent<Canvas>();
-            CardView resultVisualSource = CreateCardView(canvas.transform, toolHandCardSize);
-            resultVisualSource.Setup(
+            CardView resultVisualSource = HandCardViewFactory.Create(
+                canvas.transform,
                 outputCard,
-                true,
-                false,
-                null,
                 cardBackSprite,
                 toolSprite,
-                null,
-                new Color(0.66f, 0.78f, 0.95f, 1f),
-                new Color(0.16f, 0.18f, 0.25f, 1f));
+                handPresentationSettings,
+                canvas,
+                cardViewPrefab: cardViewPrefab);
 
             CanvasGroup sourceCanvasGroup = resultVisualSource.GetComponent<CanvasGroup>();
             sourceCanvasGroup.alpha = 0f;
@@ -429,22 +429,17 @@ public class CardBackpackController : MonoBehaviour
 
             baseCardViews.Remove(first);
             baseCardViews.Remove(second);
-            Destroy(first.gameObject);
-            Destroy(second.gameObject);
+            PreserveConsumedBaseCardSlot(first);
+            PreserveConsumedBaseCardSlot(second);
 
-            CardView toolView = CreateCardView(toolHandArea);
-            toolView.Setup(
+            CardView toolView = HandCardViewFactory.Create(
+                toolHandArea,
                 outputCard,
-                true,
-                false,
-                null,
                 cardBackSprite,
                 toolSprite,
-                null,
-                new Color(0.66f, 0.78f, 0.95f, 1f),
-                new Color(0.16f, 0.18f, 0.25f, 1f));
-
-            ConfigureHandCardHover(toolView);
+                handPresentationSettings,
+                canvas,
+                cardViewPrefab: cardViewPrefab);
             toolCards.Add(toolView);
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(toolHandArea);
@@ -473,6 +468,51 @@ public class CardBackpackController : MonoBehaviour
         }
 
         UpdateContinueButtonState();
+    }
+
+    private void PreserveConsumedBaseCardSlot(CardView view)
+    {
+        if (view == null)
+        {
+            return;
+        }
+
+        view.SetClickable(false);
+
+        CanvasGroup group = view.GetComponent<CanvasGroup>();
+        if (group == null)
+        {
+            group = view.gameObject.AddComponent<CanvasGroup>();
+        }
+
+        group.alpha = 0f;
+        group.interactable = false;
+        group.blocksRaycasts = false;
+    }
+
+    private void CleanupRoundBaseCardViews()
+    {
+        foreach (CardView view in roundBaseCardViews)
+        {
+            if (view == null)
+            {
+                continue;
+            }
+
+            view.gameObject.SetActive(false);
+
+            bool isInAutoLayout = autoBaseCardArea != null
+                && view.transform.IsChildOf(autoBaseCardArea);
+
+            if (isInAutoLayout)
+            {
+                continue;
+            }
+
+            Destroy(view.gameObject);
+        }
+
+        roundBaseCardViews.Clear();
     }
 
     private void SetRemainingBaseCardsClickable(bool clickable)
@@ -714,108 +754,61 @@ public class CardBackpackController : MonoBehaviour
         layoutElement.flexibleHeight = 0f;
     }
 
-    private void ConfigureToolHandClipping()
+    private void ApplySharedHandPresentation()
     {
         if (toolHandArea == null)
         {
             return;
         }
 
-        HorizontalLayoutGroup handLayout = toolHandArea.GetComponent<HorizontalLayoutGroup>();
-        if (handLayout != null)
-        {
-            handLayout.spacing = -handCardOverlap;
-            handLayout.childControlWidth = false;
-            handLayout.childControlHeight = false;
-            handLayout.childForceExpandWidth = false;
-            handLayout.childForceExpandHeight = false;
-            handLayout.childAlignment = GetHandCardLayoutAlignment();
-        }
-
-        if (toolHandArea.GetComponent<RectMask2D>() == null)
-        {
-            toolHandArea.gameObject.AddComponent<RectMask2D>();
-        }
-    }
-
-    private void ConfigureHandCardHover(CardView handCard)
-    {
-        if (handCard == null)
-        {
-            return;
-        }
+        handPresentationSettings = CreateHandPresentationSettings();
+        HandCardPresentationApplier.PublishSettings(handPresentationSettings);
+        HandCardPresentationApplier.ApplyHandArea(toolHandArea, handPresentationSettings);
 
         Canvas canvas = toolHandArea.GetComponentInParent<Canvas>();
-        if (canvas == null)
-        {
-            return;
-        }
-
-        HandCardHoverEffect hoverEffect = handCard.GetComponent<HandCardHoverEffect>();
-        if (hoverEffect == null)
-        {
-            hoverEffect = handCard.gameObject.AddComponent<HandCardHoverEffect>();
-        }
-
-        hoverEffect.Configure(
-            canvas,
-            handCardHoverScale,
-            handCardHoverLiftY,
-            handCardHoverAnimationDuration,
-            handCardHoverPreviewOffsetY,
-            originalCardHoverAlpha,
-            handCardHoverExitDuration,
-            originalCardRestoreDuration,
-            handCardHoverFadeDuration);
-    }
-
-    private void RefreshHandCardHoverSettings()
-    {
         foreach (CardView handCard in toolCards)
         {
             if (handCard != null)
             {
-                ConfigureHandCardHover(handCard);
+                HandCardPresentationApplier.ApplyHandCard(
+                    handCard.gameObject,
+                    canvas,
+                    handPresentationSettings);
             }
         }
     }
 
-    private TextAnchor GetHandCardLayoutAlignment()
+    private HandCardPresentationSettings CreateHandPresentationSettings()
     {
-        return handCardCropAlignment switch
+        HandCardPresentationSettings settings = new HandCardPresentationSettings
         {
-            HandCardCropAlignment.ShowUpperPart => TextAnchor.UpperCenter,
-            HandCardCropAlignment.ShowLowerPart => TextAnchor.LowerCenter,
-            _ => TextAnchor.MiddleCenter
+            CardSize = HandCardPresentationApplier.ResolveCardSize(toolHandCardSize),
+            Overlap = handCardOverlap,
+            CropAlignment = handCardCropAlignment switch
+            {
+                HandCardCropAlignment.ShowUpperPart => HandCardVerticalCropAlignment.ShowUpperPart,
+                HandCardCropAlignment.ShowLowerPart => HandCardVerticalCropAlignment.ShowLowerPart,
+                _ => HandCardVerticalCropAlignment.ShowCenterPart
+            },
+            HoverScale = handCardHoverScale,
+            HoverLiftY = handCardHoverLiftY,
+            HoverEnterDuration = handCardHoverAnimationDuration,
+            HoverPreviewOffsetY = handCardHoverPreviewOffsetY,
+            OriginalCardHoverAlpha = originalCardHoverAlpha,
+            HoverExitDuration = handCardHoverExitDuration,
+            OriginalCardRestoreDuration = originalCardRestoreDuration,
+            HoverFadeDuration = handCardHoverFadeDuration
         };
+
+        return HandCardPresentationApplier.ResolveSettings(settings);
     }
 
     private Vector3 CalculatePendingHandCardWorldPosition()
     {
-        HorizontalLayoutGroup handLayout = toolHandArea.GetComponent<HorizontalLayoutGroup>();
-        Rect handRect = toolHandArea.rect;
-        RectOffset padding = handLayout != null
-            ? handLayout.padding
-            : new RectOffset();
-        float spacing = handLayout != null ? handLayout.spacing : 0f;
-        int finalCardCount = toolCards.Count + 1;
-        float totalCardsWidth = finalCardCount * toolHandCardSize.x;
-        float totalSpacingWidth = Mathf.Max(0, finalCardCount - 1) * spacing;
-        float contentWidth = totalCardsWidth + totalSpacingWidth;
-        float innerWidth = Mathf.Max(0f, handRect.width - padding.horizontal);
-        float firstCardLeft = handRect.xMin + padding.left + (innerWidth - contentWidth) * 0.5f;
-        float targetX = firstCardLeft
-            + (finalCardCount - 1) * (toolHandCardSize.x + spacing)
-            + toolHandCardSize.x * 0.5f;
-
-        float targetY = handCardCropAlignment switch
-        {
-            HandCardCropAlignment.ShowUpperPart => handRect.yMax - padding.top - toolHandCardSize.y * 0.5f,
-            HandCardCropAlignment.ShowLowerPart => handRect.yMin + padding.bottom + toolHandCardSize.y * 0.5f,
-            _ => handRect.center.y + (padding.bottom - padding.top) * 0.5f
-        };
-
-        return toolHandArea.TransformPoint(new Vector3(targetX, targetY, 0f));
+        return HandCardPresentationApplier.CalculatePendingCardWorldPosition(
+            toolHandArea,
+            toolCards.Count + 1,
+            handPresentationSettings);
     }
 
     private CardMergeEffectPlayer GetOrCreateMergeEffectPlayer()
@@ -1011,9 +1004,9 @@ public class CardBackpackController : MonoBehaviour
             RectTransform toolHandArea = CreateArea(
                 "ToolHandArea",
                 canvasRect,
-                new Vector2(0.22f, 0.035f),
-                new Vector2(0.78f, 0.215f),
-                new Color(0.06f, 0.07f, 0.09f, 0.9f));
+                new Vector2(0.22f, 0f),
+                new Vector2(0.78f, 0.18f),
+                Color.clear);
 
             HorizontalLayoutGroup handLayout = toolHandArea.gameObject.AddComponent<HorizontalLayoutGroup>();
             handLayout.spacing = -70f;
