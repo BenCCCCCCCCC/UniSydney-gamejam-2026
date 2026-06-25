@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,15 +10,6 @@ using UnityEngine.UI;
 using UnityEditor.SceneManagement;
 #endif
 
-public enum Node3EffectType
-{
-    ShortcutMove,
-    GuidePath,
-    DoorOpen,
-    NegativeObstacle,
-    InvalidPlacement
-}
-
 public class Node3ResultPlayer : MonoBehaviour
 {
     [Header("Scene")]
@@ -30,51 +20,10 @@ public class Node3ResultPlayer : MonoBehaviour
     [Header("Dialogue")]
     [SerializeField] private float messageDuration = 1.6f;
 
-    private readonly HashSet<string> shortcutMoveCards = new HashSet<string>
-    {
-        "T_LEAF_GLIDER",
-        "T_FLYING_CLOAK",
-        "T_BOUNCY_MUSHROOM",
-        "T_LAUNCH_BOARD",
-        "T_ELASTIC_ROPE"
-    };
-
-    private readonly HashSet<string> guidePathCards = new HashSet<string>
-    {
-        "T_GUIDE_BIRD",
-        "T_TALKING_SIGN",
-        "T_GLOWING_SIGN",
-        "T_PETAL_PATH",
-        "T_GLOWING_FLOWER_PATH",
-        "T_BLOOMING_PATH",
-        "T_BROADCAST_BIRD"
-    };
-
-    private readonly HashSet<string> negativePathCards = new HashSet<string>
-    {
-        "T_SPINNING_SIGN",
-        "T_SPORE_FOG"
-    };
-
-    private readonly HashSet<string> doorOpenCards = new HashSet<string>
-    {
-        "T_FLOWER_KEY",
-        "T_BIRD_DOORBELL",
-        "T_WIND_CHIME_SIGNAL",
-        "T_UNLOCK_SET",
-        "T_LOCKPICK_TOOLS",
-        "T_WELCOME_CURTAIN",
-        "T_RESCUE_BEACON"
-    };
-
-    private readonly HashSet<string> negativeDoorCards = new HashSet<string>
-    {
-        "T_BARRED_DOOR"
-    };
-
     private bool routeSolved;
     private bool doorSolved;
     private bool hasEnded;
+    private CardDatabase cachedDatabase;
 
     private string routeFailReason = "Snow White is lost.";
     private string doorFailReason = "Snow White couldn't enter the house.";
@@ -132,12 +81,17 @@ public class Node3ResultPlayer : MonoBehaviour
             ? "(empty)"
             : point.storedToolCardID;
 
-        Node3EffectType effectType = GetEffectType(placePointID, toolCardID);
-        ApplyEffect(effectType, placePointID, toolCardID);
+        bool hasPlacementResult = TryGetPlacementResult(placePointID, toolCardID, out PlacementResultRow result);
+        if (hasPlacementResult)
+        {
+            ApplyEffect(result, placePointID);
+        }
 
-        string message = GetMessage(effectType, placePointID, toolCardID);
+        string message = hasPlacementResult
+            ? result.ResultSummaryCN
+            : "What's that for?";
 
-        Debug.Log($"NODE3_RESULT: {placePointID} / {toolCardID} / {effectType}");
+        Debug.Log($"NODE3_RESULT: {placePointID} / {toolCardID} / {(hasPlacementResult ? result.OutcomeType : "InvalidPlacement")}");
 
         if (dialogueCoroutine != null)
         {
@@ -147,118 +101,45 @@ public class Node3ResultPlayer : MonoBehaviour
         dialogueCoroutine = StartCoroutine(ShowMessageThenContinue(message));
     }
 
-    private Node3EffectType GetEffectType(string placePointID, string toolCardID)
+    private void ApplyEffect(PlacementResultRow result, string placePointID)
     {
-        if (placePointID == "N3_P1")
+        if (result == null)
         {
-            if (shortcutMoveCards.Contains(toolCardID))
-            {
-                return Node3EffectType.ShortcutMove;
-            }
-
-            return Node3EffectType.InvalidPlacement;
+            return;
         }
 
-        if (placePointID == "N3_P2")
-        {
-            if (guidePathCards.Contains(toolCardID))
-            {
-                return Node3EffectType.GuidePath;
-            }
-
-            if (negativePathCards.Contains(toolCardID))
-            {
-                return Node3EffectType.NegativeObstacle;
-            }
-
-            return Node3EffectType.InvalidPlacement;
-        }
-
-        if (placePointID == "N3_P3")
-        {
-            if (doorOpenCards.Contains(toolCardID))
-            {
-                return Node3EffectType.DoorOpen;
-            }
-
-            if (negativeDoorCards.Contains(toolCardID))
-            {
-                return Node3EffectType.NegativeObstacle;
-            }
-
-            return Node3EffectType.InvalidPlacement;
-        }
-
-        return Node3EffectType.InvalidPlacement;
-    }
-
-    private void ApplyEffect(Node3EffectType effectType, string placePointID, string toolCardID)
-    {
-        if (effectType == Node3EffectType.ShortcutMove)
+        if (result.OutcomeType == "ReachDoor")
         {
             routeSolved = true;
             return;
         }
 
-        if (effectType == Node3EffectType.GuidePath)
+        if (result.OutcomeType == "Success")
         {
-            routeSolved = true;
-            return;
-        }
-
-        if (effectType == Node3EffectType.DoorOpen)
-        {
-            doorSolved = true;
-            return;
-        }
-
-        if (effectType == Node3EffectType.NegativeObstacle)
-        {
-            if (placePointID == "N3_P2")
+            if (placePointID == "N3_P3")
             {
-                routeFailReason = "Snow White is lost.";
+                doorSolved = true;
+            }
+            else
+            {
+                routeSolved = true;
+            }
+
+            return;
+        }
+
+        if (result.OutcomeType == "Fail")
+        {
+            if (placePointID == "N3_P1" || placePointID == "N3_P2")
+            {
+                routeFailReason = result.ResultSummaryCN;
             }
 
             if (placePointID == "N3_P3")
             {
-                doorFailReason = "The door is blocked. Snow White couldn't enter the house.";
+                doorFailReason = result.ResultSummaryCN;
             }
         }
-    }
-
-    private string GetMessage(Node3EffectType effectType, string placePointID, string toolCardID)
-    {
-        if (effectType == Node3EffectType.ShortcutMove)
-        {
-            return "Snow White is moved to the dwarfs' house.";
-        }
-
-        if (effectType == Node3EffectType.GuidePath)
-        {
-            return "Snow White finds the way.";
-        }
-
-        if (effectType == Node3EffectType.DoorOpen)
-        {
-            return "The door opens. Snow White enters the house.";
-        }
-
-        if (effectType == Node3EffectType.NegativeObstacle)
-        {
-            if (placePointID == "N3_P2")
-            {
-                return "Snow White is lost.";
-            }
-
-            if (placePointID == "N3_P3")
-            {
-                return "The door is blocked.";
-            }
-
-            return "Something went wrong.";
-        }
-
-        return "What's that for?";
     }
 
     private IEnumerator ShowMessageThenContinue(string message)
@@ -468,6 +349,36 @@ public class Node3ResultPlayer : MonoBehaviour
         }
 
         return SceneManager.GetActiveScene().name == retrySceneName;
+    }
+
+    private bool TryGetPlacementResult(string placePointID, string toolCardID, out PlacementResultRow result)
+    {
+        result = null;
+
+        if (!TryGetDatabase(out CardDatabase database))
+        {
+            Debug.LogWarning("Node3ResultPlayer: CardDatabase is unavailable.");
+            return false;
+        }
+
+        return database.TryGetPlacementResult(nodeID, placePointID, toolCardID, out result);
+    }
+
+    private bool TryGetDatabase(out CardDatabase database)
+    {
+        if (cachedDatabase == null)
+        {
+            cachedDatabase = FindAnyObjectByType<CardDatabase>();
+        }
+
+        if (cachedDatabase == null)
+        {
+            GameObject databaseObject = new GameObject("RuntimeCardDatabase");
+            cachedDatabase = databaseObject.AddComponent<CardDatabase>();
+        }
+
+        database = cachedDatabase;
+        return database != null && database.Data != null;
     }
 
     private void LoadSceneByName(string sceneName)

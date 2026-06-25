@@ -216,7 +216,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             frontImage.sprite = frontSprite;
             frontImage.color = frontSprite == null ? frontColor : Color.white;
-            frontImage.preserveAspect = false;
+            frontImage.preserveAspect = true;
             StretchToParent(frontImage.rectTransform);
             hasFullFrontSprite = frontSprite != null;
         }

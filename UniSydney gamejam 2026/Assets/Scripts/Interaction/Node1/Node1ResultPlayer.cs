@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,14 +10,6 @@ using UnityEngine.UI;
 using UnityEditor.SceneManagement;
 #endif
 
-public enum Node1EffectType
-{
-    OutsideRumor,
-    CrownJealousy,
-    MirrorReveal,
-    InvalidPlacement
-}
-
 public class Node1ResultPlayer : MonoBehaviour
 {
     [Header("Scene")]
@@ -29,27 +20,9 @@ public class Node1ResultPlayer : MonoBehaviour
     [Header("Dialogue")]
     [SerializeField] private float messageDuration = 1.6f;
 
-    private readonly HashSet<string> outsideRumorCards = new HashSet<string>
-    {
-        "T_BROADCAST_BIRD",
-        "T_PETAL_PATH",
-        "T_GLOWING_FLOWER_PATH"
-    };
-
-    private readonly HashSet<string> crownJealousyCards = new HashSet<string>
-    {
-        "T_BOUNCY_CROWN",
-        "T_PAPER_CROWN_DOLL"
-    };
-
-    private readonly HashSet<string> mirrorRevealCards = new HashSet<string>
-    {
-        "T_SPOTLIGHT_MIRROR",
-        "T_BEAUTY_RANKING"
-    };
-
     private bool queenProvoked;
     private bool hasEnded;
+    private CardDatabase cachedDatabase;
 
     private GameObject canvasObject;
     private GameObject dialoguePanelObject;
@@ -104,12 +77,17 @@ public class Node1ResultPlayer : MonoBehaviour
             ? "(empty)"
             : point.storedToolCardID;
 
-        Node1EffectType effectType = GetEffectType(placePointID, toolCardID);
-        ApplyEffect(effectType);
+        bool hasPlacementResult = TryGetPlacementResult(placePointID, toolCardID, out PlacementResultRow result);
+        if (hasPlacementResult)
+        {
+            queenProvoked = true;
+        }
 
-        string message = GetMessage(effectType);
+        string message = hasPlacementResult
+            ? result.ResultSummaryCN
+            : "What's that for?";
 
-        Debug.Log($"NODE1_RESULT: {placePointID} / {toolCardID} / {effectType}");
+        Debug.Log($"NODE1_RESULT: {placePointID} / {toolCardID} / {(hasPlacementResult ? result.OutcomeType : "InvalidPlacement")}");
 
         if (dialogueCoroutine != null)
         {
@@ -117,71 +95,6 @@ public class Node1ResultPlayer : MonoBehaviour
         }
 
         dialogueCoroutine = StartCoroutine(ShowMessageThenContinue(message));
-    }
-
-    private Node1EffectType GetEffectType(string placePointID, string toolCardID)
-    {
-        if (placePointID == "N1_P1")
-        {
-            if (outsideRumorCards.Contains(toolCardID))
-            {
-                return Node1EffectType.OutsideRumor;
-            }
-
-            return Node1EffectType.InvalidPlacement;
-        }
-
-        if (placePointID == "N1_P2")
-        {
-            if (crownJealousyCards.Contains(toolCardID))
-            {
-                return Node1EffectType.CrownJealousy;
-            }
-
-            return Node1EffectType.InvalidPlacement;
-        }
-
-        if (placePointID == "N1_P3")
-        {
-            if (mirrorRevealCards.Contains(toolCardID))
-            {
-                return Node1EffectType.MirrorReveal;
-            }
-
-            return Node1EffectType.InvalidPlacement;
-        }
-
-        return Node1EffectType.InvalidPlacement;
-    }
-
-    private void ApplyEffect(Node1EffectType effectType)
-    {
-        if (effectType == Node1EffectType.InvalidPlacement)
-        {
-            return;
-        }
-
-        queenProvoked = true;
-    }
-
-    private string GetMessage(Node1EffectType effectType)
-    {
-        if (effectType == Node1EffectType.OutsideRumor)
-        {
-            return "Everyone is talking about Snow White.";
-        }
-
-        if (effectType == Node1EffectType.CrownJealousy)
-        {
-            return "The Queen feels her place being taken.";
-        }
-
-        if (effectType == Node1EffectType.MirrorReveal)
-        {
-            return "The mirror reveals Snow White's beauty.";
-        }
-
-        return "What's that for?";
     }
 
     private IEnumerator ShowMessageThenContinue(string message)
@@ -385,6 +298,36 @@ public class Node1ResultPlayer : MonoBehaviour
         }
 
         return SceneManager.GetActiveScene().name == retrySceneName;
+    }
+
+    private bool TryGetPlacementResult(string placePointID, string toolCardID, out PlacementResultRow result)
+    {
+        result = null;
+
+        if (!TryGetDatabase(out CardDatabase database))
+        {
+            Debug.LogWarning("Node1ResultPlayer: CardDatabase is unavailable.");
+            return false;
+        }
+
+        return database.TryGetPlacementResult(nodeID, placePointID, toolCardID, out result);
+    }
+
+    private bool TryGetDatabase(out CardDatabase database)
+    {
+        if (cachedDatabase == null)
+        {
+            cachedDatabase = FindAnyObjectByType<CardDatabase>();
+        }
+
+        if (cachedDatabase == null)
+        {
+            GameObject databaseObject = new GameObject("RuntimeCardDatabase");
+            cachedDatabase = databaseObject.AddComponent<CardDatabase>();
+        }
+
+        database = cachedDatabase;
+        return database != null && database.Data != null;
     }
 
     private void LoadSceneByName(string sceneName)
