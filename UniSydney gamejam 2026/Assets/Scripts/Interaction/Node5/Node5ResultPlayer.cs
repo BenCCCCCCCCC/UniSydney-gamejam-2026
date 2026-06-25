@@ -224,7 +224,10 @@ public class Node5ResultPlayer : MonoBehaviour
 
         string feedbackMessage = !string.IsNullOrWhiteSpace(summary)
             ? summary
-            : GetFeedbackMessage(placePointID, delta);
+            : GetToolSpecificFallbackFeedback(placePointID, toolCardID, delta);
+
+        Debug.Log(
+            $"NODE5_DISPLAY_FEEDBACK: point={placePointID}, tool={loggedToolCardID}, outcome={outcomeType}, delta={delta}, summary='{summary}', displayed='{feedbackMessage}'");
 
         if (showTriggerFeedback)
         {
@@ -470,7 +473,7 @@ public class Node5ResultPlayer : MonoBehaviour
     {
         if (textBank != null)
         {
-            return textBank.GetFeedbackMessage(placePointID, delta);
+            return SanitizeFallbackFeedback(placePointID, delta, textBank.GetFeedbackMessage(placePointID, delta));
         }
 
         Debug.LogWarning("Node5ResultPlayer: Node5TextBank is not assigned. Using fallback feedback text.");
@@ -521,6 +524,58 @@ public class Node5ResultPlayer : MonoBehaviour
         }
 
         return "The magic has an unclear effect.";
+    }
+
+    private string GetToolSpecificFallbackFeedback(string placePointID, string toolCardID, int delta)
+    {
+        if (placePointID == "N5_P1")
+        {
+            switch (toolCardID)
+            {
+                case "T_BROADCAST_BIRD":
+                    return "Broadcast Bird calls out to the prince and helps him find the clearing.";
+                case "T_TALKING_SIGN":
+                    return "Talking Signpost points the prince toward the clearing.";
+                case "T_RESCUE_BEACON":
+                    return "Rescue Beacon shines brightly and guides the prince forward.";
+                case "T_HALLUCINATION_MUSHROOM":
+                    return "Hallucination Mushroom confuses the prince and leads him away.";
+                case "T_SPORE_FOG":
+                    return "Spore Fog covers the path and makes the prince lose his way.";
+                case "T_PETAL_PATH":
+                    return "Petal Path leads the prince safely toward the clearing.";
+                case "T_BLOOMING_PATH":
+                    return "Blooming Path looks beautiful, but it does not really help the prince.";
+                case "T_FAST_VINES":
+                    return "Fast-Growing Vines pull the prince quickly toward the clearing.";
+            }
+        }
+
+        return GetFeedbackMessage(placePointID, delta);
+    }
+
+    private string SanitizeFallbackFeedback(string placePointID, int delta, string feedback)
+    {
+        if (placePointID == "N5_P1" && delta == 0 && ContainsFlowerSpecificFallback(feedback))
+        {
+            return "The prince is unsure where to go.";
+        }
+
+        return feedback;
+    }
+
+    private static bool ContainsFlowerSpecificFallback(string feedback)
+    {
+        if (string.IsNullOrWhiteSpace(feedback))
+        {
+            return false;
+        }
+
+        return feedback.Contains("flower")
+            || feedback.Contains("Flower")
+            || feedback.Contains("Blooming Path")
+            || feedback.Contains("Petal Path")
+            || feedback.Contains("beautiful");
     }
 
     private void ShowEndingPanel(string title, string body)

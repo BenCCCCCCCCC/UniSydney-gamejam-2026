@@ -32,7 +32,13 @@ public class Node5TextBank : MonoBehaviour
     {
         if (placePointID == "N5_P1")
         {
-            return GetByDelta(delta, princeRoutePlus, princeRouteNeutral, princeRouteMinus);
+            string message = GetByDelta(delta, princeRoutePlus, princeRouteNeutral, princeRouteMinus);
+            if (delta == 0 && ContainsFlowerSpecificFallback(message))
+            {
+                return "The prince is unsure where to go.";
+            }
+
+            return message;
         }
 
         if (placePointID == "N5_P2")
@@ -88,5 +94,19 @@ public class Node5TextBank : MonoBehaviour
         }
 
         return neutral;
+    }
+
+    private static bool ContainsFlowerSpecificFallback(string feedback)
+    {
+        if (string.IsNullOrWhiteSpace(feedback))
+        {
+            return false;
+        }
+
+        return feedback.Contains("flower")
+            || feedback.Contains("Flower")
+            || feedback.Contains("Blooming Path")
+            || feedback.Contains("Petal Path")
+            || feedback.Contains("beautiful");
     }
 }
