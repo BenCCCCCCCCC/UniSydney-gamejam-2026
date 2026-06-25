@@ -119,6 +119,90 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &7158871
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7158874}
+  - component: {fileID: 7158873}
+  - component: {fileID: 7158872}
+  m_Layer: 0
+  m_Name: NodeIconPresenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &7158872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7158871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94b9df6b02e40724a827b9f51e10d1bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlacedToolIconAutoPlayTrigger
+  iconPresenter: {fileID: 7158873}
+  triggerOnce: 1
+  triggerDelaySeconds: 0
+  autoFindPresenter: 1
+--- !u!114 &7158873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7158871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39013c5032d5b2046a25ae2028ed19cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlacedToolIconPresenter
+  toolIconCatalog: {fileID: 11400000, guid: 89303714453ed8948b1aa1dd23f12245, type: 2}
+  iconWorldParent: {fileID: 0}
+  placementBindings:
+  - placePointID: N2_P2
+    placementPoint: {fileID: 2041744737}
+    iconTarget: {fileID: 0}
+    placedCardUIObjectToHide: {fileID: 0}
+  - placePointID: N2_P3
+    placementPoint: {fileID: 2002107727}
+    iconTarget: {fileID: 0}
+    placedCardUIObjectToHide: {fileID: 0}
+  - placePointID: N2_P4
+    placementPoint: {fileID: 2109103807}
+    iconTarget: {fileID: 0}
+    placedCardUIObjectToHide: {fileID: 0}
+  fallHeight: 1.5
+  fallDuration: 0.35
+  worldOffset: {x: 0, y: 0, z: 0}
+  iconSize: {x: 1, y: 1}
+  sortingLayerName: Default
+  sortingOrder: 50
+  hidePlacedCardUIAfterSpawn: 0
+  clearOldIconsBeforePlay: 1
+--- !u!4 &7158874
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7158871}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.89983, y: 5.89806, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &30098234
 GameObject:
   m_ObjectHideFlags: 0
@@ -865,6 +949,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1241796174}
   - component: {fileID: 1241796175}
+  - component: {fileID: 1241796176}
   m_Layer: 0
   m_Name: Princess_Placeholder
   m_TagString: Untagged
@@ -947,6 +1032,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!95 &1241796176
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1241796173}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 5ce7d3016dbc9fd44a3a7dce122ebf4c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!213 &1362081347
 Sprite:
   serializedVersion: 2
@@ -1942,7 +2049,7 @@ Animator:
   m_GameObject: {fileID: 2126450171}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: ddc06bd9308d7604a9be2b9389def3cb, type: 2}
+  m_Controller: {fileID: 9100000, guid: 12226a8db54302b49b5f43562ffb787e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2086,3 +2193,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 837009141}
   - {fileID: 2089790158}
+  - {fileID: 7158874}
