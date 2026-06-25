@@ -11,7 +11,6 @@ public class Node5ResultPlayer : MonoBehaviour
     [Header("Scene")]
     [SerializeField] private string nodeID = "Node5";
     [SerializeField] private string retrySceneName = "Node5";
-    [SerializeField] private string mainMenuSceneName = "MainMenu";
     [SerializeField] private StoryActorAutoMove storyActor;
     [SerializeField] private CardDatabase database;
 
@@ -135,7 +134,7 @@ public class Node5ResultPlayer : MonoBehaviour
 
         if (textUI != null)
         {
-            textUI.ConfigureFinalEndingButtons(RetryNode5, HandleMainMenu);
+            textUI.ConfigureEndingButtons(RetryNode5, RetryNode5, HandleNextLevel);
             textUI.HideDialogue();
             textUI.HideEnding();
         }
@@ -185,17 +184,11 @@ public class Node5ResultPlayer : MonoBehaviour
 
         string toolCardID = string.IsNullOrWhiteSpace(point.storedToolCardID)
             ? ""
-            : point.storedToolCardID.Trim();
-        string loggedToolCardID = string.IsNullOrWhiteSpace(toolCardID)
-            ? "(empty)"
-            : toolCardID;
+            : point.storedToolCardID;
 
         int delta = 0;
         string outcomeType = "InvalidPlacement";
         string summary = "";
-        string messageKey = "Default";
-
-        Debug.Log($"NODE5_TRIGGER: point={placePointID}, tool={loggedToolCardID}");
 
         if (!string.IsNullOrWhiteSpace(toolCardID)
             && TryGetPlacementResult(placePointID, toolCardID, out PlacementResultRow result))
@@ -203,15 +196,11 @@ public class Node5ResultPlayer : MonoBehaviour
             outcomeType = result.OutcomeType;
             summary = result.ResultSummaryCN;
             delta = GetDeltaFromOutcome(outcomeType);
-            messageKey = string.IsNullOrWhiteSpace(result.ResultID)
-                ? $"{placePointID}:{toolCardID}"
-                : result.ResultID;
         }
         else if (!string.IsNullOrWhiteSpace(toolCardID)
             && TryGetFallbackDelta(placePointID, toolCardID, out delta))
         {
             outcomeType = GetFallbackOutcomeType(delta);
-            messageKey = $"Fallback:{placePointID}:{toolCardID}";
         }
 
         totalScore += delta;
@@ -227,12 +216,18 @@ public class Node5ResultPlayer : MonoBehaviour
             princeLost = delta < 0;
         }
 
+        string loggedToolCardID = string.IsNullOrWhiteSpace(toolCardID)
+            ? "(empty)"
+            : toolCardID;
+
         Debug.Log($"NODE5_SCORE_RECORD: {placePointID} / {loggedToolCardID} / {outcomeType} / delta = {delta} / total = {totalScore} / {summary}");
 
         string feedbackMessage = !string.IsNullOrWhiteSpace(summary)
             ? summary
-            : GetFeedbackMessage(placePointID, delta);
-        Debug.Log($"NODE5_DIALOGUE_SELECTED: point={placePointID}, tool={loggedToolCardID}, messageKey={messageKey}, scoreDelta={delta}");
+            : GetToolSpecificFallbackFeedback(placePointID, toolCardID, delta);
+
+        Debug.Log(
+            $"NODE5_DISPLAY_FEEDBACK: point={placePointID}, tool={loggedToolCardID}, outcome={outcomeType}, delta={delta}, summary='{summary}', displayed='{feedbackMessage}'");
 
         if (showTriggerFeedback)
         {
@@ -478,7 +473,7 @@ public class Node5ResultPlayer : MonoBehaviour
     {
         if (textBank != null)
         {
-            return textBank.GetFeedbackMessage(placePointID, delta);
+            return SanitizeFallbackFeedback(placePointID, delta, textBank.GetFeedbackMessage(placePointID, delta));
         }
 
         Debug.LogWarning("Node5ResultPlayer: Node5TextBank is not assigned. Using fallback feedback text.");
@@ -531,6 +526,58 @@ public class Node5ResultPlayer : MonoBehaviour
         return "The magic has an unclear effect.";
     }
 
+    private string GetToolSpecificFallbackFeedback(string placePointID, string toolCardID, int delta)
+    {
+        if (placePointID == "N5_P1")
+        {
+            switch (toolCardID)
+            {
+                case "T_BROADCAST_BIRD":
+                    return "Broadcast Bird calls out to the prince and helps him find the clearing.";
+                case "T_TALKING_SIGN":
+                    return "Talking Signpost points the prince toward the clearing.";
+                case "T_RESCUE_BEACON":
+                    return "Rescue Beacon shines brightly and guides the prince forward.";
+                case "T_HALLUCINATION_MUSHROOM":
+                    return "Hallucination Mushroom confuses the prince and leads him away.";
+                case "T_SPORE_FOG":
+                    return "Spore Fog covers the path and makes the prince lose his way.";
+                case "T_PETAL_PATH":
+                    return "Petal Path leads the prince safely toward the clearing.";
+                case "T_BLOOMING_PATH":
+                    return "Blooming Path looks beautiful, but it does not really help the prince.";
+                case "T_FAST_VINES":
+                    return "Fast-Growing Vines pull the prince quickly toward the clearing.";
+            }
+        }
+
+        return GetFeedbackMessage(placePointID, delta);
+    }
+
+    private string SanitizeFallbackFeedback(string placePointID, int delta, string feedback)
+    {
+        if (placePointID == "N5_P1" && delta == 0 && ContainsFlowerSpecificFallback(feedback))
+        {
+            return "The prince is unsure where to go.";
+        }
+
+        return feedback;
+    }
+
+    private static bool ContainsFlowerSpecificFallback(string feedback)
+    {
+        if (string.IsNullOrWhiteSpace(feedback))
+        {
+            return false;
+        }
+
+        return feedback.Contains("flower")
+            || feedback.Contains("Flower")
+            || feedback.Contains("Blooming Path")
+            || feedback.Contains("Petal Path")
+            || feedback.Contains("beautiful");
+    }
+
     private void ShowEndingPanel(string title, string body)
     {
         if (textUI == null)
@@ -539,7 +586,7 @@ public class Node5ResultPlayer : MonoBehaviour
             return;
         }
 
-        textUI.ShowFinalEnding(title, $"{body}\n\nFinal Score: {totalScore}");
+        textUI.ShowEnding(title, $"{body}\n\nFinal Score: {totalScore}", true);
     }
 
     private void StartDwarfPhase()
@@ -782,18 +829,9 @@ public class Node5ResultPlayer : MonoBehaviour
         LoadSceneByName(retrySceneName);
     }
 
-    private void HandleMainMenu()
+    private void HandleNextLevel()
     {
-        if (string.IsNullOrWhiteSpace(mainMenuSceneName))
-        {
-            Debug.LogWarning("Node5ResultPlayer: mainMenuSceneName is empty.");
-            return;
-        }
-
-        GameSessionData.CurrentNodeSceneName = mainMenuSceneName;
-        GameSessionData.CurrentPhase = GameFlowPhase.Briefing;
-
-        LoadSceneByName(mainMenuSceneName);
+        Debug.Log("NODE5_NEXT_LEVEL_NOT_IMPLEMENTED");
     }
 
     private void LoadSceneByName(string sceneName)
