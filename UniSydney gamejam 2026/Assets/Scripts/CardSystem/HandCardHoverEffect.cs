@@ -63,18 +63,23 @@ public class HandCardHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointer
         TransitionPreview(false);
     }
 
+    public void SetHoverEnabled(bool hoverEnabled)
+    {
+        if (hoverEnabled)
+        {
+            enabled = true;
+            return;
+        }
+
+        pointerInside = false;
+        CleanupPreviewAndRestore();
+        enabled = false;
+    }
+
     private void OnDisable()
     {
         pointerInside = false;
-        StopActiveAnimation();
-
-        if (previewObject != null)
-        {
-            Destroy(previewObject);
-            previewObject = null;
-        }
-
-        RestoreOriginalCardImmediately();
+        CleanupPreviewAndRestore();
     }
 
     private void TransitionPreview(bool showing)
@@ -297,6 +302,19 @@ public class HandCardHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointer
         {
             sourceCanvasGroup.alpha = originalCardRestingAlpha;
         }
+    }
+
+    private void CleanupPreviewAndRestore()
+    {
+        StopActiveAnimation();
+
+        if (previewObject != null)
+        {
+            Destroy(previewObject);
+            previewObject = null;
+        }
+
+        RestoreOriginalCardImmediately();
     }
 
     private RectTransform GetOrCreateOverlayLayer(Canvas ownerCanvas)
