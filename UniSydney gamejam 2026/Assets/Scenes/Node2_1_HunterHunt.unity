@@ -332,7 +332,7 @@ Transform:
   m_GameObject: {fileID: 264295982}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.22, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -677,6 +677,82 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2089790158}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1151786024
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1151786027}
+  - component: {fileID: 1151786026}
+  - component: {fileID: 1151786025}
+  m_Layer: 0
+  m_Name: NodeIconPresenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1151786025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151786024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94b9df6b02e40724a827b9f51e10d1bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlacedToolIconAutoPlayTrigger
+  iconPresenter: {fileID: 1151786026}
+  triggerOnce: 1
+  triggerDelaySeconds: 0
+  autoFindPresenter: 1
+--- !u!114 &1151786026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151786024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39013c5032d5b2046a25ae2028ed19cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlacedToolIconPresenter
+  toolIconCatalog: {fileID: 11400000, guid: 89303714453ed8948b1aa1dd23f12245, type: 2}
+  iconWorldParent: {fileID: 0}
+  placementBindings:
+  - placePointID: N2_P1
+    placementPoint: {fileID: 47383802}
+    iconTarget: {fileID: 1331221913}
+    placedCardUIObjectToHide: {fileID: 0}
+  fallHeight: 1.5
+  fallDuration: 0.35
+  worldOffset: {x: 0, y: 0, z: 0}
+  iconSize: {x: 1, y: 1}
+  sortingLayerName: Default
+  sortingOrder: 50
+  hidePlacedCardUIAfterSpawn: 0
+  clearOldIconsBeforePlay: 1
+--- !u!4 &1151786027
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151786024}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.89983, y: 5.89806, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1331221912
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,7 +779,7 @@ Transform:
   m_GameObject: {fileID: 1331221912}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.08, y: 0.12, z: 0}
+  m_LocalPosition: {x: 1.01, y: 0.19, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1581,3 +1657,4 @@ SceneRoots:
   - {fileID: 837009141}
   - {fileID: 2089790158}
   - {fileID: 19016513}
+  - {fileID: 1151786027}
