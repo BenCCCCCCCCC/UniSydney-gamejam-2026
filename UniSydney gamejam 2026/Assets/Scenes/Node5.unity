@@ -145,7 +145,7 @@ Transform:
   m_GameObject: {fileID: 47383800}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.51, y: 2.67, z: 0}
+  m_LocalPosition: {x: -2.68, y: 2.92, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -195,7 +195,7 @@ Transform:
   m_GameObject: {fileID: 61986275}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.5, y: -4.12, z: 0}
+  m_LocalPosition: {x: 1.42, y: -4.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -521,7 +521,7 @@ Transform:
   m_GameObject: {fileID: 629975695}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.51, y: -4.1, z: 0}
+  m_LocalPosition: {x: 1.39, y: -4.13, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -947,7 +947,7 @@ Transform:
   m_GameObject: {fileID: 1081387994}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.88, y: 2.13, z: 0}
+  m_LocalPosition: {x: 0.39, y: 2.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1204,7 +1204,11 @@ MonoBehaviour:
   dwarfVisualRoot: {fileID: 3300000000}
   dwarfStartPoint: {fileID: 3300000101}
   dwarfEndPoint: {fileID: 1994000446}
-  princeFollowOffset: {x: -0.8, y: 0, z: 0}
+  dwarfFollowsPrinceWhenNotLost: 1
+  princeDwarfJoinPoint: {fileID: 0}
+  princeDwarfJoinOffsetFromDwarf: {x: 0.8, y: 0, z: 0}
+  princeDwarfJoinDistance: 0.15
+  dwarfFollowOffsetFromPrince: {x: -0.8, y: 0, z: 0}
   textUI: {fileID: 3200000005}
   textBank: {fileID: 3200000500}
   showTriggerFeedback: 1
@@ -1693,6 +1697,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoryActorFrameAnimator
   targetRenderer: {fileID: 1107149440}
+  movementSource: {fileID: 0}
   idleFrames:
   - {fileID: -6253031473013530884, guid: 4148bf01b61634b4e860add83ad56169, type: 3}
   - {fileID: -1773069513007363652, guid: 4148bf01b61634b4e860add83ad56169, type: 3}
@@ -1703,8 +1708,8 @@ MonoBehaviour:
   - {fileID: -4810737056794783374, guid: df2d27210e96e7b44ac8c30612f56750, type: 3}
   - {fileID: 5143104599111547540, guid: df2d27210e96e7b44ac8c30612f56750, type: 3}
   - {fileID: -5697952217754530667, guid: df2d27210e96e7b44ac8c30612f56750, type: 3}
-  idleFrameRate: 4
-  walkFrameRate: 8
+  idleFrameRate: 2
+  walkFrameRate: 4
   movementThreshold: 0.001
   useUnscaledTime: 0
   playIdleWhenNoFrames: 1
@@ -4157,7 +4162,7 @@ Transform:
   m_GameObject: {fileID: 3300000000}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.61, y: -0.58, z: 0}
+  m_LocalPosition: {x: -1.58, y: -0.64, z: 0}
   m_LocalScale: {x: 1.5, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4326,6 +4331,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoryActorFrameAnimator
   targetRenderer: {fileID: 880359206}
+  movementSource: {fileID: 0}
   idleFrames:
   - {fileID: -8541514026566891565, guid: 86975cb5d70d82c438e3174fe2fcfb26, type: 3}
   - {fileID: 7644416914810804364, guid: 86975cb5d70d82c438e3174fe2fcfb26, type: 3}
