@@ -23,7 +23,7 @@ MonoBehaviour:
     sprite: {fileID: 663455848043613904, guid: f1d554d0c89da29498074ce88f858a88, type: 3}
   - cardID: B_CROWN
     sprite: {fileID: 8538985039029115744, guid: d70e7939e8cabfa46810fa7ff18eaa04, type: 3}
-  - cardID: B_CRYSTAL_GLASS
+  - cardID: B_CRYSTAL
     sprite: {fileID: -6091321608862071422, guid: 039377ac4fb2cea40a53c59ed9caa8ac, type: 3}
   - cardID: B_FLOWER
     sprite: {fileID: -6053833663051375574, guid: c33b0d021804f4e41ae3846d7067654e, type: 3}
@@ -53,7 +53,7 @@ MonoBehaviour:
     sprite: {fileID: 3873878346624319662, guid: 0f668314de0cb2041b67de428ca59e33, type: 3}
   - cardID: B_SEED
     sprite: {fileID: 5258080392000346968, guid: 1298b0c42fd3d9947924bc37f94aa1fd, type: 3}
-  - cardID: B_SIGN
+  - cardID: B_SIGNPOST
     sprite: {fileID: 5599323782787759188, guid: 6b76a78ed6df8c94e8b1fffd3913f9ea, type: 3}
   - cardID: B_SPRING
     sprite: {fileID: 8933066180510333674, guid: 8fa8047326b0df94fbf415bb8964ad99, type: 3}
@@ -161,3 +161,5 @@ MonoBehaviour:
     sprite: {fileID: 7113978937093574563, guid: 186bdad239ebef44493b8bd67b865c22, type: 3}
   - cardID: T_BROADCAST_BIRD
     sprite: {fileID: -220151198244820131, guid: 82e5656f20496be4da3bcbae897ded34, type: 3}
+  - cardID: T_MIRROR_CURSE_POTION
+    sprite: {fileID: -3007827498052362213, guid: 3feaa9f700b5d3a438d3f29df0ad049c, type: 3}
