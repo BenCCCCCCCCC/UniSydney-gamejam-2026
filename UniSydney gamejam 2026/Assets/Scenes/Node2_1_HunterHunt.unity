@@ -849,7 +849,7 @@ MonoBehaviour:
   fallDuration: 0.35
   worldOffset: {x: 0, y: 0, z: 0}
   iconSize: {x: 1, y: 1}
-  useRevealEffect: 1
+  useRevealEffect: 0
   revealVfxConfig: {fileID: 11400000, guid: b77c6537482747042affa46e4017c2e5, type: 2}
   sortingLayerName: Default
   sortingOrder: 50

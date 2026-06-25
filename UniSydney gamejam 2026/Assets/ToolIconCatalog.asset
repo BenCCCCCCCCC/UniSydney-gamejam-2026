@@ -69,7 +69,7 @@ MonoBehaviour:
     iconSprite: {fileID: 8452481171257435072, guid: 06cdf45b0f20d4945be520e69745b19a, type: 3}
   - toolCardID: T_LAUNCH_PLANK
     iconSprite: {fileID: 6439838778626830904, guid: 765745cd005f05f4691702ca4533ba87, type: 3}
-  - toolCardID: T_LAEAF_CLOAK
+  - toolCardID: T_LEAF_CLOAK
     iconSprite: {fileID: -1330983229763626651, guid: a5d3a46688e0b7544a2d593e22ef9062, type: 3}
   - toolCardID: T_LEAF_GLIDER
     iconSprite: {fileID: 5029996649418691313, guid: e7bbb4370d67b5445b809c02f6066384, type: 3}
