@@ -34,6 +34,12 @@ public class Node5ResultPlayer : MonoBehaviour
     [SerializeField] private Node5TextBank textBank;
     [SerializeField] private bool showTriggerFeedback = true;
     [SerializeField] private float triggerFeedbackDuration = 1.2f;
+    [SerializeField] private bool useDynamicFeedbackDuration = true;
+    [SerializeField] private float minFeedbackDuration = 1.8f;
+    [SerializeField] private float maxFeedbackDuration = 5.5f;
+    [SerializeField] private float readingWordsPerMinute = 220f;
+    [SerializeField] private float feedbackPaddingSeconds = 0.8f;
+    [SerializeField] private float punctuationExtraSeconds = 0.15f;
 
     private int totalScore;
     private bool princeCalled;
@@ -256,7 +262,7 @@ public class Node5ResultPlayer : MonoBehaviour
 
         textUI.ShowDialogue(message);
 
-        yield return new WaitForSeconds(triggerFeedbackDuration);
+        yield return new WaitForSeconds(GetFeedbackDuration(message));
 
         textUI.HideDialogue();
         feedbackCoroutine = null;
@@ -277,6 +283,19 @@ public class Node5ResultPlayer : MonoBehaviour
         {
             activeActor.ResumeMove();
         }
+    }
+
+    private float GetFeedbackDuration(string message)
+    {
+        return DialogReadingTimeUtility.GetDuration(
+            message,
+            useDynamicFeedbackDuration,
+            triggerFeedbackDuration,
+            minFeedbackDuration,
+            maxFeedbackDuration,
+            readingWordsPerMinute,
+            feedbackPaddingSeconds,
+            punctuationExtraSeconds);
     }
 
     private bool TryGetPlacementResult(string placePointID, string toolCardID, out PlacementResultRow result)

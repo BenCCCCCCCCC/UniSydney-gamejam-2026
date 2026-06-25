@@ -23,6 +23,8 @@ public class CardBackpackController : MonoBehaviour
     private const string DefaultNodeID = "Node1";
     private const string DefaultTargetSceneName = "Node1_QueenCastle";
     private const string CardBackpackSceneName = "CardBackpackTest";
+    private const string DefaultInstruction =
+        "Memorize the cards, then create the right tools.";
     private static readonly Vector2 DefaultBaseCardSize = new Vector2(145f, 205f);
     private static readonly Vector2 DefaultBaseCardSpacing = new Vector2(18f, 18f);
     private const int DefaultMaxBaseCardsPerRow = 8;
@@ -153,6 +155,7 @@ public class CardBackpackController : MonoBehaviour
             return;
         }
 
+        ConfigureTopInstructionText();
         ApplySharedHandPresentation();
 
         continueButton.gameObject.SetActive(true);
@@ -224,7 +227,7 @@ public class CardBackpackController : MonoBehaviour
         openedCards.Clear();
         toolCards.Clear();
 
-        instructionText.text = "Memorize the base cards. They will flip soon.";
+        instructionText.text = DefaultInstruction;
 
         List<CardRow> baseCards = database.GetBaseCardsForNode(currentNodeId);
         BaseCardSlotBinder slotBinder = useManualBaseCardSlots ? FindAnyObjectByType<BaseCardSlotBinder>() : null;
@@ -275,7 +278,7 @@ public class CardBackpackController : MonoBehaviour
         }
 
         inputLocked = false;
-        instructionText.text = "Flip two base cards to craft a tool. Continue anytime if you have enough tools.";
+        instructionText.text = DefaultInstruction;
         UpdateContinueButtonState();
     }
 
@@ -292,6 +295,7 @@ public class CardBackpackController : MonoBehaviour
         }
 
         memoryCountdownUI = MemoryCountdownUI.Create(runtimeCanvas);
+        HideMemoryCountdownPromptVisuals();
 
         if (previewSeconds <= 0f)
         {
@@ -311,6 +315,26 @@ public class CardBackpackController : MonoBehaviour
 
         memoryCountdownUI?.SetProgress(0f);
         CleanupMemoryCountdown();
+    }
+
+    private void HideMemoryCountdownPromptVisuals()
+    {
+        if (memoryCountdownUI == null)
+        {
+            return;
+        }
+
+        Transform panel = memoryCountdownUI.transform.Find("Panel");
+        if (panel != null)
+        {
+            panel.gameObject.SetActive(false);
+        }
+
+        Transform message = memoryCountdownUI.transform.Find("Message");
+        if (message != null)
+        {
+            message.gameObject.SetActive(false);
+        }
     }
 
     private Canvas GetRuntimeCanvas()
@@ -416,7 +440,8 @@ public class CardBackpackController : MonoBehaviour
                 toolSprite,
                 handPresentationSettings,
                 canvas,
-                cardViewPrefab: cardViewPrefab);
+                cardViewPrefab: cardViewPrefab,
+                enableCorrectToolHint: false);
 
             CanvasGroup sourceCanvasGroup = resultVisualSource.GetComponent<CanvasGroup>();
             sourceCanvasGroup.alpha = 0f;
@@ -424,13 +449,22 @@ public class CardBackpackController : MonoBehaviour
             sourceCanvasGroup.blocksRaycasts = false;
 
             Vector3 handTargetWorldPosition = CalculatePendingHandCardWorldPosition();
+            bool isCorrectHintTool =
+                CorrectToolHintRules.IsCorrectSolutionTool(
+                    currentNodeId,
+                    outputCard.CardID);
+            Debug.Log(
+                $"CORRECT_TOOL_MERGE_CHECK: node={currentNodeId}, "
+                + $"result={outputCard.CardID}, correct={isCorrectHintTool}");
+
             if (effectPlayer != null)
             {
                 yield return effectPlayer.PlayMerge(
                     first,
                     second,
                     resultVisualSource,
-                    handTargetWorldPosition);
+                    handTargetWorldPosition,
+                    isCorrectHintTool);
             }
 
             Destroy(resultVisualSource.gameObject);
@@ -476,6 +510,31 @@ public class CardBackpackController : MonoBehaviour
         }
 
         UpdateContinueButtonState();
+    }
+
+    private void ConfigureTopInstructionText()
+    {
+        if (instructionText == null)
+        {
+            return;
+        }
+
+        instructionText.textWrappingMode = TextWrappingModes.NoWrap;
+        instructionText.overflowMode = TextOverflowModes.Ellipsis;
+        instructionText.enableAutoSizing = true;
+        instructionText.fontSizeMax = Mathf.Min(30f, instructionText.fontSize);
+        instructionText.fontSizeMin = 18f;
+
+        RectTransform rect = instructionText.rectTransform;
+        Vector2 anchorMin = rect.anchorMin;
+        Vector2 anchorMax = rect.anchorMax;
+        anchorMin.y = 0.965f;
+        anchorMax.y = 0.965f;
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.pivot = new Vector2(rect.pivot.x, 0.5f);
+        rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, 0f);
+        rect.sizeDelta = new Vector2(Mathf.Max(rect.sizeDelta.x, 1120f), 44f);
     }
 
     private void PreserveConsumedBaseCardSlot(CardView view)
@@ -1029,9 +1088,9 @@ public class CardBackpackController : MonoBehaviour
             TMP_Text instructionText = CreateText(
                 "InstructionText",
                 uiLayer,
-                "Memorize the base cards. They will flip soon.",
-                new Vector2(0.5f, 0.94f),
-                new Vector2(1120f, 58f),
+                DefaultInstruction,
+                new Vector2(0.5f, 0.965f),
+                new Vector2(1120f, 44f),
                 30f);
 
             RectTransform baseCardArea = CreateArea(

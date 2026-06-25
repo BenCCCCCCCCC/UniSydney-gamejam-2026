@@ -19,7 +19,8 @@ public static class HandCardViewFactory
         Canvas canvas,
         Action<CardView> onClicked = null,
         bool clickable = false,
-        CardView cardViewPrefab = null)
+        CardView cardViewPrefab = null,
+        bool enableCorrectToolHint = true)
     {
         if (parent == null || card == null)
         {
@@ -67,6 +68,12 @@ public static class HandCardViewFactory
             view.gameObject,
             canvas,
             settings);
+        if (enableCorrectToolHint)
+        {
+            CorrectToolHintEffect.ConfigureHandCard(view.gameObject, card.CardID);
+            Debug.Log(
+                $"CORRECT_TOOL_HAND_ATTACHED: card={card.CardID}, object={view.gameObject.name}");
+        }
 
         return view;
     }

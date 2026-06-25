@@ -17,6 +17,12 @@ public class Node1ResultPlayer : MonoBehaviour
     [Header("Dialogue")]
     [SerializeField] private SceneTextUIController textUI;
     [SerializeField] private float messageDuration = 1.6f;
+    [SerializeField] private bool useDynamicMessageDuration = true;
+    [SerializeField] private float minMessageDuration = 1.8f;
+    [SerializeField] private float maxMessageDuration = 5.5f;
+    [SerializeField] private float readingWordsPerMinute = 220f;
+    [SerializeField] private float messagePaddingSeconds = 0.7f;
+    [SerializeField] private float punctuationExtraSeconds = 0.15f;
 
     private bool queenProvoked;
     private bool hasEnded;
@@ -111,7 +117,7 @@ public class Node1ResultPlayer : MonoBehaviour
 
         ShowDialogue(message);
 
-        yield return new WaitForSeconds(messageDuration);
+        yield return new WaitForSeconds(GetMessageDuration(message));
 
         HideDialogue();
 
@@ -119,6 +125,50 @@ public class Node1ResultPlayer : MonoBehaviour
         {
             storyActor.ResumeMove();
         }
+    }
+
+    private float GetMessageDuration(string message)
+    {
+        if (!useDynamicMessageDuration)
+        {
+            return messageDuration;
+        }
+
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return messageDuration;
+        }
+
+        if (readingWordsPerMinute <= 0f)
+        {
+            return messageDuration;
+        }
+
+        int wordCount = CountWords(message);
+        float wordsPerSecond = readingWordsPerMinute / 60f;
+        float duration = wordCount / wordsPerSecond + messagePaddingSeconds;
+
+        string trimmed = message.Trim();
+        if (trimmed.EndsWith("!") || trimmed.EndsWith("?") || trimmed.EndsWith(".") || trimmed.EndsWith("\""))
+        {
+            duration += punctuationExtraSeconds;
+        }
+
+        return Mathf.Clamp(duration, minMessageDuration, maxMessageDuration);
+    }
+
+    private int CountWords(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return 0;
+        }
+
+        string[] parts = message.Split(
+            new[] { ' ', '\n', '\t', '\r' },
+            System.StringSplitOptions.RemoveEmptyEntries);
+
+        return parts.Length;
     }
 
     private void OnActorReachedEnd(StoryActorAutoMove actor)

@@ -73,7 +73,7 @@ public class RuntimePlayButtonIconHook : MonoBehaviour
 
     private Button FindRuntimePlayButton()
     {
-        Button[] buttons = FindObjectsByType<Button>(FindObjectsSortMode.None);
+        Button[] buttons = FindObjectsByType<Button>(FindObjectsInactive.Exclude);
 
         foreach (Button button in buttons)
         {
