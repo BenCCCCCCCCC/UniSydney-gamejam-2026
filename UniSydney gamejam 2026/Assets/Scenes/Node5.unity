@@ -165,8 +165,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47e3bea6681257c44abb0e2bae925c21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementPoint
-  nodeID: Node3
-  placePointID: N3_P1
+  nodeID: Node5
+  placePointID: N5_P1
   storedToolCardID: 
 --- !u!1 &61986275
 GameObject:
@@ -215,7 +215,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 1081387996}
   node1ResultPlayer: {fileID: 0}
-  node3ResultPlayer: {fileID: 1115226646}
+  node3ResultPlayer: {fileID: 0}
+  node5ResultPlayer: {fileID: 1115226646}
   triggerOnlyOnce: 1
 --- !u!61 &61986278
 BoxCollider2D:
@@ -304,15 +305,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 242490778}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 343c4c96a2a6036448e4baf054e21e5f, type: 3}
+  m_Script: {fileID: 11500000, guid: f3183cb33243900488303e8fd0b18152, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Node3SimpleFlowController
-  nodeID: Node3
-  nodeSceneName: Node3_DwarfHouse
+  m_EditorClassIdentifier: Assembly-CSharp::Node5SimpleFlowController
+  nodeID: Node5
+  nodeSceneName: Node5
   cardBackpackSceneName: CardBackpackTest
-  briefingLine: Snow White gets lost in the forest. She eventually finds the dwarfs'
-    cottage and finds a way to get inside.
-  readingSeconds: 6
+  briefingText: "Father: \"Finally, the prince arrived at the crystal coffin...\"\nChild:
+    \"Wait. This time, I decide the ending.\""
+  briefingDuration: 3.2
 --- !u!1 &264295982
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,7 +361,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 47383802}
   node1ResultPlayer: {fileID: 0}
-  node3ResultPlayer: {fileID: 1115226646}
+  node3ResultPlayer: {fileID: 0}
+  node5ResultPlayer: {fileID: 1115226646}
   triggerOnlyOnce: 1
 --- !u!61 &264295985
 BoxCollider2D:
@@ -807,8 +809,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47e3bea6681257c44abb0e2bae925c21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementPoint
-  nodeID: Node3
-  placePointID: N3_P2
+  nodeID: Node5
+  placePointID: N5_P2
   storedToolCardID: 
 --- !u!1 &1089344936
 GameObject:
@@ -916,13 +918,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1115226644}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 993287f7a0d699a4bb00cee0f22421cd, type: 3}
+  m_Script: {fileID: 11500000, guid: dd2c07c2cdb62044292dd67fb510b594, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Node3ResultPlayer
-  nodeID: Node3
-  retrySceneName: Node3_DwarfHouse
+  m_EditorClassIdentifier: Assembly-CSharp::Node5ResultPlayer
+  nodeID: Node5
+  retrySceneName: Node5
   storyActor: {fileID: 1405852954}
-  messageDuration: 1.6
+  database: {fileID: 0}
 --- !u!1 &1331221912
 GameObject:
   m_ObjectHideFlags: 0
@@ -1059,7 +1061,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daf313c9700d9ba4d87ecdd9b6744ad1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Node3PlacementPlayController
-  nodeID: Node3
+  nodeID: Node5
   storyActor: {fileID: 1405852954}
   requiredPlacementPoints:
   - {fileID: 47383802}
@@ -1529,8 +1531,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47e3bea6681257c44abb0e2bae925c21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementPoint
-  nodeID: Node3
-  placePointID: N3_P3
+  nodeID: Node5
+  placePointID: N5_P3
   storedToolCardID: 
 --- !u!1 &1729910019
 GameObject:
@@ -1750,7 +1752,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacementTriggerZone
   placementPoint: {fileID: 1729720876}
   node1ResultPlayer: {fileID: 0}
-  node3ResultPlayer: {fileID: 1115226646}
+  node3ResultPlayer: {fileID: 0}
+  node5ResultPlayer: {fileID: 1115226646}
   triggerOnlyOnce: 1
 --- !u!61 &1851893872
 BoxCollider2D:
