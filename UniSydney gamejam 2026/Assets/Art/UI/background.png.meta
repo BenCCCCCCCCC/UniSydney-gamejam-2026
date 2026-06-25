@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: a4cf5247c252a294baed8622c6e0e3cc
+guid: 159c1a032c5ce9f48959bffc10faa7fe
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3635270358302827178
-    second: T_TALKING_SIGN_1_0
-  - first:
-      213: 7471321293487254738
-    second: T_TALKING_SIGN_1_1
-  - first:
-      213: -3149536849741640253
-    second: T_TALKING_SIGN_1_2
+      213: -1843028302627794106
+    second: "\u80CC\u666F_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -106,67 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: T_TALKING_SIGN_1_0
+      name: "\u80CC\u666F_0"
       rect:
         serializedVersion: 2
-        x: 32
-        y: 1
-        width: 216
-        height: 275
+        x: 0
+        y: 0
+        width: 2360
+        height: 1280
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: aa2a5216123137230800000000000000
-      internalID: 3635270358302827178
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: T_TALKING_SIGN_1_1
-      rect:
-        serializedVersion: 2
-        x: 82
-        y: 6
-        width: 152
-        height: 243
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2dcae15b1277fa760800000000000000
-      internalID: 7471321293487254738
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: T_TALKING_SIGN_1_2
-      rect:
-        serializedVersion: 2
-        x: 33
-        y: 180
-        width: 44
-        height: 26
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3cd85201ce89a44d0800000000000000
-      internalID: -3149536849741640253
+      spriteID: 64311e6068f3c66e0800000000000000
+      internalID: -1843028302627794106
       vertices: []
       indices: 
       edges: []
@@ -175,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 805a71c059b17eb43bdf94b873de40ac
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -185,9 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      T_TALKING_SIGN_1_0: 3635270358302827178
-      T_TALKING_SIGN_1_1: 7471321293487254738
-      T_TALKING_SIGN_1_2: -3149536849741640253
+      "\u80CC\u666F_0": -1843028302627794106
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
