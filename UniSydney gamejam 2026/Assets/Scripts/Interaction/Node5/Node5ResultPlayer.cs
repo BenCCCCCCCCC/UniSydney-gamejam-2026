@@ -11,6 +11,7 @@ public class Node5ResultPlayer : MonoBehaviour
     [Header("Scene")]
     [SerializeField] private string nodeID = "Node5";
     [SerializeField] private string retrySceneName = "Node5";
+    [SerializeField] private string mainMenuSceneName = "MainMenu";
     [SerializeField] private StoryActorAutoMove storyActor;
     [SerializeField] private CardDatabase database;
 
@@ -134,7 +135,7 @@ public class Node5ResultPlayer : MonoBehaviour
 
         if (textUI != null)
         {
-            textUI.ConfigureEndingButtons(RetryNode5, RetryNode5, null);
+            textUI.ConfigureFinalEndingButtons(RetryNode5, HandleMainMenu);
             textUI.HideDialogue();
             textUI.HideEnding();
         }
@@ -769,6 +770,20 @@ public class Node5ResultPlayer : MonoBehaviour
         GameSessionData.ToolCardIDs.Clear();
 
         LoadSceneByName(retrySceneName);
+    }
+
+    private void HandleMainMenu()
+    {
+        if (string.IsNullOrWhiteSpace(mainMenuSceneName))
+        {
+            Debug.LogWarning("Node5ResultPlayer: mainMenuSceneName is empty.");
+            return;
+        }
+
+        GameSessionData.CurrentNodeSceneName = mainMenuSceneName;
+        GameSessionData.CurrentPhase = GameFlowPhase.Briefing;
+
+        LoadSceneByName(mainMenuSceneName);
     }
 
     private void LoadSceneByName(string sceneName)
