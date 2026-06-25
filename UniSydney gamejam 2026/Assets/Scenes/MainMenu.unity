@@ -206,6 +206,11 @@ MonoBehaviour:
   startButton: {fileID: 389309560}
   exitButton: {fileID: 736959450}
   menuCanvasGroup: {fileID: 0}
+  tutorialRoot: {fileID: 0}
+  tutorialImage: {fileID: 0}
+  tutorialSprite: {fileID: -3813906993928986081, guid: 7dfc442576e519a47b8636785252ed04, type: 3}
+  tutorialDuration: 6
+  showTutorialBeforeStart: 1
 --- !u!4 &353216491
 Transform:
   m_ObjectHideFlags: 0

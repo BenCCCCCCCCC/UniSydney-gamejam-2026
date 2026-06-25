@@ -13,6 +13,8 @@ using UnityEditor.SceneManagement;
 /// </summary>
 public class Node4SimpleFlowController : MonoBehaviour
 {
+    private static Material safeSpriteMaterial;
+
     [Header("节点设置")]
     [SerializeField] private string nodeID = "Node4";
     [SerializeField] private string nodeSceneName = "Node4_1";
@@ -24,6 +26,8 @@ public class Node4SimpleFlowController : MonoBehaviour
 
     private IEnumerator Start()
     {
+        EnsureSceneSpriteRenderersUseValidMaterials();
+
         GameSessionData.CurrentNodeID = nodeID;
         GameSessionData.CurrentNodeSceneName = nodeSceneName;
         GameSessionData.CardBackpackSceneName = cardBackpackSceneName;
@@ -41,11 +45,88 @@ public class Node4SimpleFlowController : MonoBehaviour
         yield return new WaitForSeconds(readingSeconds);
 
         yield return new WaitForEndOfFrame();
-        GameSessionData.SetCardBackpackBackgroundSnapshot(
-            ScreenCapture.CaptureScreenshotAsTexture());
+        CaptureCardBackpackBackgroundSnapshot();
 
         GameSessionData.CurrentPhase = GameFlowPhase.CardCrafting;
         LoadSceneByName(cardBackpackSceneName);
+    }
+
+    private void CaptureCardBackpackBackgroundSnapshot()
+    {
+        Texture2D snapshot = ScreenCapture.CaptureScreenshotAsTexture();
+
+        if (snapshot == null || snapshot.width <= 0 || snapshot.height <= 0)
+        {
+            Debug.LogWarning("Node4SimpleFlowController: background snapshot capture failed; CardBackpack will use a dim fallback background.");
+            GameSessionData.ClearCardBackpackBackgroundSnapshot();
+            return;
+        }
+
+        GameSessionData.SetCardBackpackBackgroundSnapshot(snapshot);
+    }
+
+    private void EnsureSceneSpriteRenderersUseValidMaterials()
+    {
+        SpriteRenderer[] spriteRenderers = FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None);
+        Material fallbackMaterial = null;
+        int fixedCount = 0;
+
+        foreach (SpriteRenderer spriteRenderer in spriteRenderers)
+        {
+            if (spriteRenderer == null || !HasBrokenMaterial(spriteRenderer.sharedMaterial))
+            {
+                continue;
+            }
+
+            fallbackMaterial ??= GetSafeSpriteMaterial();
+            if (fallbackMaterial == null)
+            {
+                Debug.LogWarning("Node4SimpleFlowController: could not find a safe sprite shader for broken SpriteRenderer materials.");
+                return;
+            }
+
+            spriteRenderer.sharedMaterial = fallbackMaterial;
+            fixedCount++;
+        }
+
+        if (fixedCount > 0)
+        {
+            Debug.Log($"Node4SimpleFlowController: replaced {fixedCount} broken SpriteRenderer material(s) with a safe sprite material.");
+        }
+    }
+
+    private static bool HasBrokenMaterial(Material material)
+    {
+        return material == null
+            || material.shader == null
+            || !material.shader.isSupported
+            || material.shader.name == "Hidden/InternalErrorShader";
+    }
+
+    private static Material GetSafeSpriteMaterial()
+    {
+        if (safeSpriteMaterial != null)
+        {
+            return safeSpriteMaterial;
+        }
+
+        Shader shader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
+        if (shader == null)
+        {
+            shader = Shader.Find("Sprites/Default");
+        }
+
+        if (shader == null)
+        {
+            return null;
+        }
+
+        safeSpriteMaterial = new Material(shader)
+        {
+            name = "Node4_RuntimeSafeSpriteMaterial"
+        };
+
+        return safeSpriteMaterial;
     }
 
     private void ShowDialogueBubble(string line)
