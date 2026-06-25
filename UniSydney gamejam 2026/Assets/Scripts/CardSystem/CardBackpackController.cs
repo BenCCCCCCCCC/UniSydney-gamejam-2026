@@ -64,6 +64,10 @@ public class CardBackpackController : MonoBehaviour
     [SerializeField] private float handCardHoverLiftY = 60f;
     [SerializeField, Min(0f)] private float handCardHoverAnimationDuration = 0.12f;
     [SerializeField] private float handCardHoverPreviewOffsetY = 80f;
+    [SerializeField, Range(0f, 1f)] private float originalCardHoverAlpha = 0f;
+    [SerializeField, Min(0f)] private float handCardHoverExitDuration = 0.16f;
+    [SerializeField, Min(0f)] private float originalCardRestoreDuration = 0.12f;
+    [SerializeField, Min(0f)] private float handCardHoverFadeDuration = 0.12f;
 
     [Header("Timing")]
     [SerializeField] private float previewSeconds = 3f;
@@ -673,7 +677,11 @@ public class CardBackpackController : MonoBehaviour
             handCardHoverScale,
             handCardHoverLiftY,
             handCardHoverAnimationDuration,
-            handCardHoverPreviewOffsetY);
+            handCardHoverPreviewOffsetY,
+            originalCardHoverAlpha,
+            handCardHoverExitDuration,
+            originalCardRestoreDuration,
+            handCardHoverFadeDuration);
     }
 
     private void RefreshHandCardHoverSettings()

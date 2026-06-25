@@ -10,96 +10,221 @@ public class HandCardHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointer
     private RectTransform overlayLayer;
     private GameObject previewObject;
     private Coroutine animationRoutine;
+    private CanvasGroup sourceCanvasGroup;
     private float hoverScale = 1.18f;
     private float hoverLiftY = 60f;
-    private float animationDuration = 0.12f;
+    private float hoverEnterDuration = 0.12f;
     private float previewOffsetY = 80f;
+    private float originalCardHoverAlpha;
+    private float hoverExitDuration = 0.16f;
+    private float originalCardRestoreDuration = 0.12f;
+    private float hoverFadeDuration = 0.12f;
+    private float originalCardRestingAlpha = 1f;
+    private bool pointerInside;
 
     public void Configure(
         Canvas ownerCanvas,
         float scale,
         float liftY,
-        float duration,
-        float offsetY)
+        float enterDuration,
+        float offsetY,
+        float sourceHoverAlpha,
+        float exitDuration,
+        float sourceRestoreDuration,
+        float fadeDuration)
     {
         canvas = ownerCanvas;
         sourceRect = GetComponent<RectTransform>();
+        sourceCanvasGroup = GetComponent<CanvasGroup>();
         hoverScale = Mathf.Max(0.01f, scale);
         hoverLiftY = liftY;
-        animationDuration = Mathf.Max(0f, duration);
+        hoverEnterDuration = Mathf.Max(0f, enterDuration);
         previewOffsetY = offsetY;
+        originalCardHoverAlpha = Mathf.Clamp01(sourceHoverAlpha);
+        hoverExitDuration = Mathf.Max(0f, exitDuration);
+        originalCardRestoreDuration = Mathf.Max(0f, sourceRestoreDuration);
+        hoverFadeDuration = Mathf.Max(0f, fadeDuration);
+
+        if (sourceCanvasGroup != null && previewObject == null && animationRoutine == null)
+        {
+            originalCardRestingAlpha = sourceCanvasGroup.alpha;
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        ShowPreview();
+        pointerInside = true;
+        TransitionPreview(true);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        HidePreview();
+        pointerInside = false;
+        TransitionPreview(false);
     }
 
     private void OnDisable()
     {
-        if (animationRoutine != null)
-        {
-            StopCoroutine(animationRoutine);
-            animationRoutine = null;
-        }
+        pointerInside = false;
+        StopActiveAnimation();
 
         if (previewObject != null)
         {
             Destroy(previewObject);
             previewObject = null;
         }
+
+        RestoreOriginalCardImmediately();
     }
 
-    private void ShowPreview()
+    private void TransitionPreview(bool showing)
     {
         if (canvas == null || sourceRect == null)
         {
             return;
         }
 
-        overlayLayer = GetOrCreateOverlayLayer(canvas);
-        if (overlayLayer == null)
+        StopActiveAnimation();
+
+        if (showing)
         {
+            overlayLayer = GetOrCreateOverlayLayer(canvas);
+            if (overlayLayer == null)
+            {
+                return;
+            }
+
+            overlayLayer.SetAsLastSibling();
+
+            if (previewObject == null)
+            {
+                if (sourceCanvasGroup != null)
+                {
+                    originalCardRestingAlpha = sourceCanvasGroup.alpha;
+                }
+
+                previewObject = CreatePreviewClone();
+                if (previewObject == null)
+                {
+                    RestoreOriginalCardImmediately();
+                    return;
+                }
+            }
+        }
+        else if (previewObject == null)
+        {
+            RestoreOriginalCardImmediately();
             return;
         }
 
-        if (animationRoutine != null)
+        animationRoutine = StartCoroutine(AnimateTransition(showing));
+    }
+
+    private IEnumerator AnimateTransition(bool showing)
+    {
+        RectTransform previewRect = previewObject.GetComponent<RectTransform>();
+        CanvasGroup previewGroup = previewObject.GetComponent<CanvasGroup>();
+        Vector2 startPosition = previewRect.anchoredPosition;
+        Vector3 startScale = previewRect.localScale;
+        float startPreviewAlpha = previewGroup.alpha;
+        float startSourceAlpha = sourceCanvasGroup != null
+            ? sourceCanvasGroup.alpha
+            : originalCardRestingAlpha;
+
+        Vector2 restingPosition = GetOverlayPosition(sourceRect) + Vector2.up * previewOffsetY;
+        Vector2 targetPosition = showing
+            ? restingPosition + Vector2.up * hoverLiftY
+            : restingPosition;
+        Vector3 targetScale = showing
+            ? Vector3.one * hoverScale
+            : Vector3.one;
+        float targetPreviewAlpha = showing ? 1f : 0f;
+        float targetSourceAlpha = showing
+            ? originalCardHoverAlpha
+            : originalCardRestingAlpha;
+        float motionDuration = showing ? hoverEnterDuration : hoverExitDuration;
+        float sourceDuration = showing ? hoverFadeDuration : originalCardRestoreDuration;
+        float totalDuration = Mathf.Max(motionDuration, hoverFadeDuration, sourceDuration);
+
+        if (totalDuration <= 0f)
         {
-            StopCoroutine(animationRoutine);
+            ApplyTransitionEnd(
+                previewRect,
+                previewGroup,
+                targetPosition,
+                targetScale,
+                targetPreviewAlpha,
+                targetSourceAlpha);
+            FinishTransition(showing);
+            yield break;
+        }
+
+        float elapsed = 0f;
+        while (elapsed < totalDuration && previewObject != null)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float motionT = Smooth(GetProgress(elapsed, motionDuration));
+            float fadeT = Smooth(GetProgress(elapsed, hoverFadeDuration));
+            float sourceT = Smooth(GetProgress(elapsed, sourceDuration));
+
+            previewRect.anchoredPosition = Vector2.LerpUnclamped(startPosition, targetPosition, motionT);
+            previewRect.localScale = Vector3.LerpUnclamped(startScale, targetScale, motionT);
+            previewGroup.alpha = Mathf.LerpUnclamped(startPreviewAlpha, targetPreviewAlpha, fadeT);
+
+            if (sourceCanvasGroup != null)
+            {
+                sourceCanvasGroup.alpha = Mathf.LerpUnclamped(startSourceAlpha, targetSourceAlpha, sourceT);
+            }
+
+            yield return null;
         }
 
         if (previewObject != null)
         {
-            Destroy(previewObject);
+            ApplyTransitionEnd(
+                previewRect,
+                previewGroup,
+                targetPosition,
+                targetScale,
+                targetPreviewAlpha,
+                targetSourceAlpha);
         }
 
-        previewObject = CreatePreviewClone();
-        if (previewObject == null)
-        {
-            return;
-        }
-
-        animationRoutine = StartCoroutine(AnimatePreviewIn());
+        FinishTransition(showing);
     }
 
-    private void HidePreview()
+    private void ApplyTransitionEnd(
+        RectTransform previewRect,
+        CanvasGroup previewGroup,
+        Vector2 targetPosition,
+        Vector3 targetScale,
+        float targetPreviewAlpha,
+        float targetSourceAlpha)
     {
-        if (previewObject == null)
-        {
-            return;
-        }
+        previewRect.anchoredPosition = targetPosition;
+        previewRect.localScale = targetScale;
+        previewGroup.alpha = targetPreviewAlpha;
 
-        if (animationRoutine != null)
+        if (sourceCanvasGroup != null)
         {
-            StopCoroutine(animationRoutine);
+            sourceCanvasGroup.alpha = targetSourceAlpha;
         }
+    }
 
-        animationRoutine = StartCoroutine(AnimatePreviewOut());
+    private void FinishTransition(bool showing)
+    {
+        animationRoutine = null;
+
+        if (!showing && !pointerInside)
+        {
+            if (previewObject != null)
+            {
+                Destroy(previewObject);
+                previewObject = null;
+            }
+
+            RestoreOriginalCardImmediately();
+        }
     }
 
     private GameObject CreatePreviewClone()
@@ -155,81 +280,23 @@ public class HandCardHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointer
         return clone;
     }
 
-    private IEnumerator AnimatePreviewIn()
+    private void StopActiveAnimation()
     {
-        RectTransform previewRect = previewObject.GetComponent<RectTransform>();
-        CanvasGroup group = previewObject.GetComponent<CanvasGroup>();
-        Vector2 startPosition = previewRect.anchoredPosition;
-        Vector2 endPosition = startPosition + Vector2.up * hoverLiftY;
-
-        if (animationDuration <= 0f)
+        if (animationRoutine == null)
         {
-            previewRect.anchoredPosition = endPosition;
-            previewRect.localScale = Vector3.one * hoverScale;
-            group.alpha = 1f;
-            animationRoutine = null;
-            yield break;
+            return;
         }
 
-        float elapsed = 0f;
-        while (elapsed < animationDuration && previewObject != null)
-        {
-            elapsed += Time.unscaledDeltaTime;
-            float t = Smooth(Mathf.Clamp01(elapsed / animationDuration));
-            previewRect.anchoredPosition = Vector2.LerpUnclamped(startPosition, endPosition, t);
-            previewRect.localScale = Vector3.LerpUnclamped(Vector3.one, Vector3.one * hoverScale, t);
-            group.alpha = t;
-            yield return null;
-        }
-
-        if (previewObject != null)
-        {
-            previewRect.anchoredPosition = endPosition;
-            previewRect.localScale = Vector3.one * hoverScale;
-            group.alpha = 1f;
-        }
-
+        StopCoroutine(animationRoutine);
         animationRoutine = null;
     }
 
-    private IEnumerator AnimatePreviewOut()
+    private void RestoreOriginalCardImmediately()
     {
-        RectTransform previewRect = previewObject.GetComponent<RectTransform>();
-        CanvasGroup group = previewObject.GetComponent<CanvasGroup>();
-        Vector2 startPosition = previewRect.anchoredPosition;
-        Vector2 endPosition = startPosition + Vector2.down * hoverLiftY * 0.35f;
-        Vector3 startScale = previewRect.localScale;
-        float startAlpha = group.alpha;
-
-        if (animationDuration <= 0f)
+        if (sourceCanvasGroup != null)
         {
-            DestroyPreview();
-            yield break;
+            sourceCanvasGroup.alpha = originalCardRestingAlpha;
         }
-
-        float elapsed = 0f;
-        while (elapsed < animationDuration && previewObject != null)
-        {
-            elapsed += Time.unscaledDeltaTime;
-            float t = Smooth(Mathf.Clamp01(elapsed / animationDuration));
-            previewRect.anchoredPosition = Vector2.LerpUnclamped(startPosition, endPosition, t);
-            previewRect.localScale = Vector3.LerpUnclamped(startScale, Vector3.one, t);
-            group.alpha = Mathf.LerpUnclamped(startAlpha, 0f, t);
-            yield return null;
-        }
-
-        DestroyPreview();
-    }
-
-    private void DestroyPreview()
-    {
-        if (previewObject != null)
-        {
-            Destroy(previewObject);
-            previewObject = null;
-        }
-
-        animationRoutine = null;
     }
 
     private RectTransform GetOrCreateOverlayLayer(Canvas ownerCanvas)
@@ -269,6 +336,11 @@ public class HandCardHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointer
             out Vector2 localPoint);
 
         return localPoint;
+    }
+
+    private static float GetProgress(float elapsed, float duration)
+    {
+        return duration <= 0f ? 1f : Mathf.Clamp01(elapsed / duration);
     }
 
     private static float Smooth(float t)
