@@ -123,7 +123,7 @@ MonoBehaviour:
     sprite: {fileID: -591695658248330065, guid: cb98dc8f8df6bf74c9eed56b8b4cf49e, type: 3}
   - cardID: T_PETAL_PATH
     sprite: {fileID: -384732974935762353, guid: 5608e8fa06cb88746b0cd7a440c7e8e2, type: 3}
-  - cardID: T_POISION_APPLE
+  - cardID: T_POISON_APPLE
     sprite: {fileID: 6598860494425132216, guid: fc72cd6e02e29494e8e027ca2e6adf16, type: 3}
   - cardID: T_RESCUE_BEACON
     sprite: {fileID: 2725541604295273370, guid: d4a6480c08d745d4889426e9987c3f5e, type: 3}
@@ -143,7 +143,7 @@ MonoBehaviour:
     sprite: {fileID: 3275718832649954336, guid: 3fb30156d7e27e8449fd63e553bc53c2, type: 3}
   - cardID: T_TALKING_SIGN
     sprite: {fileID: -2615759701313701882, guid: 1adb8501dfc511c4a95d290663d69ac0, type: 3}
-  - cardID: T_TUNLOCK_KIT
+  - cardID: T_UNLOCK_KIT
     sprite: {fileID: 3488196593219628645, guid: 5fceab79980653a4b917bcac5ada24dd, type: 3}
   - cardID: T_WELCOME_CURTAIN
     sprite: {fileID: -736251774395838962, guid: 5d7e81ab19861b2409976f082bc2e42e, type: 3}
@@ -157,7 +157,7 @@ MonoBehaviour:
     sprite: {fileID: 2802683280088530782, guid: fb7e95f7ef436524f9c4b701add9f95d, type: 3}
   - cardID: T_SHAKING_COFFIN
     sprite: {fileID: -1021674643421900921, guid: 348cecd867160eb4ba2fb7f26967b461, type: 3}
-  - cardID: T_SEALEDA_COFFIN
+  - cardID: T_SEALED_COFFIN
     sprite: {fileID: 7113978937093574563, guid: 186bdad239ebef44493b8bd67b865c22, type: 3}
   - cardID: T_BROADCAST_BIRD
     sprite: {fileID: -220151198244820131, guid: 82e5656f20496be4da3bcbae897ded34, type: 3}

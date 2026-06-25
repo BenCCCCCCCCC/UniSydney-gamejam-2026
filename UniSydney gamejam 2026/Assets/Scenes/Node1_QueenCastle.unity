@@ -1017,7 +1017,7 @@ MonoBehaviour:
   - {fileID: 47383802}
   - {fileID: 1081387996}
   - {fileID: 1729720876}
-  cardArtCatalog: {fileID: 0}
+  cardArtCatalog: {fileID: 11400000, guid: 129c2306ebcc5ab4483abc86d5aec4fa, type: 2}
   useResourcesArtFallback: 1
   slotPanelAnchor: {x: 0.5, y: 0.56}
   slotPanelSize: {x: 820, y: 260}

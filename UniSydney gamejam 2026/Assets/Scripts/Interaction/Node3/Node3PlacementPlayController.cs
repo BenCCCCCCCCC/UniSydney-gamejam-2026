@@ -56,6 +56,8 @@ public class Node3PlacementPlayController : MonoBehaviour
             storyActor.PauseMove();
         }
 
+        ApplySceneConfig(FindAnyObjectByType<NodeToolHandSceneConfig>());
+
         if (GameSessionData.CurrentPhase != GameFlowPhase.Placement)
         {
             HidePlayButton();
@@ -78,6 +80,21 @@ public class Node3PlacementPlayController : MonoBehaviour
         }
 
         RefreshPlayButtonState();
+    }
+
+    private void ApplySceneConfig(NodeToolHandSceneConfig config)
+    {
+        if (config == null)
+        {
+            return;
+        }
+
+        if (config.CardArtCatalog != null)
+        {
+            cardArtCatalog = config.CardArtCatalog;
+        }
+
+        useResourcesArtFallback = config.UseResourcesArtFallback;
     }
 
     private void Update()

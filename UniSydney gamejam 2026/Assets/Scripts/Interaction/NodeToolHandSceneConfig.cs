@@ -15,6 +15,7 @@ public class NodeToolHandSceneConfig : MonoBehaviour
     [SerializeField] private Vector2 handAreaAnchorMax = new Vector2(0.82f, 0.22f);
 
     [Header("Placement Slot Layout")]
+    [SerializeField] private bool autoAlignDropSlots = true;
     [SerializeField] private Vector2 placementDropSlotSize = new Vector2(170f, 220f);
     [SerializeField] private Vector2 placedCardSize = new Vector2(120f, 160f);
     [SerializeField] private float placedCardScale = 1f;
@@ -31,6 +32,7 @@ public class NodeToolHandSceneConfig : MonoBehaviour
     public float ToolHandSpacing => toolHandSpacing;
     public Vector2 HandAreaAnchorMin => handAreaAnchorMin;
     public Vector2 HandAreaAnchorMax => handAreaAnchorMax;
+    public bool AutoAlignDropSlots => autoAlignDropSlots;
     public Vector2 PlacementDropSlotSize => placementDropSlotSize;
     public Vector2 PlacedCardSize => placedCardSize;
     public float PlacedCardScale => placedCardScale;
