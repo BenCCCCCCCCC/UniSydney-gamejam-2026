@@ -125,6 +125,27 @@ public class CardBackpackController : MonoBehaviour
         continueButton = runtimeContinueButton;
     }
 
+    public void ApplySceneConfig(CardBackpackSceneConfig config)
+    {
+        if (config == null)
+        {
+            return;
+        }
+
+        cardArtCatalog = config.CardArtCatalog;
+        cardBackSprite = config.CardBackSprite;
+        useResourcesArtFallback = config.UseResourcesArtFallback;
+        baseCardSize = config.BaseCardSize;
+        baseCardSpacing = config.BaseCardSpacing;
+        maxBaseCardsPerRow = Mathf.Max(1, config.MaxBaseCardsPerRow);
+        baseCardAreaPadding = CopyPadding(config.BaseCardAreaPadding);
+        toolHandCardSize = config.ToolHandCardSize;
+        previewSeconds = Mathf.Max(0f, config.PreviewSeconds);
+        useManualBaseCardSlots = config.UseManualBaseCardSlots;
+
+        Debug.Log("CardBackpackController: applied CardBackpackSceneConfig.");
+    }
+
     private void ApplyGameSessionTarget()
     {
         if (!string.IsNullOrWhiteSpace(GameSessionData.CurrentNodeID))
@@ -462,6 +483,16 @@ public class CardBackpackController : MonoBehaviour
         }
     }
 
+    private static RectOffset CopyPadding(RectOffset source)
+    {
+        if (source == null)
+        {
+            return new RectOffset(16, 16, 16, 16);
+        }
+
+        return new RectOffset(source.left, source.right, source.top, source.bottom);
+    }
+
     private void ApplyManualSlotLayout(CardView view, RectTransform slot)
     {
         if (view == null || slot == null)
@@ -725,6 +756,12 @@ public class CardBackpackController : MonoBehaviour
             CardDatabase database = controllerObject.AddComponent<CardDatabase>();
             CardBackpackController controller = controllerObject.AddComponent<CardBackpackController>();
             controller.ConfigureRuntime(database, baseCardArea, toolHandArea, instructionText, continueButton);
+
+            CardBackpackSceneConfig config = FindAnyObjectByType<CardBackpackSceneConfig>();
+            if (config != null)
+            {
+                controller.ApplySceneConfig(config);
+            }
         }
 
         private static void EnsureEventSystem()
