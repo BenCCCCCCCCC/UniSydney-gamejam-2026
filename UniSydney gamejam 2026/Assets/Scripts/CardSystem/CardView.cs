@@ -209,6 +209,7 @@ public class CardView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             backImage.sprite = cardBackSprite;
             backImage.color = cardBackSprite == null ? backColor : Color.white;
+            backImage.preserveAspect = true;
             hasBackSprite = cardBackSprite != null;
         }
 
