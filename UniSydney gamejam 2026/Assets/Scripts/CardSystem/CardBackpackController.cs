@@ -78,6 +78,8 @@ public class CardBackpackController : MonoBehaviour
 
     private RectTransform autoBaseCardArea;
     private CardMergeEffectPlayer mergeEffectPlayer;
+    private MemoryCountdownUI memoryCountdownUI;
+    private Canvas memoryCountdownFallbackCanvas;
     private bool inputLocked;
     private bool isContinuing;
 
@@ -96,6 +98,11 @@ public class CardBackpackController : MonoBehaviour
         ConfigureToolHandClipping();
         RefreshHandCardHoverSettings();
         LayoutRebuilder.ForceRebuildLayoutImmediate(toolHandArea);
+    }
+
+    private void OnDisable()
+    {
+        CleanupMemoryCountdown();
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -243,7 +250,7 @@ public class CardBackpackController : MonoBehaviour
             baseCardViews.Add(view);
         }
 
-        yield return new WaitForSeconds(previewSeconds);
+        yield return RunMemoryCountdown();
 
         foreach (CardView view in baseCardViews)
         {
@@ -259,6 +266,84 @@ public class CardBackpackController : MonoBehaviour
         inputLocked = false;
         instructionText.text = "Flip two base cards to craft a tool. Continue anytime if you have enough tools.";
         UpdateContinueButtonState();
+    }
+
+    private IEnumerator RunMemoryCountdown()
+    {
+        CleanupMemoryCountdown();
+
+        Canvas runtimeCanvas = GetRuntimeCanvas();
+        if (runtimeCanvas == null)
+        {
+            memoryCountdownFallbackCanvas = MemoryCountdownUI.CreateFallbackCanvas();
+            runtimeCanvas = memoryCountdownFallbackCanvas;
+            Debug.LogWarning("CardBackpackController: no parent Canvas was available; using a temporary countdown fallback Canvas.");
+        }
+
+        memoryCountdownUI = MemoryCountdownUI.Create(runtimeCanvas);
+
+        if (previewSeconds <= 0f)
+        {
+            memoryCountdownUI?.SetProgress(0f);
+            CleanupMemoryCountdown();
+            yield break;
+        }
+
+        float elapsed = 0f;
+        while (elapsed < previewSeconds)
+        {
+            elapsed += Time.deltaTime;
+            float remaining = 1f - Mathf.Clamp01(elapsed / previewSeconds);
+            memoryCountdownUI?.SetProgress(remaining);
+            yield return null;
+        }
+
+        memoryCountdownUI?.SetProgress(0f);
+        CleanupMemoryCountdown();
+    }
+
+    private Canvas GetRuntimeCanvas()
+    {
+        Canvas canvas = baseCardArea != null
+            ? baseCardArea.GetComponentInParent<Canvas>()
+            : null;
+
+        if (canvas == null && toolHandArea != null)
+        {
+            canvas = toolHandArea.GetComponentInParent<Canvas>();
+        }
+
+        if (canvas == null && instructionText != null)
+        {
+            canvas = instructionText.GetComponentInParent<Canvas>();
+        }
+
+        if (canvas == null && continueButton != null)
+        {
+            canvas = continueButton.GetComponentInParent<Canvas>();
+        }
+
+        if (canvas == null)
+        {
+            canvas = FindAnyObjectByType<Canvas>();
+        }
+
+        return canvas;
+    }
+
+    private void CleanupMemoryCountdown()
+    {
+        if (memoryCountdownUI != null)
+        {
+            memoryCountdownUI.HideAndDestroy();
+            memoryCountdownUI = null;
+        }
+
+        if (memoryCountdownFallbackCanvas != null)
+        {
+            Destroy(memoryCountdownFallbackCanvas.gameObject);
+            memoryCountdownFallbackCanvas = null;
+        }
     }
 
     private void OnBaseCardClicked(CardView view)
