@@ -677,6 +677,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &625236107
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 625236109}
+  - component: {fileID: 625236108}
+  m_Layer: 0
+  m_Name: NodeToolHandConfig
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &625236108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 625236107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a073daa34e8a7c34fa99e66de91e5a6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NodeToolHandSceneConfig
+  cardArtCatalog: {fileID: 11400000, guid: 129c2306ebcc5ab4483abc86d5aec4fa, type: 2}
+  useResourcesArtFallback: 1
+  toolHandCardSize: {x: 120, y: 160}
+  toolHandSpacing: 20
+  handAreaAnchorMin: {x: 0.18, y: 0.025}
+  handAreaAnchorMax: {x: 0.82, y: 0.22}
+  placementDropSlotSize: {x: 170, y: 220}
+  placedCardSize: {x: 120, y: 160}
+  placedCardScale: 1
+  placedCardPreserveAspect: 1
+  activeToolTextAnchor: {x: 0.5, y: 0.17}
+  activeToolTextSize: {x: 900, y: 44}
+  activeToolTextFontSize: 24
+--- !u!4 &625236109
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 625236107}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.54098, y: -0.64369, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &629975695
 GameObject:
   m_ObjectHideFlags: 0
@@ -2367,3 +2424,4 @@ SceneRoots:
   - {fileID: 222165759}
   - {fileID: 781378191}
   - {fileID: 549399567}
+  - {fileID: 625236109}
