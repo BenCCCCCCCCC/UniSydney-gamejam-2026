@@ -2229,7 +2229,7 @@
       "ToolCardID": "T_BROADCAST_BIRD",
       "OutcomeType": "ScorePlus",
       "ResultID": "N5_R001",
-      "ResultSummaryCN": "Broadcast Bird affects point 1; score +1.",
+      "ResultSummaryCN": "Broadcast Bird calls out to the prince and helps him find the clearing.",
       "NextState": "Node5Score"
     },
     {
@@ -2239,7 +2239,7 @@
       "ToolCardID": "T_TALKING_SIGN",
       "OutcomeType": "ScorePlus",
       "ResultID": "N5_R002",
-      "ResultSummaryCN": "Talking Signpost affects point 1; score +1.",
+      "ResultSummaryCN": "Talking Signpost points the prince toward the clearing.",
       "NextState": "Node5Score"
     },
     {
@@ -2249,7 +2249,7 @@
       "ToolCardID": "T_RESCUE_BEACON",
       "OutcomeType": "ScorePlus",
       "ResultID": "N5_R003",
-      "ResultSummaryCN": "Rescue Beacon affects point 1; score +1.",
+      "ResultSummaryCN": "Rescue Beacon shines brightly and guides the prince forward.",
       "NextState": "Node5Score"
     },
     {
@@ -2259,7 +2259,7 @@
       "ToolCardID": "T_HALLUCINATION_MUSHROOM",
       "OutcomeType": "ScoreMinus",
       "ResultID": "N5_R004",
-      "ResultSummaryCN": "Hallucination Mushroom affects point 1; score -1.",
+      "ResultSummaryCN": "Hallucination Mushroom confuses the prince and leads him away.",
       "NextState": "Node5Score"
     },
     {
@@ -2269,7 +2269,7 @@
       "ToolCardID": "T_SPORE_FOG",
       "OutcomeType": "ScoreMinus",
       "ResultID": "N5_R005",
-      "ResultSummaryCN": "Spore Fog affects point 1; score -1.",
+      "ResultSummaryCN": "Spore Fog covers the path and makes the prince lose his way.",
       "NextState": "Node5Score"
     },
     {
@@ -2279,7 +2279,7 @@
       "ToolCardID": "T_RESCUE_BELL_MACHINE",
       "OutcomeType": "ScorePlus",
       "ResultID": "N5_R006",
-      "ResultSummaryCN": "Rescue Bell Machine affects point 2; score +1.",
+      "ResultSummaryCN": "Rescue Bell Machine rings loudly and helps the dwarfs gather for the rescue.",
       "NextState": "Node5Score"
     },
     {
@@ -2289,7 +2289,7 @@
       "ToolCardID": "T_DOORBELL_BIRD",
       "OutcomeType": "ScorePlus",
       "ResultID": "N5_R007",
-      "ResultSummaryCN": "Doorbell Bird affects point 2; score +1.",
+      "ResultSummaryCN": "Doorbell Bird alerts the dwarfs and helps them act quickly.",
       "NextState": "Node5Score"
     },
     {
@@ -2299,7 +2299,7 @@
       "ToolCardID": "T_WIND_CHIME_SIGNAL",
       "OutcomeType": "ScoreNeutral",
       "ResultID": "N5_R008",
-      "ResultSummaryCN": "Wind Chime Signal affects point 2; score 0.",
+      "ResultSummaryCN": "Wind Chime Signal catches the dwarfs' attention, but it is not enough.",
       "NextState": "Node5Score"
     },
     {
@@ -2309,7 +2309,7 @@
       "ToolCardID": "T_BARRICADE_DOOR",
       "OutcomeType": "ScoreMinus",
       "ResultID": "N5_R009",
-      "ResultSummaryCN": "Barricade Door affects point 2; score -1.",
+      "ResultSummaryCN": "Barricade Door blocks the dwarfs and slows the rescue.",
       "NextState": "Node5Score"
     },
     {
@@ -2319,7 +2319,7 @@
       "ToolCardID": "T_UNLOCK_KIT",
       "OutcomeType": "ScorePlus",
       "ResultID": "N5_R010",
-      "ResultSummaryCN": "Unlock Kit affects point 3; score +1.",
+      "ResultSummaryCN": "Unlock Kit helps open the crystal coffin.",
       "NextState": "Node5Score"
     },
     {
@@ -2329,7 +2329,7 @@
       "ToolCardID": "T_LOCKPICK_TOOLS",
       "OutcomeType": "ScorePlus",
       "ResultID": "N5_R011",
-      "ResultSummaryCN": "Lockpick Tools affects point 3; score +1.",
+      "ResultSummaryCN": "Lockpick Tools help loosen the coffin lock.",
       "NextState": "Node5Score"
     },
     {
@@ -2339,7 +2339,7 @@
       "ToolCardID": "T_COFFIN_OPENER",
       "OutcomeType": "ScorePlus",
       "ResultID": "N5_R012",
-      "ResultSummaryCN": "Coffin Opener affects point 3; score +1.",
+      "ResultSummaryCN": "Coffin Opener pries the crystal coffin open.",
       "NextState": "Node5Score"
     },
     {
@@ -2349,7 +2349,7 @@
       "ToolCardID": "T_SHAKING_COFFIN",
       "OutcomeType": "ScorePlus",
       "ResultID": "N5_R013",
-      "ResultSummaryCN": "Shaking Coffin affects point 3; score +1.",
+      "ResultSummaryCN": "Shaking Coffin rattles the coffin until the seal weakens.",
       "NextState": "Node5Score"
     },
     {
@@ -2359,7 +2359,7 @@
       "ToolCardID": "T_FOCUSED_CRYSTAL",
       "OutcomeType": "ScorePlus",
       "ResultID": "N5_R014",
-      "ResultSummaryCN": "Focused Crystal affects point 3; score +1.",
+      "ResultSummaryCN": "Focused Crystal redirects the magic and weakens the seal.",
       "NextState": "Node5Score"
     },
     {
@@ -2369,7 +2369,7 @@
       "ToolCardID": "T_SEALED_COFFIN",
       "OutcomeType": "ScoreMinus",
       "ResultID": "N5_R015",
-      "ResultSummaryCN": "Sealed Coffin affects point 3; score -1.",
+      "ResultSummaryCN": "Sealed Coffin strengthens the seal around Snow White.",
       "NextState": "Node5Score"
     },
     {
@@ -2379,7 +2379,7 @@
       "ToolCardID": "T_SLEEPING_SEAL_LOCK",
       "OutcomeType": "ScoreMinus",
       "ResultID": "N5_R016",
-      "ResultSummaryCN": "Sleeping Seal Lock affects point 3; score -1.",
+      "ResultSummaryCN": "Sleeping Seal Lock keeps Snow White trapped in deeper sleep.",
       "NextState": "Node5Score"
     },
     {
@@ -2389,7 +2389,7 @@
       "ToolCardID": "T_MIRROR_SEAL",
       "OutcomeType": "ScoreMinus",
       "ResultID": "N5_R017",
-      "ResultSummaryCN": "Mirror Seal affects point 3; score -1.",
+      "ResultSummaryCN": "Mirror Seal reflects the rescue magic away.",
       "NextState": "Node5Score"
     },
     {
@@ -2399,7 +2399,7 @@
       "ToolCardID": "T_DILUTED_POTION",
       "OutcomeType": "ScoreNeutral",
       "ResultID": "N5_R018",
-      "ResultSummaryCN": "Diluted Potion affects point 3; score 0.",
+      "ResultSummaryCN": "Diluted Potion reacts weakly with the coffin, but nothing changes.",
       "NextState": "Node5Score"
     },
     {
@@ -2409,7 +2409,7 @@
       "ToolCardID": "T_MIRROR_CURSE_POTION",
       "OutcomeType": "ScoreMinus",
       "ResultID": "N5_R019",
-      "ResultSummaryCN": "Mirror Curse Potion affects point 3; score -1.",
+      "ResultSummaryCN": "Mirror Curse Potion twists the magic and makes the seal stronger.",
       "NextState": "Node5Score"
     },
     {
@@ -2419,7 +2419,7 @@
       "ToolCardID": "T_PETAL_PATH",
       "OutcomeType": "ScorePlus",
       "ResultID": "N5_R020",
-      "ResultSummaryCN": "Petal Path affects point 1; score +1.",
+      "ResultSummaryCN": "Petal Path leads the prince safely toward the clearing.",
       "NextState": "Node5Score"
     },
     {
@@ -2429,7 +2429,7 @@
       "ToolCardID": "T_BLOOMING_PATH",
       "OutcomeType": "ScoreNeutral",
       "ResultID": "N5_R021",
-      "ResultSummaryCN": "Blooming Path affects point 1; score 0.",
+      "ResultSummaryCN": "Blooming Path looks beautiful, but it does not really help the prince.",
       "NextState": "Node5Score"
     },
     {
@@ -2439,7 +2439,7 @@
       "ToolCardID": "T_FAST_VINES",
       "OutcomeType": "ScorePlus",
       "ResultID": "N5_R022",
-      "ResultSummaryCN": "Fast-Growing Vines affects point 1; score +1.",
+      "ResultSummaryCN": "Fast-Growing Vines pull the prince quickly toward the clearing.",
       "NextState": "Node5Score"
     }
   ]

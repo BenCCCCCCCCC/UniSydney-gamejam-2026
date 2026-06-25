@@ -4,17 +4,17 @@ public class Node5TextBank : MonoBehaviour
 {
     [Header("N5_P1: Prince route point")]
     [SerializeField] private string princeRoutePlus = "The prince receives help and finds the way forward.";
-    [SerializeField] private string princeRouteNeutral = "The prince follows a beautiful flower path, but it does not really help.";
+    [SerializeField] private string princeRouteNeutral = "The prince is unsure where to go.";
     [SerializeField] private string princeRouteMinus = "The prince gets lost.";
 
     [Header("N5_P2: Dwarfs rescue point")]
     [SerializeField] private string dwarfsRescuePlus = "The dwarfs receive useful help.";
-    [SerializeField] private string dwarfsRescueNeutral = "The dwarfs notice something, but it is not enough to change the rescue.";
+    [SerializeField] private string dwarfsRescueNeutral = "The dwarfs are not sure how to help.";
     [SerializeField] private string dwarfsRescueMinus = "The dwarfs are thrown into trouble.";
 
     [Header("N5_P3: Crystal coffin / seal point")]
     [SerializeField] private string crystalCoffinPlus = "The crystal coffin begins to open.";
-    [SerializeField] private string crystalCoffinNeutral = "The crystal coffin reacts faintly, but remains closed.";
+    [SerializeField] private string crystalCoffinNeutral = "The crystal coffin does not react.";
     [SerializeField] private string crystalCoffinMinus = "The seal around the crystal coffin grows stronger.";
 
     [Header("Endings")]
