@@ -1,10 +1,6 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
@@ -18,19 +14,12 @@ public class Node1ResultPlayer : MonoBehaviour
     [SerializeField] private StoryActorAutoMove storyActor;
 
     [Header("Dialogue")]
+    [SerializeField] private SceneTextUIController textUI;
     [SerializeField] private float messageDuration = 1.6f;
 
     private bool queenProvoked;
     private bool hasEnded;
     private CardDatabase cachedDatabase;
-
-    private GameObject canvasObject;
-    private GameObject dialoguePanelObject;
-    private TMP_Text dialogueText;
-
-    private GameObject endingPanelObject;
-    private TMP_Text endingText;
-
     private Coroutine dialogueCoroutine;
 
     private void OnEnable()
@@ -50,9 +39,16 @@ public class Node1ResultPlayer : MonoBehaviour
             storyActor = FindAnyObjectByType<StoryActorAutoMove>();
         }
 
-        BuildRuntimeUI();
-        HideDialogue();
-        HideEndingPanel();
+        if (textUI != null)
+        {
+            textUI.ConfigureEndingButtons(RetryNode1, RetryNode1, HandleNextLevel);
+            textUI.HideDialogue();
+            textUI.HideEnding();
+        }
+        else
+        {
+            Debug.LogWarning("Node1ResultPlayer: SceneTextUIController is not assigned.");
+        }
     }
 
     public void PlayResult(PlacementPoint point)
@@ -151,133 +147,35 @@ public class Node1ResultPlayer : MonoBehaviour
         ShowEndingPanel(true, "The Queen decides to send the Hunter after Snow White.");
     }
 
-    private void BuildRuntimeUI()
+    private void ShowDialogue(string message)
     {
-        EnsureEventSystem();
-
-        if (canvasObject != null)
+        if (textUI == null)
         {
+            Debug.LogWarning("Node1ResultPlayer: cannot show dialogue because SceneTextUIController is not assigned.");
             return;
         }
 
-        canvasObject = new GameObject(
-            "Node1ResultCanvas",
-            typeof(RectTransform),
-            typeof(Canvas),
-            typeof(CanvasScaler),
-            typeof(GraphicRaycaster));
-
-        Canvas canvas = canvasObject.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-
-        CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
-
-        RectTransform canvasRect = canvasObject.GetComponent<RectTransform>();
-
-        dialoguePanelObject = CreatePanel(
-            "DialoguePanel",
-            canvasRect,
-            new Vector2(0.5f, 0.16f),
-            new Vector2(980f, 130f),
-            new Color(0.05f, 0.055f, 0.07f, 0.92f));
-
-        dialogueText = CreateText(
-            "DialogueText",
-            dialoguePanelObject.transform,
-            "",
-            new Vector2(0.5f, 0.5f),
-            new Vector2(900f, 90f),
-            34f);
-    }
-
-    private void ShowDialogue(string message)
-    {
-        BuildRuntimeUI();
-
-        dialoguePanelObject.SetActive(true);
-        dialogueText.text = message;
+        textUI.ShowDialogue(message);
     }
 
     private void HideDialogue()
     {
-        if (dialoguePanelObject != null)
+        if (textUI != null)
         {
-            dialoguePanelObject.SetActive(false);
+            textUI.HideDialogue();
         }
     }
 
     private void ShowEndingPanel(bool success, string message)
     {
-        BuildRuntimeUI();
-
-        HideEndingPanel();
-
-        RectTransform canvasRect = canvasObject.GetComponent<RectTransform>();
-
-        endingPanelObject = CreatePanel(
-            "EndingPanel",
-            canvasRect,
-            new Vector2(0.5f, 0.5f),
-            new Vector2(900f, 420f),
-            new Color(0.04f, 0.045f, 0.06f, 0.96f));
+        if (textUI == null)
+        {
+            Debug.LogWarning("Node1ResultPlayer: cannot show ending because SceneTextUIController is not assigned.");
+            return;
+        }
 
         string title = success ? "Success" : "Failed";
-        string body = $"{title}\n\n{message}";
-
-        endingText = CreateText(
-            "EndingText",
-            endingPanelObject.transform,
-            body,
-            new Vector2(0.5f, 0.66f),
-            new Vector2(780f, 190f),
-            38f);
-
-        if (success)
-        {
-            Button tryAnotherWayButton = CreateButton(
-                "TryAnotherWayButton",
-                endingPanelObject.transform,
-                "Try Another Way",
-                new Vector2(0.37f, 0.22f),
-                new Vector2(260f, 76f));
-
-            tryAnotherWayButton.onClick.AddListener(RetryNode1);
-
-            Button nextButton = CreateButton(
-                "NextLevelButton",
-                endingPanelObject.transform,
-                "Next Level",
-                new Vector2(0.67f, 0.22f),
-                new Vector2(220f, 76f));
-
-            nextButton.onClick.AddListener(() =>
-            {
-                Debug.Log("Node1 Next Level button clicked. Not implemented yet.");
-            });
-        }
-        else
-        {
-            Button retryButton = CreateButton(
-                "RetryButton",
-                endingPanelObject.transform,
-                "Retry",
-                new Vector2(0.5f, 0.22f),
-                new Vector2(220f, 76f));
-
-            retryButton.onClick.AddListener(RetryNode1);
-        }
-    }
-
-    private void HideEndingPanel()
-    {
-        if (endingPanelObject != null)
-        {
-            Destroy(endingPanelObject);
-            endingPanelObject = null;
-        }
+        textUI.ShowEnding(title, message, success);
     }
 
     private void RetryNode1()
@@ -288,6 +186,11 @@ public class Node1ResultPlayer : MonoBehaviour
         GameSessionData.ToolCardIDs.Clear();
 
         LoadSceneByName(retrySceneName);
+    }
+
+    private void HandleNextLevel()
+    {
+        Debug.Log("Node1 Next Level button clicked. Not implemented yet.");
     }
 
     private bool IsRunningInRetryScene()
@@ -345,93 +248,5 @@ public class Node1ResultPlayer : MonoBehaviour
 #endif
 
         SceneManager.LoadScene(sceneName);
-    }
-
-    private GameObject CreatePanel(string name, Transform parent, Vector2 anchor, Vector2 size, Color color)
-    {
-        GameObject panelObject = new GameObject(name, typeof(RectTransform), typeof(Image));
-        panelObject.transform.SetParent(parent, false);
-
-        Image image = panelObject.GetComponent<Image>();
-        image.color = color;
-
-        RectTransform rect = panelObject.GetComponent<RectTransform>();
-        rect.anchorMin = anchor;
-        rect.anchorMax = anchor;
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = size;
-        rect.anchoredPosition = Vector2.zero;
-
-        return panelObject;
-    }
-
-    private TMP_Text CreateText(string name, Transform parent, string text, Vector2 anchor, Vector2 size, float fontSize)
-    {
-        GameObject textObject = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
-        textObject.transform.SetParent(parent, false);
-
-        TMP_Text tmp = textObject.GetComponent<TMP_Text>();
-        tmp.text = text;
-        tmp.alignment = TextAlignmentOptions.Center;
-        tmp.color = Color.white;
-        tmp.fontSize = fontSize;
-        tmp.textWrappingMode = TextWrappingModes.Normal;
-        tmp.enableAutoSizing = true;
-        tmp.fontSizeMin = 18f;
-        tmp.fontSizeMax = fontSize;
-
-        RectTransform rect = textObject.GetComponent<RectTransform>();
-        rect.anchorMin = anchor;
-        rect.anchorMax = anchor;
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = size;
-        rect.anchoredPosition = Vector2.zero;
-
-        return tmp;
-    }
-
-    private Button CreateButton(string name, Transform parent, string label, Vector2 anchor, Vector2 size)
-    {
-        GameObject buttonObject = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button));
-        buttonObject.transform.SetParent(parent, false);
-
-        Image image = buttonObject.GetComponent<Image>();
-        image.color = new Color(0.18f, 0.35f, 0.52f, 0.98f);
-
-        RectTransform rect = buttonObject.GetComponent<RectTransform>();
-        rect.anchorMin = anchor;
-        rect.anchorMax = anchor;
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = size;
-        rect.anchoredPosition = Vector2.zero;
-
-        Button button = buttonObject.GetComponent<Button>();
-
-        TMP_Text text = CreateText(
-            "Label",
-            buttonObject.transform,
-            label,
-            new Vector2(0.5f, 0.5f),
-            size,
-            28f);
-
-        text.fontStyle = FontStyles.Bold;
-
-        return button;
-    }
-
-    private void EnsureEventSystem()
-    {
-        if (FindAnyObjectByType<EventSystem>() != null)
-        {
-            return;
-        }
-
-        GameObject eventSystemObject = new GameObject(
-            "EventSystem",
-            typeof(EventSystem),
-            typeof(InputSystemUIInputModule));
-
-        eventSystemObject.SetActive(true);
     }
 }
