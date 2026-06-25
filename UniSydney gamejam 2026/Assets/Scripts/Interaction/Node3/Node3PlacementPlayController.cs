@@ -65,8 +65,8 @@ public class Node3PlacementPlayController : MonoBehaviour
     [SerializeField] private bool showUIImmediately = true;
 
     [Header("Actor Start Delay")]
-    [SerializeField] private float actorStartDelaySeconds = 1f;
-    [SerializeField] private bool delayInitialActorStart;
+    [SerializeField] private float actorStartDelaySeconds = 2.5f;
+    [SerializeField] private bool delayInitialActorStart = true;
 
     private GameObject tableCanvasObject;
     private GameObject playButtonCanvasObject;

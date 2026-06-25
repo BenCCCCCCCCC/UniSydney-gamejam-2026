@@ -8,6 +8,8 @@ using UnityEditor.SceneManagement;
 
 public class Node3ResultPlayer : MonoBehaviour
 {
+    private const string LostInForestMessage = "Snow White gets lost in the forest.";
+
     private enum Node3PostFeedbackAction
     {
         ResumeNormally,
@@ -35,9 +37,11 @@ public class Node3ResultPlayer : MonoBehaviour
     [SerializeField] private Transform shortcutTargetBeforeDoorTrigger;
     [SerializeField] private float shortcutMoveSpeedMultiplier = 3.5f;
     [SerializeField] private float shortcutArriveDistance = 0.05f;
-    [SerializeField] private float fallbackShortcutDistanceBeforeDoorTrigger = 0.7f;
     [SerializeField] private bool useAutomaticDoorTriggerFallback = true;
     [SerializeField] private float minimumShortcutMoveSpeed = 6f;
+    [SerializeField] private float shortcutAdvanceDistanceAlongPath = 3f;
+    [SerializeField] private float shortcutStopDistanceBeforeDoorAlongPath = 0.7f;
+    [SerializeField] private bool projectDoorTriggerOntoActorPath = true;
 
     [Header("Door Visual")]
     [SerializeField] private SpriteRenderer doorRenderer;
@@ -135,15 +139,15 @@ public class Node3ResultPlayer : MonoBehaviour
             ? result.ResultSummaryCN
             : "What's that for?";
 
-        if (hasPlacementResult && placePointID == "N3_P2" && result.OutcomeType == "Fail")
+        Node3PostFeedbackAction postFeedbackAction = GetPostFeedbackAction(placePointID, hasPlacementResult, result);
+        if (ShouldFailRouteImmediately(placePointID, hasPlacementResult, result))
         {
-            message = "Snow White gets lost in the forest.";
+            message = LostInForestMessage;
             routeFailReason = message;
+            postFeedbackAction = Node3PostFeedbackAction.FailImmediately;
         }
 
         Debug.Log($"NODE3_RESULT: {placePointID} / {toolCardID} / {(hasPlacementResult ? result.OutcomeType : "InvalidPlacement")}");
-
-        Node3PostFeedbackAction postFeedbackAction = GetPostFeedbackAction(placePointID, hasPlacementResult, result);
 
         if (dialogueCoroutine != null)
         {
@@ -227,6 +231,21 @@ public class Node3ResultPlayer : MonoBehaviour
         return Node3PostFeedbackAction.ResumeNormally;
     }
 
+    private bool ShouldFailRouteImmediately(
+        string placePointID,
+        bool hasPlacementResult,
+        PlacementResultRow result)
+    {
+        if (placePointID != "N3_P1" && placePointID != "N3_P2")
+        {
+            return false;
+        }
+
+        return !hasPlacementResult
+            || result == null
+            || result.OutcomeType != "ReachDoor";
+    }
+
     private IEnumerator ShowMessageThenContinue(string message, Node3PostFeedbackAction postFeedbackAction)
     {
         if (storyActor != null)
@@ -302,7 +321,8 @@ public class Node3ResultPlayer : MonoBehaviour
         isShortcutMoving = true;
         storyActor.PauseMove();
 
-        float shortcutSpeed = Mathf.Max(minimumShortcutMoveSpeed, shortcutMoveSpeedMultiplier);
+        float baseSpeed = storyActor.MoveSpeed > 0f ? storyActor.MoveSpeed : 2f;
+        float shortcutSpeed = Mathf.Max(minimumShortcutMoveSpeed, baseSpeed * shortcutMoveSpeedMultiplier);
         while (Vector3.Distance(storyActor.transform.position, shortcutTargetPosition) > shortcutArriveDistance)
         {
             storyActor.transform.position = Vector3.MoveTowards(
@@ -324,39 +344,69 @@ public class Node3ResultPlayer : MonoBehaviour
 
     private bool TryGetShortcutTargetPosition(out Vector3 shortcutTargetPosition)
     {
-        if (shortcutTargetBeforeDoorTrigger != null)
+        if (storyActor == null || storyActor.StartPoint == null || storyActor.EndPoint == null)
         {
-            shortcutTargetPosition = shortcutTargetBeforeDoorTrigger.position;
-            return true;
-        }
-
-        if (!useAutomaticDoorTriggerFallback || storyActor == null)
-        {
+            Debug.LogWarning("Node3ResultPlayer: storyActor, StartPoint, or EndPoint is missing. Cannot calculate shortcut along actor path.");
             shortcutTargetPosition = Vector3.zero;
             return false;
         }
 
-        if (!TryFindDoorTriggerPosition(out Vector3 doorTriggerPosition))
+        Vector3 pathStart = storyActor.StartPoint.position;
+        Vector3 pathEnd = storyActor.EndPoint.position;
+        Vector3 pathVector = pathEnd - pathStart;
+        pathVector.z = 0f;
+
+        float pathLength = pathVector.magnitude;
+        if (pathLength <= 0.0001f)
         {
+            Debug.LogWarning("Node3ResultPlayer: actor path length is too short. Cannot calculate shortcut along actor path.");
             shortcutTargetPosition = Vector3.zero;
             return false;
         }
 
-        Vector3 directionToDoor = doorTriggerPosition - storyActor.transform.position;
-        directionToDoor.z = 0f;
+        Vector3 pathDirection = pathVector / pathLength;
+        float currentDistanceOnPath = Vector3.Dot(storyActor.transform.position - pathStart, pathDirection);
+        currentDistanceOnPath = Mathf.Clamp(currentDistanceOnPath, 0f, pathLength);
 
-        if (directionToDoor.sqrMagnitude <= 0.0001f)
+        float targetDistanceOnPath;
+        if (TryGetDoorReferencePosition(out Vector3 doorReferencePosition))
         {
-            directionToDoor = Vector3.right;
+            float doorDistanceOnPath = projectDoorTriggerOntoActorPath
+                ? Vector3.Dot(doorReferencePosition - pathStart, pathDirection)
+                : currentDistanceOnPath + shortcutAdvanceDistanceAlongPath;
+
+            targetDistanceOnPath = doorDistanceOnPath - shortcutStopDistanceBeforeDoorAlongPath;
         }
         else
         {
-            directionToDoor.Normalize();
+            targetDistanceOnPath = currentDistanceOnPath + shortcutAdvanceDistanceAlongPath;
         }
 
-        shortcutTargetPosition = doorTriggerPosition - directionToDoor * fallbackShortcutDistanceBeforeDoorTrigger;
+        targetDistanceOnPath = Mathf.Clamp(
+            targetDistanceOnPath,
+            currentDistanceOnPath + 0.1f,
+            pathLength);
+
+        shortcutTargetPosition = pathStart + pathDirection * targetDistanceOnPath;
         shortcutTargetPosition.z = storyActor.transform.position.z;
         return true;
+    }
+
+    private bool TryGetDoorReferencePosition(out Vector3 doorReferencePosition)
+    {
+        if (shortcutTargetBeforeDoorTrigger != null)
+        {
+            doorReferencePosition = shortcutTargetBeforeDoorTrigger.position;
+            return true;
+        }
+
+        if (useAutomaticDoorTriggerFallback && TryFindDoorTriggerPosition(out doorReferencePosition))
+        {
+            return true;
+        }
+
+        doorReferencePosition = Vector3.zero;
+        return false;
     }
 
     private bool TryFindDoorTriggerPosition(out Vector3 doorTriggerPosition)
