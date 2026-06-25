@@ -8,6 +8,14 @@ using UnityEditor.SceneManagement;
 
 public class Node3ResultPlayer : MonoBehaviour
 {
+    private enum Node3PostFeedbackAction
+    {
+        ResumeNormally,
+        ShortcutToDoorTrigger,
+        OpenDoorThenSucceed,
+        FailImmediately
+    }
+
     [Header("Scene")]
     [SerializeField] private string nodeID = "Node3";
     [SerializeField] private string retrySceneName = "Node3_DwarfHouse";
@@ -16,6 +24,23 @@ public class Node3ResultPlayer : MonoBehaviour
     [Header("Dialogue")]
     [SerializeField] private SceneTextUIController textUI;
     [SerializeField] private float messageDuration = 1.6f;
+    [SerializeField] private bool useDynamicMessageDuration = true;
+    [SerializeField] private float minMessageDuration = 1.8f;
+    [SerializeField] private float maxMessageDuration = 5.5f;
+    [SerializeField] private float readingWordsPerMinute = 220f;
+    [SerializeField] private float messagePaddingSeconds = 0.7f;
+    [SerializeField] private float punctuationExtraSeconds = 0.15f;
+
+    [Header("Node3 Shortcut")]
+    [SerializeField] private Transform shortcutTargetBeforeDoorTrigger;
+    [SerializeField] private float shortcutMoveSpeedMultiplier = 3.5f;
+    [SerializeField] private float shortcutArriveDistance = 0.05f;
+
+    [Header("Door Visual")]
+    [SerializeField] private SpriteRenderer doorRenderer;
+    [SerializeField] private Sprite closedDoorSprite;
+    [SerializeField] private Sprite openDoorSprite;
+    [SerializeField] private bool setClosedDoorOnStart = true;
 
     private bool routeSolved;
     private bool doorSolved;
@@ -26,6 +51,7 @@ public class Node3ResultPlayer : MonoBehaviour
     private string doorFailReason = "Snow White couldn't enter the house.";
 
     private Coroutine dialogueCoroutine;
+    private bool isShortcutMoving;
 
     private void OnEnable()
     {
@@ -62,6 +88,11 @@ public class Node3ResultPlayer : MonoBehaviour
         {
             Debug.LogWarning("Node3ResultPlayer: SceneTextUIController is not assigned.");
         }
+
+        if (setClosedDoorOnStart && doorRenderer != null && closedDoorSprite != null)
+        {
+            doorRenderer.sprite = closedDoorSprite;
+        }
     }
 
     public void PlayResult(PlacementPoint point)
@@ -72,6 +103,11 @@ public class Node3ResultPlayer : MonoBehaviour
         }
 
         if (hasEnded)
+        {
+            return;
+        }
+
+        if (isShortcutMoving)
         {
             return;
         }
@@ -98,12 +134,14 @@ public class Node3ResultPlayer : MonoBehaviour
 
         Debug.Log($"NODE3_RESULT: {placePointID} / {toolCardID} / {(hasPlacementResult ? result.OutcomeType : "InvalidPlacement")}");
 
+        Node3PostFeedbackAction postFeedbackAction = GetPostFeedbackAction(placePointID, hasPlacementResult, result);
+
         if (dialogueCoroutine != null)
         {
             StopCoroutine(dialogueCoroutine);
         }
 
-        dialogueCoroutine = StartCoroutine(ShowMessageThenContinue(message));
+        dialogueCoroutine = StartCoroutine(ShowMessageThenContinue(message, postFeedbackAction));
     }
 
     private void ApplyEffect(PlacementResultRow result, string placePointID)
@@ -147,7 +185,40 @@ public class Node3ResultPlayer : MonoBehaviour
         }
     }
 
-    private IEnumerator ShowMessageThenContinue(string message)
+    private Node3PostFeedbackAction GetPostFeedbackAction(
+        string placePointID,
+        bool hasPlacementResult,
+        PlacementResultRow result)
+    {
+        if (!hasPlacementResult || result == null)
+        {
+            return Node3PostFeedbackAction.ResumeNormally;
+        }
+
+        if (placePointID == "N3_P1" && result.OutcomeType == "ReachDoor")
+        {
+            return Node3PostFeedbackAction.ShortcutToDoorTrigger;
+        }
+
+        if (placePointID == "N3_P2" && result.OutcomeType == "Fail")
+        {
+            return Node3PostFeedbackAction.FailImmediately;
+        }
+
+        if (placePointID == "N3_P3" && result.OutcomeType == "Success")
+        {
+            return Node3PostFeedbackAction.OpenDoorThenSucceed;
+        }
+
+        if (placePointID == "N3_P3" && result.OutcomeType == "Fail")
+        {
+            return Node3PostFeedbackAction.FailImmediately;
+        }
+
+        return Node3PostFeedbackAction.ResumeNormally;
+    }
+
+    private IEnumerator ShowMessageThenContinue(string message, Node3PostFeedbackAction postFeedbackAction)
     {
         if (storyActor != null)
         {
@@ -156,11 +227,87 @@ public class Node3ResultPlayer : MonoBehaviour
 
         ShowDialogue(message);
 
-        yield return new WaitForSeconds(messageDuration);
+        yield return new WaitForSeconds(GetMessageDuration(message));
 
         HideDialogue();
 
+        dialogueCoroutine = null;
+
+        if (hasEnded)
+        {
+            yield break;
+        }
+
+        if (postFeedbackAction == Node3PostFeedbackAction.ShortcutToDoorTrigger)
+        {
+            yield return MoveActorToShortcutTarget();
+            yield break;
+        }
+
+        if (postFeedbackAction == Node3PostFeedbackAction.OpenDoorThenSucceed)
+        {
+            OpenDoorVisual();
+            CompleteNode3(true, "Snow White settles down in the forest.");
+            yield break;
+        }
+
+        if (postFeedbackAction == Node3PostFeedbackAction.FailImmediately)
+        {
+            CompleteNode3(false, message);
+            yield break;
+        }
+
         if (!hasEnded && storyActor != null)
+        {
+            storyActor.ResumeMove();
+        }
+    }
+
+    private float GetMessageDuration(string message)
+    {
+        return DialogReadingTimeUtility.GetDuration(
+            message,
+            useDynamicMessageDuration,
+            messageDuration,
+            minMessageDuration,
+            maxMessageDuration,
+            readingWordsPerMinute,
+            messagePaddingSeconds,
+            punctuationExtraSeconds);
+    }
+
+    private IEnumerator MoveActorToShortcutTarget()
+    {
+        if (storyActor == null)
+        {
+            yield break;
+        }
+
+        if (shortcutTargetBeforeDoorTrigger == null)
+        {
+            Debug.LogWarning("Node3ResultPlayer: shortcutTargetBeforeDoorTrigger is not assigned. Resuming normal movement.");
+            storyActor.ResumeMove();
+            yield break;
+        }
+
+        isShortcutMoving = true;
+        storyActor.PauseMove();
+
+        float shortcutSpeed = Mathf.Max(0.01f, shortcutMoveSpeedMultiplier);
+        while (Vector3.Distance(storyActor.transform.position, shortcutTargetBeforeDoorTrigger.position) > shortcutArriveDistance)
+        {
+            storyActor.transform.position = Vector3.MoveTowards(
+                storyActor.transform.position,
+                shortcutTargetBeforeDoorTrigger.position,
+                shortcutSpeed * Time.deltaTime);
+
+            yield return null;
+        }
+
+        storyActor.transform.position = shortcutTargetBeforeDoorTrigger.position;
+        isShortcutMoving = false;
+
+        if (!hasEnded)
         {
             storyActor.ResumeMove();
         }
@@ -183,28 +330,21 @@ public class Node3ResultPlayer : MonoBehaviour
             return;
         }
 
-        hasEnded = true;
-
-        if (storyActor != null)
-        {
-            storyActor.PauseMove();
-        }
-
         HideDialogue();
 
         if (!routeSolved)
         {
-            ShowEndingPanel(false, routeFailReason);
+            CompleteNode3(false, routeFailReason);
             return;
         }
 
         if (!doorSolved)
         {
-            ShowEndingPanel(false, doorFailReason);
+            CompleteNode3(false, doorFailReason);
             return;
         }
 
-        ShowEndingPanel(true, "Snow White settles down in the forest.");
+        CompleteNode3(true, "Snow White settles down in the forest.");
     }
 
     private void ShowDialogue(string message)
@@ -236,6 +376,41 @@ public class Node3ResultPlayer : MonoBehaviour
 
         string title = success ? "Success" : "Failed";
         textUI.ShowEnding(title, message, success);
+    }
+
+    private void OpenDoorVisual()
+    {
+        if (doorRenderer == null)
+        {
+            return;
+        }
+
+        if (openDoorSprite == null)
+        {
+            Debug.LogWarning("Node3ResultPlayer: openDoorSprite is not assigned.");
+            return;
+        }
+
+        doorRenderer.sprite = openDoorSprite;
+    }
+
+    private void CompleteNode3(bool success, string message)
+    {
+        if (hasEnded)
+        {
+            return;
+        }
+
+        hasEnded = true;
+        isShortcutMoving = false;
+
+        if (storyActor != null)
+        {
+            storyActor.PauseMove();
+        }
+
+        HideDialogue();
+        ShowEndingPanel(success, message);
     }
 
     private void RetryNode3()
