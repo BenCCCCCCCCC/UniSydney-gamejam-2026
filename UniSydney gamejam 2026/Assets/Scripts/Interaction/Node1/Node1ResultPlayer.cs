@@ -11,6 +11,7 @@ public class Node1ResultPlayer : MonoBehaviour
     [Header("Scene")]
     [SerializeField] private string nodeID = "Node1";
     [SerializeField] private string retrySceneName = "Node1_QueenCastle";
+    [SerializeField] private string nextSceneName = "Node2_1_HunterHunt";
     [SerializeField] private StoryActorAutoMove storyActor;
 
     [Header("Dialogue")]
@@ -198,7 +199,16 @@ public class Node1ResultPlayer : MonoBehaviour
 
     private void HandleNextLevel()
     {
-        Debug.Log("Node1 Next Level button clicked. Not implemented yet.");
+        if (string.IsNullOrWhiteSpace(nextSceneName))
+        {
+            Debug.LogWarning("Node1ResultPlayer: nextSceneName is empty.");
+            return;
+        }
+
+        GameSessionData.CurrentNodeSceneName = nextSceneName;
+        GameSessionData.CurrentPhase = GameFlowPhase.Briefing;
+
+        LoadSceneByName(nextSceneName);
     }
 
     private bool IsRunningInRetryScene()

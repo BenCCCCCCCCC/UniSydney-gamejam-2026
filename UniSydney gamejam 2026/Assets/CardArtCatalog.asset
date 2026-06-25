@@ -117,7 +117,7 @@ MonoBehaviour:
     sprite: {fileID: 4480382998747184970, guid: 2f5953cc9bcc4824d9c0b08a77d53c71, type: 3}
   - cardID: T_MAGIC_MIRROR
     sprite: {fileID: -2077453115925867722, guid: e43d971ff0ace5746bb33c0848beef92, type: 3}
-  - cardID: T_MAGIC_SEAL
+  - cardID: T_MIRROR_SEAL
     sprite: {fileID: 1027726689647761724, guid: 73c0d3ce068f8cb4f83350e0b915a3e5, type: 3}
   - cardID: T_PAPER_CROWN_DOLL
     sprite: {fileID: -591695658248330065, guid: cb98dc8f8df6bf74c9eed56b8b4cf49e, type: 3}

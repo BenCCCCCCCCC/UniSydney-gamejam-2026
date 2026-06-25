@@ -27,6 +27,7 @@ public class Node2_1ResultPlayer : MonoBehaviour
     [Header("场景引用")]
     public StoryActorAutoMove hunterActor;
     [SerializeField] private string retrySceneName = "Node2_1_HunterHunt";
+    [SerializeField] private string nextSceneName = "Node3_DwarfHouse";
 
     [Header("对话设置")]
     [SerializeField] private float messageDuration = 2f;
@@ -170,11 +171,9 @@ public class Node2_1ResultPlayer : MonoBehaviour
             "Try Another Way", new Vector2(0.37f, 0.22f), new Vector2(260f, 76f));
         retryBtn.onClick.AddListener(RetryNode2_1);
 
-        // 下一关按钮（进入 Node2_2）
         Button nextBtn = CreateButton("NextButton", endingPanelObject.transform,
             "Next Level", new Vector2(0.67f, 0.22f), new Vector2(220f, 76f));
-        nextBtn.onClick.AddListener(() =>
-            SceneTransitionManager.Instance?.PanToNextScene("Node2_2_HunterHunt"));
+        nextBtn.onClick.AddListener(HandleNextLevel);
     }
 
     private void RetryNode2_1()
@@ -184,6 +183,20 @@ public class Node2_1ResultPlayer : MonoBehaviour
         GameSessionData.CurrentPhase = GameFlowPhase.Briefing;
         GameSessionData.ToolCardIDs.Clear();
         LoadScene(retrySceneName);
+    }
+
+    private void HandleNextLevel()
+    {
+        if (string.IsNullOrWhiteSpace(nextSceneName))
+        {
+            Debug.LogWarning("Node2_1ResultPlayer: nextSceneName is empty.");
+            return;
+        }
+
+        GameSessionData.CurrentNodeSceneName = nextSceneName;
+        GameSessionData.CurrentPhase = GameFlowPhase.Briefing;
+
+        LoadScene(nextSceneName);
     }
 
     private void LoadScene(string sceneName)
