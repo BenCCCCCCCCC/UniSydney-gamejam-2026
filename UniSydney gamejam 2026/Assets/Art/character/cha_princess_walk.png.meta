@@ -1,13 +1,22 @@
 fileFormatVersion: 2
-guid: 99e4f7384df80994bb6e9c1145ed6eba
+guid: df71043f74de2124d8fc42cd1c61d730
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8958460140796319950
-    second: cha_queen_walk_0
+      213: 2307023110390330986
+    second: cha_princess_walk_0
   - first:
-      213: -3545297700347654095
-    second: cha_queen_walk_1
+      213: -6216971276230726886
+    second: cha_princess_walk_1
+  - first:
+      213: 1126995125293285513
+    second: cha_princess_walk_2
+  - first:
+      213: 1859319941043006670
+    second: cha_princess_walk_3
+  - first:
+      213: -4171439751465571553
+    second: cha_princess_walk_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,7 +112,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cha_queen_walk_0
+      name: cha_princess_walk_0
       rect:
         serializedVersion: 2
         x: 0
@@ -118,14 +127,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ec819aab808d25c70800000000000000
-      internalID: 8958460140796319950
+      spriteID: a66be67bb41340020800000000000000
+      internalID: 2307023110390330986
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cha_queen_walk_1
+      name: cha_princess_walk_1
       rect:
         serializedVersion: 2
         x: 540
@@ -140,14 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 130d4cb76829ccec0800000000000000
-      internalID: -3545297700347654095
+      spriteID: a1be57d2091e8b9a0800000000000000
+      internalID: -6216971276230726886
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cha_queen_walk_2
+      name: cha_princess_walk_2
       rect:
         serializedVersion: 2
         x: 1080
@@ -160,16 +169,16 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 842f03f3926b2f7429470591ed9a0d93
-      internalID: -684048307
+      spriteID: 98004ba6814e3af00800000000000000
+      internalID: 1126995125293285513
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cha_queen_walk_3
+      name: cha_princess_walk_3
       rect:
         serializedVersion: 2
         x: 1620
@@ -182,16 +191,16 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 86efff44a16eb9d409715f6c41f394e8
-      internalID: 348807270
+      spriteID: ecc2ba1a2a1adc910800000000000000
+      internalID: 1859319941043006670
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cha_queen_walk_4
+      name: cha_princess_walk_4
       rect:
         serializedVersion: 2
         x: 2160
@@ -204,10 +213,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 85ed74de5ab1a7d4597269ffbee51737
-      internalID: -1932158249
+      spriteID: f1b63f3b5a11c16c0800000000000000
+      internalID: -4171439751465571553
       vertices: []
       indices: 
       edges: []
@@ -216,7 +225,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 836029e0f89013e48abf5fecb1b38a16
+    spriteID: 073aede476db5da4e9dfeb358a6842f5
     internalID: 0
     vertices: []
     indices: 
@@ -228,11 +237,11 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":5.0,"y":1.0},"gridSpriteSize":{"x":540.0,"y":540.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      cha_queen_walk_0: 8958460140796319950
-      cha_queen_walk_1: -3545297700347654095
-      cha_queen_walk_2: -684048307
-      cha_queen_walk_3: 348807270
-      cha_queen_walk_4: -1932158249
+      cha_princess_walk_0: 2307023110390330986
+      cha_princess_walk_1: -6216971276230726886
+      cha_princess_walk_2: 1126995125293285513
+      cha_princess_walk_3: 1859319941043006670
+      cha_princess_walk_4: -4171439751465571553
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

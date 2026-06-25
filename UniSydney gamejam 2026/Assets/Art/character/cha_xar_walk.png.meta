@@ -109,12 +109,12 @@ TextureImporter:
       name: cha_xar_walk_0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 23
-        width: 486
-        height: 282
+        x: 0
+        y: 0
+        width: 540
+        height: 540
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -131,12 +131,12 @@ TextureImporter:
       name: cha_xar_walk_1
       rect:
         serializedVersion: 2
-        x: 563
-        y: 17
-        width: 486
-        height: 278
+        x: 540
+        y: 0
+        width: 540
+        height: 540
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -153,12 +153,12 @@ TextureImporter:
       name: cha_xar_walk_2
       rect:
         serializedVersion: 2
-        x: 1103
-        y: 28
-        width: 487
-        height: 277
+        x: 1080
+        y: 0
+        width: 540
+        height: 540
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -171,11 +171,55 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: cha_xar_walk_3
+      rect:
+        serializedVersion: 2
+        x: 1620
+        y: 0
+        width: 540
+        height: 540
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c77b97d9118299c4abf7d2e087ac1f39
+      internalID: -1152968353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cha_xar_walk_4
+      rect:
+        serializedVersion: 2
+        x: 2160
+        y: 0
+        width: 540
+        height: 540
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f310c11737d7c44e8f8a8c9bed84c00
+      internalID: -1362591134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 22dc0cbfddb7da044982ddae8b5087d9
     internalID: 0
     vertices: []
     indices: 
@@ -183,11 +227,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":5.0,"y":1.0},"gridSpriteSize":{"x":540.0,"y":540.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       cha_xar_walk_0: 1051256706809765039
       cha_xar_walk_1: 1929867189026486063
       cha_xar_walk_2: -8411734540007132397
+      cha_xar_walk_3: -1152968353
+      cha_xar_walk_4: -1362591134
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
