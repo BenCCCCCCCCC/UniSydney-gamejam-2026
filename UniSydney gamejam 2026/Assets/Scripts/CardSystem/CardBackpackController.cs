@@ -20,6 +20,13 @@ public class CardBackpackController : MonoBehaviour
         ShowLowerPart
     }
 
+    [System.Serializable]
+    private class NodeContinueRequirement
+    {
+        public string nodeID = "Node4";
+        [Min(0)] public int minimumCraftedTools = 1;
+    }
+
     private const string DefaultNodeID = "Node1";
     private const string DefaultTargetSceneName = "Node1_QueenCastle";
     private const string CardBackpackSceneName = "CardBackpackTest";
@@ -77,6 +84,10 @@ public class CardBackpackController : MonoBehaviour
     [Header("Continue Requirement")]
     [SerializeField, Min(0)] private int minimumCraftedToolsToContinue = 3;
     [SerializeField] private bool requireMinimumCraftedToolsToContinue = true;
+    [SerializeField] private List<NodeContinueRequirement> nodeRequirementOverrides = new()
+    {
+        new NodeContinueRequirement { nodeID = "Node4", minimumCraftedTools = 1 }
+    };
 
     [Header("Scene Transition")]
     [SerializeField] private bool useSceneTransitionOverlay = true;
@@ -153,6 +164,7 @@ public class CardBackpackController : MonoBehaviour
     {
         EnsureBaseCardAreaPadding();
         ApplyGameSessionTarget();
+        Debug.Log($"CardBackpackController continue requirement: node={currentNodeId}, requiredTools={GetRequiredCraftedToolCount()}");
 
         if (!HasRequiredReferences())
         {
@@ -670,18 +682,14 @@ public class CardBackpackController : MonoBehaviour
 
     private bool HasEnoughCraftedToolsToContinue()
     {
-        if (!requireMinimumCraftedToolsToContinue)
-        {
-            return true;
-        }
-
-        return GetCraftedToolCount() >= minimumCraftedToolsToContinue;
+        return GetCraftedToolCount() >= GetRequiredCraftedToolCount();
     }
 
     private string GetContinueRequirementMessage()
     {
+        int requiredCount = GetRequiredCraftedToolCount();
         int craftedCount = GetCraftedToolCount();
-        int remaining = Mathf.Max(0, minimumCraftedToolsToContinue - craftedCount);
+        int remaining = Mathf.Max(0, requiredCount - craftedCount);
 
         if (!requireMinimumCraftedToolsToContinue || remaining <= 0)
         {
@@ -690,10 +698,36 @@ public class CardBackpackController : MonoBehaviour
 
         if (remaining == 1)
         {
-            return $"Craft {remaining} more tool to continue. ({craftedCount}/{minimumCraftedToolsToContinue})";
+            return $"Craft {remaining} more tool to continue. ({craftedCount}/{requiredCount})";
         }
 
-        return $"Craft {remaining} more tools to continue. ({craftedCount}/{minimumCraftedToolsToContinue})";
+        return $"Craft {remaining} more tools to continue. ({craftedCount}/{requiredCount})";
+    }
+
+    private int GetRequiredCraftedToolCount()
+    {
+        if (!requireMinimumCraftedToolsToContinue)
+        {
+            return 0;
+        }
+
+        if (nodeRequirementOverrides != null)
+        {
+            foreach (NodeContinueRequirement requirement in nodeRequirementOverrides)
+            {
+                if (requirement == null || string.IsNullOrWhiteSpace(requirement.nodeID))
+                {
+                    continue;
+                }
+
+                if (string.Equals(requirement.nodeID, currentNodeId, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return Mathf.Max(0, requirement.minimumCraftedTools);
+                }
+            }
+        }
+
+        return Mathf.Max(0, minimumCraftedToolsToContinue);
     }
 
     private List<CardRow> GetAutoLayoutBaseCards(List<CardRow> baseCards, BaseCardSlotBinder slotBinder, bool useManualSlots)
