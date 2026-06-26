@@ -74,6 +74,10 @@ public class CardBackpackController : MonoBehaviour
     [Header("Timing")]
     [SerializeField] private float previewSeconds = 3f;
 
+    [Header("Continue Requirement")]
+    [SerializeField, Min(0)] private int minimumCraftedToolsToContinue = 3;
+    [SerializeField] private bool requireMinimumCraftedToolsToContinue = true;
+
     [Header("Scene Transition")]
     [SerializeField] private bool useSceneTransitionOverlay = true;
     [SerializeField] private Color transitionColor = Color.black;
@@ -278,7 +282,7 @@ public class CardBackpackController : MonoBehaviour
         }
 
         inputLocked = false;
-        instructionText.text = DefaultInstruction;
+        instructionText.text = GetContinueRequirementMessage();
         UpdateContinueButtonState();
     }
 
@@ -485,6 +489,8 @@ public class CardBackpackController : MonoBehaviour
             toolCards.Add(toolView);
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(toolHandArea);
+
+            instructionText.text = $"Crafted: {outputName}. {GetContinueRequirementMessage()}";
         }
         else
         {
@@ -506,7 +512,13 @@ public class CardBackpackController : MonoBehaviour
 
         if (!HasAnyRemainingRecipe())
         {
-            instructionText.text = "No more valid pairs. Continue when ready.";
+            instructionText.text = HasEnoughCraftedToolsToContinue()
+                ? "No more valid pairs. Continue when ready."
+                : $"No more valid pairs. {GetContinueRequirementMessage()}";
+        }
+        else if (!HasEnoughCraftedToolsToContinue())
+        {
+            instructionText.text = GetContinueRequirementMessage();
         }
 
         UpdateContinueButtonState();
@@ -633,7 +645,55 @@ public class CardBackpackController : MonoBehaviour
         }
 
         continueButton.gameObject.SetActive(true);
-        continueButton.interactable = !inputLocked && !isContinuing;
+        continueButton.interactable =
+            !inputLocked
+            && !isContinuing
+            && HasEnoughCraftedToolsToContinue();
+    }
+
+    private int GetCraftedToolCount()
+    {
+        int count = 0;
+
+        foreach (CardView toolCard in toolCards)
+        {
+            if (toolCard == null || toolCard.Card == null || string.IsNullOrWhiteSpace(toolCard.Card.CardID))
+            {
+                continue;
+            }
+
+            count++;
+        }
+
+        return count;
+    }
+
+    private bool HasEnoughCraftedToolsToContinue()
+    {
+        if (!requireMinimumCraftedToolsToContinue)
+        {
+            return true;
+        }
+
+        return GetCraftedToolCount() >= minimumCraftedToolsToContinue;
+    }
+
+    private string GetContinueRequirementMessage()
+    {
+        int craftedCount = GetCraftedToolCount();
+        int remaining = Mathf.Max(0, minimumCraftedToolsToContinue - craftedCount);
+
+        if (!requireMinimumCraftedToolsToContinue || remaining <= 0)
+        {
+            return "Ready to continue.";
+        }
+
+        if (remaining == 1)
+        {
+            return $"Craft {remaining} more tool to continue. ({craftedCount}/{minimumCraftedToolsToContinue})";
+        }
+
+        return $"Craft {remaining} more tools to continue. ({craftedCount}/{minimumCraftedToolsToContinue})";
     }
 
     private List<CardRow> GetAutoLayoutBaseCards(List<CardRow> baseCards, BaseCardSlotBinder slotBinder, bool useManualSlots)
@@ -944,6 +1004,19 @@ public class CardBackpackController : MonoBehaviour
     {
         if (inputLocked || isContinuing)
         {
+            return;
+        }
+
+        if (!HasEnoughCraftedToolsToContinue())
+        {
+            string message = GetContinueRequirementMessage();
+            Debug.Log($"Continue blocked: {message}");
+            if (instructionText != null)
+            {
+                instructionText.text = message;
+            }
+
+            UpdateContinueButtonState();
             return;
         }
 

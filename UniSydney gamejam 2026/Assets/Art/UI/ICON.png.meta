@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: 78f7a823576852b439b76637b1066f9a
+guid: aafbf57cce79a9d4a8db05145b5012f6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6419262676984338220
-    second: T_PETAL_PATH_1_0
-  - first:
-      213: -6665848170123735016
-    second: T_PETAL_PATH_1_1
-  - first:
-      213: -3371106762205501238
-    second: T_PETAL_PATH_1_2
+      213: -5624337792998351728
+    second: ICON_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -106,67 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: T_PETAL_PATH_1_0
+      name: ICON_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 61
-        width: 262
-        height: 161
+        x: 0
+        y: 0
+        width: 1024
+        height: 1024
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4d8ec622b923ae6a0800000000000000
-      internalID: -6419262676984338220
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: T_PETAL_PATH_1_1
-      rect:
-        serializedVersion: 2
-        x: 197
-        y: 116
-        width: 65
-        height: 48
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 810561d08662e73a0800000000000000
-      internalID: -6665848170123735016
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: T_PETAL_PATH_1_2
-      rect:
-        serializedVersion: 2
-        x: 11
-        y: 60
-        width: 262
-        height: 162
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ac8e2dab24c6731d0800000000000000
-      internalID: -3371106762205501238
+      spriteID: 09c5787839652f1b0800000000000000
+      internalID: -5624337792998351728
       vertices: []
       indices: 
       edges: []
@@ -175,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 7e442478e598e1242b350ed314cf7dec
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -185,9 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      T_PETAL_PATH_1_0: -6419262676984338220
-      T_PETAL_PATH_1_1: -6665848170123735016
-      T_PETAL_PATH_1_2: -3371106762205501238
+      ICON_0: -5624337792998351728
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 007f7fb1030872a40a529842f7a3a769
   - enabled: 1
+    path: Assets/Scenes/CardBackpackTest.unity
+    guid: 3ff1c959898a81d41a8d9c785fb34628
+  - enabled: 1
     path: Assets/Scenes/Node1_QueenCastle.unity
     guid: aa45f408080d48e4f97bc0f8772d474e
   - enabled: 1
@@ -20,6 +23,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Node3_DwarfHouse.unity
     guid: 17d2e5ea7fcbe1645b50d658243b8122
+  - enabled: 1
+    path: Assets/Scenes/Node4_1.unity
+    guid: bab80f3fb16ff884b8ef3e5ac811d724
   - enabled: 1
     path: Assets/Scenes/Node5.unity
     guid: 28f4be242ddd9ea478b41789a66505d5
