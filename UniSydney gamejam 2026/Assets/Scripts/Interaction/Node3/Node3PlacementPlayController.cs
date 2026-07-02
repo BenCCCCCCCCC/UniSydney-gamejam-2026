@@ -386,7 +386,23 @@ private void BuildPlacementTable()
             return placementSlotSprite;
         }
 
-        placementSlotSprite = Resources.Load<Sprite>(PlacementSlotResourcesPath);
+        Sprite[] resourceSprites = Resources.LoadAll<Sprite>(PlacementSlotResourcesPath);
+        if (resourceSprites != null && resourceSprites.Length > 0)
+        {
+            foreach (Sprite sprite in resourceSprites)
+            {
+                if (sprite != null && sprite.name == "bg_add_card_0")
+                {
+                    placementSlotSprite = sprite;
+                    break;
+                }
+            }
+
+            if (placementSlotSprite == null)
+            {
+                placementSlotSprite = resourceSprites[0];
+            }
+        }
 
 #if UNITY_EDITOR
         if (placementSlotSprite == null)
